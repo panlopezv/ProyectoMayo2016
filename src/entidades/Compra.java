@@ -44,16 +44,19 @@ public class Compra implements Serializable {
     @Basic(optional = false)
     @Column(name = "idCompra", nullable = false)
     private Integer idCompra;
-    @Column(name = "Fecha")
+    @Basic(optional = false)
+    @Column(name = "Fecha", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date fecha;
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(name = "Total", precision = 22)
-    private Double total;
-    @Column(name = "Credito")
-    private Boolean credito;
+    @Basic(optional = false)
+    @Column(name = "Total", nullable = false)
+    private double total;
+    @Basic(optional = false)
+    @Column(name = "Credito", nullable = false)
+    private boolean credito;
     @Column(name = "Anulada")
     private Boolean anulada;
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "Saldo", precision = 22)
     private Double saldo;
     @Basic(optional = false)
@@ -67,8 +70,11 @@ public class Compra implements Serializable {
         this.idCompra = idCompra;
     }
 
-    public Compra(Integer idCompra, int idProveedor) {
+    public Compra(Integer idCompra, Date fecha, double total, boolean credito, int idProveedor) {
         this.idCompra = idCompra;
+        this.fecha = fecha;
+        this.total = total;
+        this.credito = credito;
         this.idProveedor = idProveedor;
     }
 
@@ -88,19 +94,19 @@ public class Compra implements Serializable {
         this.fecha = fecha;
     }
 
-    public Double getTotal() {
+    public double getTotal() {
         return total;
     }
 
-    public void setTotal(Double total) {
+    public void setTotal(double total) {
         this.total = total;
     }
 
-    public Boolean getCredito() {
+    public boolean getCredito() {
         return credito;
     }
 
-    public void setCredito(Boolean credito) {
+    public void setCredito(boolean credito) {
         this.credito = credito;
     }
 

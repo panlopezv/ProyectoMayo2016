@@ -31,7 +31,6 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Producto.findByDescripcion", query = "SELECT p FROM Producto p WHERE p.descripcion = :descripcion"),
     @NamedQuery(name = "Producto.findByExistencias", query = "SELECT p FROM Producto p WHERE p.existencias = :existencias"),
     @NamedQuery(name = "Producto.findByPrecio", query = "SELECT p FROM Producto p WHERE p.precio = :precio"),
-    @NamedQuery(name = "Producto.findByCosto", query = "SELECT p FROM Producto p WHERE p.costo = :costo"),
     @NamedQuery(name = "Producto.findByIdCategoria", query = "SELECT p FROM Producto p WHERE p.idCategoria = :idCategoria")})
 public class Producto implements Serializable {
 
@@ -41,17 +40,17 @@ public class Producto implements Serializable {
     @Basic(optional = false)
     @Column(name = "idProducto", nullable = false)
     private Integer idProducto;
-    @Column(name = "Nombre", length = 45)
+    @Basic(optional = false)
+    @Column(name = "Nombre", nullable = false, length = 45)
     private String nombre;
     @Column(name = "Descripcion", length = 255)
     private String descripcion;
-    @Column(name = "Existencias")
-    private Integer existencias;
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(name = "Precio", precision = 22)
-    private Double precio;
-    @Column(name = "Costo", precision = 22)
-    private Double costo;
+    @Basic(optional = false)
+    @Column(name = "Existencias", nullable = false)
+    private int existencias;
+    @Basic(optional = false)
+    @Column(name = "Precio", nullable = false)
+    private double precio;
     @Basic(optional = false)
     @Column(name = "idCategoria", nullable = false)
     private int idCategoria;
@@ -63,8 +62,11 @@ public class Producto implements Serializable {
         this.idProducto = idProducto;
     }
 
-    public Producto(Integer idProducto, int idCategoria) {
+    public Producto(Integer idProducto, String nombre, int existencias, double precio, int idCategoria) {
         this.idProducto = idProducto;
+        this.nombre = nombre;
+        this.existencias = existencias;
+        this.precio = precio;
         this.idCategoria = idCategoria;
     }
 
@@ -92,28 +94,20 @@ public class Producto implements Serializable {
         this.descripcion = descripcion;
     }
 
-    public Integer getExistencias() {
+    public int getExistencias() {
         return existencias;
     }
 
-    public void setExistencias(Integer existencias) {
+    public void setExistencias(int existencias) {
         this.existencias = existencias;
     }
 
-    public Double getPrecio() {
+    public double getPrecio() {
         return precio;
     }
 
-    public void setPrecio(Double precio) {
+    public void setPrecio(double precio) {
         this.precio = precio;
-    }
-
-    public Double getCosto() {
-        return costo;
-    }
-
-    public void setCosto(Double costo) {
-        this.costo = costo;
     }
 
     public int getIdCategoria() {

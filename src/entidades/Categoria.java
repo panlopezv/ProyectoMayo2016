@@ -9,6 +9,8 @@ import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -30,10 +32,12 @@ public class Categoria implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "idCategoria", nullable = false)
     private Integer idCategoria;
-    @Column(name = "Nombre", length = 45)
+    @Basic(optional = false)
+    @Column(name = "Nombre", nullable = false, length = 45)
     private String nombre;
 
     public Categoria() {
@@ -41,6 +45,11 @@ public class Categoria implements Serializable {
 
     public Categoria(Integer idCategoria) {
         this.idCategoria = idCategoria;
+    }
+
+    public Categoria(Integer idCategoria, String nombre) {
+        this.idCategoria = idCategoria;
+        this.nombre = nombre;
     }
 
     public Integer getIdCategoria() {

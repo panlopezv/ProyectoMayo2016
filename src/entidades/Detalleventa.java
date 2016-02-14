@@ -30,9 +30,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Detalleventa.findByIdVenta", query = "SELECT d FROM Detalleventa d WHERE d.idVenta = :idVenta"),
     @NamedQuery(name = "Detalleventa.findByIdProducto", query = "SELECT d FROM Detalleventa d WHERE d.idProducto = :idProducto"),
     @NamedQuery(name = "Detalleventa.findByCantidad", query = "SELECT d FROM Detalleventa d WHERE d.cantidad = :cantidad"),
-    @NamedQuery(name = "Detalleventa.findBySubtotal", query = "SELECT d FROM Detalleventa d WHERE d.subtotal = :subtotal"),
     @NamedQuery(name = "Detalleventa.findByPrecio", query = "SELECT d FROM Detalleventa d WHERE d.precio = :precio"),
-    @NamedQuery(name = "Detalleventa.findBySubdescuento", query = "SELECT d FROM Detalleventa d WHERE d.subdescuento = :subdescuento")})
+    @NamedQuery(name = "Detalleventa.findBySubdescuento", query = "SELECT d FROM Detalleventa d WHERE d.subdescuento = :subdescuento"),
+    @NamedQuery(name = "Detalleventa.findBySubtotal", query = "SELECT d FROM Detalleventa d WHERE d.subtotal = :subtotal")})
 public class Detalleventa implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -51,13 +51,13 @@ public class Detalleventa implements Serializable {
     @Column(name = "Cantidad", nullable = false)
     private int cantidad;
     @Basic(optional = false)
-    @Column(name = "Subtotal", nullable = false)
-    private double subtotal;
+    @Column(name = "Precio", nullable = false)
+    private double precio;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(name = "Precio", precision = 22)
-    private Double precio;
     @Column(name = "Subdescuento", precision = 22)
     private Double subdescuento;
+    @Column(name = "Subtotal", precision = 22)
+    private Double subtotal;
 
     public Detalleventa() {
     }
@@ -66,12 +66,12 @@ public class Detalleventa implements Serializable {
         this.idDetalleVenta = idDetalleVenta;
     }
 
-    public Detalleventa(Long idDetalleVenta, int idVenta, int idProducto, int cantidad, double subtotal) {
+    public Detalleventa(Long idDetalleVenta, int idVenta, int idProducto, int cantidad, double precio) {
         this.idDetalleVenta = idDetalleVenta;
         this.idVenta = idVenta;
         this.idProducto = idProducto;
         this.cantidad = cantidad;
-        this.subtotal = subtotal;
+        this.precio = precio;
     }
 
     public Long getIdDetalleVenta() {
@@ -106,19 +106,11 @@ public class Detalleventa implements Serializable {
         this.cantidad = cantidad;
     }
 
-    public double getSubtotal() {
-        return subtotal;
-    }
-
-    public void setSubtotal(double subtotal) {
-        this.subtotal = subtotal;
-    }
-
-    public Double getPrecio() {
+    public double getPrecio() {
         return precio;
     }
 
-    public void setPrecio(Double precio) {
+    public void setPrecio(double precio) {
         this.precio = precio;
     }
 
@@ -128,6 +120,14 @@ public class Detalleventa implements Serializable {
 
     public void setSubdescuento(Double subdescuento) {
         this.subdescuento = subdescuento;
+    }
+
+    public Double getSubtotal() {
+        return subtotal;
+    }
+
+    public void setSubtotal(Double subtotal) {
+        this.subtotal = subtotal;
     }
 
     @Override

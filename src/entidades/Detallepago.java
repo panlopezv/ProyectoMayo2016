@@ -38,9 +38,9 @@ public class Detallepago implements Serializable {
     @Basic(optional = false)
     @Column(name = "idDetallePago", nullable = false)
     private Integer idDetallePago;
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(name = "Monto", precision = 22)
-    private Double monto;
+    @Basic(optional = false)
+    @Column(name = "Monto", nullable = false)
+    private double monto;
     @Basic(optional = false)
     @Column(name = "idCompra", nullable = false)
     private int idCompra;
@@ -55,8 +55,9 @@ public class Detallepago implements Serializable {
         this.idDetallePago = idDetallePago;
     }
 
-    public Detallepago(Integer idDetallePago, int idCompra, int idPago) {
+    public Detallepago(Integer idDetallePago, double monto, int idCompra, int idPago) {
         this.idDetallePago = idDetallePago;
+        this.monto = monto;
         this.idCompra = idCompra;
         this.idPago = idPago;
     }
@@ -69,11 +70,11 @@ public class Detallepago implements Serializable {
         this.idDetallePago = idDetallePago;
     }
 
-    public Double getMonto() {
+    public double getMonto() {
         return monto;
     }
 
-    public void setMonto(Double monto) {
+    public void setMonto(double monto) {
         this.monto = monto;
     }
 

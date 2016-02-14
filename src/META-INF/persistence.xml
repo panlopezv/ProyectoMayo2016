@@ -2,19 +2,19 @@
 <persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
   <persistence-unit name="PFerreteriaPU" transaction-type="RESOURCE_LOCAL">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-    <class>entidades.Pago</class>
-    <class>entidades.Detalleventa</class>
-    <class>entidades.Proveedor</class>
-    <class>entidades.Cliente</class>
-    <class>entidades.Usuario</class>
-    <class>entidades.Compra</class>
-    <class>entidades.Abono</class>
-    <class>entidades.Detalleabono</class>
-    <class>entidades.Categoria</class>
-    <class>entidades.Venta</class>
-    <class>entidades.Detallecompra</class>
     <class>entidades.Detallepago</class>
+    <class>entidades.Cliente</class>
+    <class>entidades.Detalleabono</class>
+    <class>entidades.Usuario</class>
+    <class>entidades.Proveedor</class>
+    <class>entidades.Compra</class>
+    <class>entidades.Detalleventa</class>
     <class>entidades.TipoUsuario</class>
+    <class>entidades.Venta</class>
+    <class>entidades.Pago</class>
+    <class>entidades.Detallecompra</class>
+    <class>entidades.Categoria</class>
+    <class>entidades.Abono</class>
     <class>entidades.Producto</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/ferreteria?zeroDateTimeBehavior=convertToNull"/>

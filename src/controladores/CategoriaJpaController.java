@@ -6,7 +6,6 @@
 package controladores;
 
 import controladores.exceptions.NonexistentEntityException;
-import controladores.exceptions.PreexistingEntityException;
 import entidades.Categoria;
 import java.io.Serializable;
 import java.util.List;
@@ -32,18 +31,13 @@ public class CategoriaJpaController implements Serializable {
         return emf.createEntityManager();
     }
 
-    public void create(Categoria categoria) throws PreexistingEntityException, Exception {
+    public void create(Categoria categoria) {
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
             em.persist(categoria);
             em.getTransaction().commit();
-        } catch (Exception ex) {
-            if (findCategoria(categoria.getIdCategoria()) != null) {
-                throw new PreexistingEntityException("Categoria " + categoria + " already exists.", ex);
-            }
-            throw ex;
         } finally {
             if (em != null) {
                 em.close();

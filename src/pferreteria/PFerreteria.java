@@ -5,6 +5,7 @@
  */
 package pferreteria;
 
+import conexion.Conexion;
 import controladores.UsuarioJpaController;
 import entidades.Usuario;
 import javax.persistence.EntityManager;
@@ -22,13 +23,15 @@ public class PFerreteria {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        EntityManagerFactory emf= Persistence.createEntityManagerFactory("PFerreteriaPU");
-        EntityManager em = emf.createEntityManager();
         String user = "panlopezv";
         String pass = "1234";
-        Usuario u = new Usuario(0, user, pass, true);
-        UsuarioJpaController uControlador = new UsuarioJpaController(emf);
-        uControlador.create(u);
+        Conexion c = Conexion.getConexion(user,pass);
+        if(c!=null){
+            System.out.println("Exito");
+        }
+        else{
+            System.out.println("Fracaso");
+        }
     }
     
 }

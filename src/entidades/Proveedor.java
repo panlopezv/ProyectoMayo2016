@@ -39,7 +39,8 @@ public class Proveedor implements Serializable {
     @Basic(optional = false)
     @Column(name = "idProveedor", nullable = false)
     private Integer idProveedor;
-    @Column(name = "Nombre", length = 100)
+    @Basic(optional = false)
+    @Column(name = "Nombre", nullable = false, length = 100)
     private String nombre;
     @Column(name = "NIT", length = 45)
     private String nit;
@@ -54,6 +55,11 @@ public class Proveedor implements Serializable {
 
     public Proveedor(Integer idProveedor) {
         this.idProveedor = idProveedor;
+    }
+
+    public Proveedor(Integer idProveedor, String nombre) {
+        this.idProveedor = idProveedor;
+        this.nombre = nombre;
     }
 
     public Integer getIdProveedor() {

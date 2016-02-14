@@ -43,8 +43,7 @@ public class Cliente implements Serializable {
     @Basic(optional = false)
     @Column(name = "Nombre", nullable = false, length = 45)
     private String nombre;
-    @Basic(optional = false)
-    @Column(name = "Direccion", nullable = false, length = 45)
+    @Column(name = "Direccion", length = 45)
     private String direccion;
     @Basic(optional = false)
     @Column(name = "NIT", nullable = false, length = 45)
@@ -62,10 +61,9 @@ public class Cliente implements Serializable {
         this.idCliente = idCliente;
     }
 
-    public Cliente(Integer idCliente, String nombre, String direccion, String nit) {
+    public Cliente(Integer idCliente, String nombre, String nit) {
         this.idCliente = idCliente;
         this.nombre = nombre;
-        this.direccion = direccion;
         this.nit = nit;
     }
 

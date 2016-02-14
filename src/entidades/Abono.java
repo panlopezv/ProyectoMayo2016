@@ -41,12 +41,13 @@ public class Abono implements Serializable {
     @Basic(optional = false)
     @Column(name = "idAbono", nullable = false)
     private Integer idAbono;
-    @Column(name = "Fecha")
+    @Basic(optional = false)
+    @Column(name = "Fecha", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date fecha;
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(name = "Total", precision = 22)
-    private Double total;
+    @Basic(optional = false)
+    @Column(name = "Total", nullable = false)
+    private double total;
     @Basic(optional = false)
     @Column(name = "idCliente", nullable = false)
     private int idCliente;
@@ -58,8 +59,10 @@ public class Abono implements Serializable {
         this.idAbono = idAbono;
     }
 
-    public Abono(Integer idAbono, int idCliente) {
+    public Abono(Integer idAbono, Date fecha, double total, int idCliente) {
         this.idAbono = idAbono;
+        this.fecha = fecha;
+        this.total = total;
         this.idCliente = idCliente;
     }
 
@@ -79,11 +82,11 @@ public class Abono implements Serializable {
         this.fecha = fecha;
     }
 
-    public Double getTotal() {
+    public double getTotal() {
         return total;
     }
 
-    public void setTotal(Double total) {
+    public void setTotal(double total) {
         this.total = total;
     }
 
