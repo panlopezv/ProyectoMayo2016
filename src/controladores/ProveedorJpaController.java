@@ -18,7 +18,7 @@ import javax.persistence.criteria.Root;
 
 /**
  *
- * @author panlo
+ * @author Pablo Lopez <panlopezv@gmail.com>
  */
 public class ProveedorJpaController implements Serializable {
 

@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author panlo
+ * @author Pablo Lopez <panlopezv@gmail.com>
  */
 @Entity
 @Table(name = "proveedor", catalog = "ferreteria", schema = "")
@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Proveedor.findByNombre", query = "SELECT p FROM Proveedor p WHERE p.nombre = :nombre"),
     @NamedQuery(name = "Proveedor.findByNit", query = "SELECT p FROM Proveedor p WHERE p.nit = :nit"),
     @NamedQuery(name = "Proveedor.findByTelefono", query = "SELECT p FROM Proveedor p WHERE p.telefono = :telefono"),
+    @NamedQuery(name = "Proveedor.findMaxID", query = "SELECT max(p.idProveedor) FROM Proveedor p"),
     @NamedQuery(name = "Proveedor.findBySaldo", query = "SELECT p FROM Proveedor p WHERE p.saldo = :saldo")})
 public class Proveedor implements Serializable {
 
@@ -42,13 +43,14 @@ public class Proveedor implements Serializable {
     @Basic(optional = false)
     @Column(name = "Nombre", nullable = false, length = 100)
     private String nombre;
-    @Column(name = "NIT", length = 45)
+    @Basic(optional = false)
+    @Column(name = "NIT", nullable = false, length = 45)
     private String nit;
     @Column(name = "Telefono", length = 8)
     private String telefono;
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(name = "Saldo", precision = 22)
-    private Double saldo;
+    @Basic(optional = false)
+    @Column(name = "Saldo", nullable = false)
+    private double saldo;
 
     public Proveedor() {
     }
@@ -57,10 +59,12 @@ public class Proveedor implements Serializable {
         this.idProveedor = idProveedor;
     }
 
-    public Proveedor(Integer idProveedor, String nombre) {
-        this.idProveedor = idProveedor;
+    public Proveedor(String nombre, String nit, String telefono) {
         this.nombre = nombre;
-    }
+        this.nit = nit;
+        this.telefono = telefono;
+        this.saldo = 0.0;
+    }  
 
     public Integer getIdProveedor() {
         return idProveedor;
@@ -94,11 +98,11 @@ public class Proveedor implements Serializable {
         this.telefono = telefono;
     }
 
-    public Double getSaldo() {
+    public double getSaldo() {
         return saldo;
     }
 
-    public void setSaldo(Double saldo) {
+    public void setSaldo(double saldo) {
         this.saldo = saldo;
     }
 

@@ -9,7 +9,6 @@
     <class>entidades.Proveedor</class>
     <class>entidades.Compra</class>
     <class>entidades.Detalleventa</class>
-    <class>entidades.TipoUsuario</class>
     <class>entidades.Venta</class>
     <class>entidades.Pago</class>
     <class>entidades.Detallecompra</class>

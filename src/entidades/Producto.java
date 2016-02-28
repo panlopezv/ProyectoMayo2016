@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author panlo
+ * @author Pablo Lopez <panlopezv@gmail.com>
  */
 @Entity
 @Table(name = "producto", catalog = "ferreteria", schema = "")
@@ -62,12 +62,12 @@ public class Producto implements Serializable {
         this.idProducto = idProducto;
     }
 
-    public Producto(Integer idProducto, String nombre, int existencias, double precio, int idCategoria) {
-        this.idProducto = idProducto;
+    public Producto(String nombre, String descripcion, double precio, int idCategoria) {
         this.nombre = nombre;
-        this.existencias = existencias;
+        this.descripcion = descripcion;
         this.precio = precio;
         this.idCategoria = idCategoria;
+        this.existencias = 0;
     }
 
     public Integer getIdProducto() {

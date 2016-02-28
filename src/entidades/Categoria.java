@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author panlo
+ * @author Pablo Lopez <panlopezv@gmail.com>
  */
 @Entity
 @Table(name = "categoria", catalog = "ferreteria", schema = "")
@@ -47,8 +47,7 @@ public class Categoria implements Serializable {
         this.idCategoria = idCategoria;
     }
 
-    public Categoria(Integer idCategoria, String nombre) {
-        this.idCategoria = idCategoria;
+    public Categoria(String nombre) {
         this.nombre = nombre;
     }
 

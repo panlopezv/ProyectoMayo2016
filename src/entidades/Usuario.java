@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author panlo
+ * @author Pablo Lopez <panlopezv@gmail.com>
  */
 @Entity
 @Table(name = "usuario", catalog = "ferreteria", schema = "")
@@ -28,8 +28,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Usuario.findAll", query = "SELECT u FROM Usuario u"),
     @NamedQuery(name = "Usuario.findByIdUsuario", query = "SELECT u FROM Usuario u WHERE u.idUsuario = :idUsuario"),
     @NamedQuery(name = "Usuario.findByUsuario", query = "SELECT u FROM Usuario u WHERE u.usuario = :usuario"),
-    @NamedQuery(name = "Usuario.findByUsuarioAndContrasenya", query = "SELECT u FROM Usuario u WHERE u.usuario = :usuario AND u.contrasenya = :contrasenya"),
     @NamedQuery(name = "Usuario.findByContrasenya", query = "SELECT u FROM Usuario u WHERE u.contrasenya = :contrasenya"),
+    @NamedQuery(name = "Usuario.findByUsuarioAndContrasenya", query = "SELECT u FROM Usuario u WHERE u.usuario = :usuario AND u.contrasenya = :contrasenya"),
     @NamedQuery(name = "Usuario.findByEsAdministrador", query = "SELECT u FROM Usuario u WHERE u.esAdministrador = :esAdministrador")})
 public class Usuario implements Serializable {
 

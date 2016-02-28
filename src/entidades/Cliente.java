@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author panlo
+ * @author Pablo Lopez <panlopezv@gmail.com>
  */
 @Entity
 @Table(name = "cliente", catalog = "ferreteria", schema = "")
@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Cliente.findByDireccion", query = "SELECT c FROM Cliente c WHERE c.direccion = :direccion"),
     @NamedQuery(name = "Cliente.findByNit", query = "SELECT c FROM Cliente c WHERE c.nit = :nit"),
     @NamedQuery(name = "Cliente.findByTelefono", query = "SELECT c FROM Cliente c WHERE c.telefono = :telefono"),
+    @NamedQuery(name = "Cliente.findMaxID", query = "SELECT MAX(c.idCliente) FROM Cliente c"),
     @NamedQuery(name = "Cliente.findBySaldo", query = "SELECT c FROM Cliente c WHERE c.saldo = :saldo")})
 public class Cliente implements Serializable {
 
@@ -60,11 +61,12 @@ public class Cliente implements Serializable {
     public Cliente(Integer idCliente) {
         this.idCliente = idCliente;
     }
-
-    public Cliente(Integer idCliente, String nombre, String nit) {
-        this.idCliente = idCliente;
+    
+    public Cliente(String nombre, String direccion, String nit) {
         this.nombre = nombre;
+        this.direccion = direccion;
         this.nit = nit;
+        this.saldo = 0.0;
     }
 
     public Integer getIdCliente() {

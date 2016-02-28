@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author panlo
+ * @author Pablo Lopez <panlopezv@gmail.com>
  */
 @Entity
 @Table(name = "venta", catalog = "ferreteria", schema = "")
@@ -37,6 +37,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Venta.findByCredito", query = "SELECT v FROM Venta v WHERE v.credito = :credito"),
     @NamedQuery(name = "Venta.findByAnulada", query = "SELECT v FROM Venta v WHERE v.anulada = :anulada"),
     @NamedQuery(name = "Venta.findByIdCliente", query = "SELECT v FROM Venta v WHERE v.idCliente = :idCliente"),
+    @NamedQuery(name = "Venta.findMaxID", query = "SELECT MAX(v.idVenta) FROM Venta v"),
     @NamedQuery(name = "Venta.findByIdUsuario", query = "SELECT v FROM Venta v WHERE v.idUsuario = :idUsuario")})
 public class Venta implements Serializable {
 
@@ -53,11 +54,12 @@ public class Venta implements Serializable {
     @Basic(optional = false)
     @Column(name = "Total", nullable = false)
     private double total;
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(name = "Saldo", precision = 22)
-    private Double saldo;
-    @Column(name = "Descuento", precision = 22)
-    private Double descuento;
+    @Basic(optional = false)
+    @Column(name = "Saldo", nullable = false)
+    private double saldo;
+    @Basic(optional = false)
+    @Column(name = "Descuento", nullable = false)
+    private double descuento;
     @Basic(optional = false)
     @Column(name = "Credito", nullable = false)
     private boolean credito;
@@ -77,13 +79,19 @@ public class Venta implements Serializable {
         this.idVenta = idVenta;
     }
 
-    public Venta(Integer idVenta, Date fecha, double total, boolean credito, int idCliente, int idUsuario) {
-        this.idVenta = idVenta;
+    public Venta(Date fecha, double total, double descuento, Boolean credito, int idCliente, int idUsuario) {
         this.fecha = fecha;
         this.total = total;
+        this.descuento = descuento;
         this.credito = credito;
         this.idCliente = idCliente;
         this.idUsuario = idUsuario;
+        if(this.credito){
+            this.saldo = this.total - this.descuento;
+        }
+        else{
+            this.saldo = 0.0;
+        }
     }
 
     public Integer getIdVenta() {
@@ -110,19 +118,19 @@ public class Venta implements Serializable {
         this.total = total;
     }
 
-    public Double getSaldo() {
+    public double getSaldo() {
         return saldo;
     }
 
-    public void setSaldo(Double saldo) {
+    public void setSaldo(double saldo) {
         this.saldo = saldo;
     }
 
-    public Double getDescuento() {
+    public double getDescuento() {
         return descuento;
     }
 
-    public void setDescuento(Double descuento) {
+    public void setDescuento(double descuento) {
         this.descuento = descuento;
     }
 

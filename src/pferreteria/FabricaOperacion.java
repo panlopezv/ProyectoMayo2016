@@ -5,12 +5,29 @@
  */
 package pferreteria;
 
+import javax.persistence.EntityManagerFactory;
+
 public class FabricaOperacion {
 
-    public FabricaOperacion() {
+    private final EntityManagerFactory emf;
+    
+    public FabricaOperacion(EntityManagerFactory emf) {
+        this.emf = emf;
     }
 
-    public COperacion crearOperacion(int tipo) {
+    /**
+     * Construye y devuelve la operacion CVenta o CCompra
+     * @param tipo int
+     * @param idUsuario int
+     * @return CVenta/CCompra
+     */
+    public COperacion crearOperacion(int tipo, int idUsuario) {
+        switch(tipo){
+            // Venta
+            case 1: return new CVenta(emf, idUsuario);
+            // Compra
+            case 2: return new CCompra(emf, idUsuario);
+        }
         return null;
     }
 }

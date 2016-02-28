@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author panlo
+ * @author Pablo Lopez <panlopezv@gmail.com>
  */
 @Entity
 @Table(name = "compra", catalog = "ferreteria", schema = "")
@@ -56,9 +56,9 @@ public class Compra implements Serializable {
     private boolean credito;
     @Column(name = "Anulada")
     private Boolean anulada;
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(name = "Saldo", precision = 22)
-    private Double saldo;
+    @Basic(optional = false)
+    @Column(name = "Saldo", nullable = false)
+    private double saldo;
     @Basic(optional = false)
     @Column(name = "idProveedor", nullable = false)
     private int idProveedor;
@@ -70,14 +70,19 @@ public class Compra implements Serializable {
         this.idCompra = idCompra;
     }
 
-    public Compra(Integer idCompra, Date fecha, double total, boolean credito, int idProveedor) {
-        this.idCompra = idCompra;
+    public Compra(Date fecha, double total, Boolean credito, int idProveedor) {
         this.fecha = fecha;
         this.total = total;
         this.credito = credito;
         this.idProveedor = idProveedor;
+        if(this.credito){
+            this.saldo = this.total;
+        }
+        else{
+            this.saldo = 0.0;
+        }
     }
-
+    
     public Integer getIdCompra() {
         return idCompra;
     }
@@ -118,11 +123,11 @@ public class Compra implements Serializable {
         this.anulada = anulada;
     }
 
-    public Double getSaldo() {
+    public double getSaldo() {
         return saldo;
     }
 
-    public void setSaldo(Double saldo) {
+    public void setSaldo(double saldo) {
         this.saldo = saldo;
     }
 

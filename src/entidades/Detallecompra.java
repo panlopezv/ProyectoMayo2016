@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author panlo
+ * @author Pablo Lopez <panlopezv@gmail.com>
  */
 @Entity
 @Table(name = "detallecompra", catalog = "ferreteria", schema = "")
@@ -52,9 +52,9 @@ public class Detallecompra implements Serializable {
     @Basic(optional = false)
     @Column(name = "Costo", nullable = false)
     private double costo;
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(name = "Subtotal", precision = 22)
-    private Double subtotal;
+    @Basic(optional = false)
+    @Column(name = "Subtotal", nullable = false)
+    private double subtotal;
 
     public Detallecompra() {
     }
@@ -63,14 +63,14 @@ public class Detallecompra implements Serializable {
         this.idDetalleCompra = idDetalleCompra;
     }
 
-    public Detallecompra(Long idDetalleCompra, int compraidCompra, int productoidProducto, int cantidad, double costo) {
-        this.idDetalleCompra = idDetalleCompra;
+    public Detallecompra(int compraidCompra, int productoidProducto, Integer cantidad, Double costo, Double subtotal) {
         this.compraidCompra = compraidCompra;
         this.productoidProducto = productoidProducto;
         this.cantidad = cantidad;
         this.costo = costo;
+        this.subtotal = subtotal;
     }
-
+    
     public Long getIdDetalleCompra() {
         return idDetalleCompra;
     }
@@ -111,11 +111,11 @@ public class Detallecompra implements Serializable {
         this.costo = costo;
     }
 
-    public Double getSubtotal() {
+    public double getSubtotal() {
         return subtotal;
     }
 
-    public void setSubtotal(Double subtotal) {
+    public void setSubtotal(double subtotal) {
         this.subtotal = subtotal;
     }
 
