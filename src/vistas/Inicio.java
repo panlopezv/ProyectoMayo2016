@@ -30,15 +30,6 @@ public class Inicio extends javax.swing.JFrame {
         tablero.setVisible(Boolean.FALSE);
         escritorio.setVisible(Boolean.FALSE);
     }
-    
-    public void removerComponente(Component c){
-        try{
-            c.setVisible(Boolean.FALSE);
-            escritorio.remove(c);
-        }catch(Exception ex){
-
-        }
-    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -240,16 +231,14 @@ public class Inicio extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        removerComponente(pruebaB);
-        removerComponente(pruebaA);
+        escritorio.removeAll();
         pruebaA = new InternoA();
         escritorio.add(pruebaA);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
-        removerComponente(pruebaA);
-        removerComponente(pruebaB);
+        escritorio.removeAll();
         pruebaB = new InternoB();
         escritorio.add(pruebaB);
     }//GEN-LAST:event_jButton2ActionPerformed
