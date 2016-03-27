@@ -5,9 +5,8 @@
  */
 package pferreteria;
 
+import vistas.Inicio;
 import conexion.Conexion;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -21,16 +20,18 @@ public class PFerreteria {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        String user = "panlopezv";
-        String pass = "1234";
-        c = Conexion.getConexion(user,pass);
-        if(c!=null){
-            System.out.println("Exito");
-        }
-        else{
-            System.out.println("Fracaso");
-        }
-        FabricaOperacion fp = new FabricaOperacion(c.getEmf());
+        Inicio nuevo = new Inicio();
+        nuevo.setVisible(true);
+//        String user = "panlopezv";
+//        String pass = "1234";
+//        c = Conexion.getConexion(user,pass);
+//        if(c!=null){
+//            System.out.println("Exito");
+//        }
+//        else{
+//            System.out.println("Fracaso");
+//        }
+//        FabricaOperacion fp = new FabricaOperacion(c.getEmf());
         
         //CCompra nuevaCompra = (CCompra) fp.crearOperacion(2, 1);
 //        nuevaCompra.crearProducto("Martillo", "Martillo", 20, 1);
@@ -47,15 +48,15 @@ public class PFerreteria {
 //        nuevaCompra.setIdPersona(1);
 //        nuevaCompra.finalizarCompra();
         
-        CVenta nuevaVenta = (CVenta) fp.crearOperacion(1, 1);
-//        nuevaVenta.crearCliente("Pablo Andres", "Ciudad", "12345");
-
-        nuevaVenta.agregarProducto(new CProducto(1,"Martillo",1,30));
-        nuevaVenta.agregarProducto(new CProducto(2,"Desarmador",1,25));
-        nuevaVenta.setCredito(Boolean.TRUE);
-        nuevaVenta.setDescuento(10);
-        nuevaVenta.setIdPersona(1);
-        nuevaVenta.finalizarVenta();
+//        CVenta nuevaVenta = (CVenta) fp.crearOperacion(1, 1);
+////        nuevaVenta.crearCliente("Pablo Andres", "Ciudad", "12345");
+//
+//        nuevaVenta.agregarProducto(new CProducto(1,"Martillo",1,30));
+//        nuevaVenta.agregarProducto(new CProducto(2,"Desarmador",1,25));
+//        nuevaVenta.setCredito(Boolean.TRUE);
+//        nuevaVenta.setDescuento(10);
+//        nuevaVenta.setIdPersona(1);
+//        nuevaVenta.finalizarVenta();
     }
     
 }
