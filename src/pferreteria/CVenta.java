@@ -22,6 +22,8 @@ public class CVenta extends COperacion {
     private final DetalleventaJpaController controladorDetalleVenta;
     private final ClienteJpaController controladorCliente;
     private double descuento;
+    private double saldo;
+    private double pagoInicial;
     private ArrayList<CProducto> productos;
 
     /**
@@ -34,6 +36,7 @@ public class CVenta extends COperacion {
         this.idUsuario = idUsuario;
         this.productos = new ArrayList<>();
         this.descuento = 0;
+        this.pagoInicial = 0;
         controladorVenta = new VentaJpaController(emf);
         controladorDetalleVenta = new DetalleventaJpaController(emf);
         controladorCliente = new ClienteJpaController(emf);
@@ -43,7 +46,13 @@ public class CVenta extends COperacion {
      * Crea la venta, los detalles de venta y los almacena en la base de datos.
      */
     public void finalizarVenta(){
-        Venta nueva = new Venta(new Date(), getTotal(), descuento, credito, idPersona, idUsuario);
+        if(credito){
+            saldo = getTotal() - this.descuento - pagoInicial;
+        }
+        else{
+            saldo = 0.0;
+        }
+        Venta nueva = new Venta(new Date(), getTotal(), saldo, descuento, credito, idPersona, idUsuario);
         controladorVenta.create(nueva);
         for(int i=0;i<productos.size();i++){
             controladorDetalleVenta.create(new Detalleventa(nueva.getIdVenta(), productos.get(i).getId(), productos.get(i).getCantidad(), productos.get(i).getPrecio(),productos.get(i).getSubtotal()));
@@ -84,6 +93,14 @@ public class CVenta extends COperacion {
 
     public void setProductos(ArrayList<CProducto> productos) {
         this.productos = productos;
+    }
+
+    public double getPagoInicial() {
+        return pagoInicial;
+    }
+
+    public void setPagoInicial(double pagoInicial) {
+        this.pagoInicial = pagoInicial;
     }
 
     /**

@@ -79,19 +79,14 @@ public class Venta implements Serializable {
         this.idVenta = idVenta;
     }
 
-    public Venta(Date fecha, double total, double descuento, Boolean credito, int idCliente, int idUsuario) {
+    public Venta(Date fecha, double total, double saldo, double descuento, Boolean credito, int idCliente, int idUsuario) {
         this.fecha = fecha;
         this.total = total;
+        this.saldo = saldo;
         this.descuento = descuento;
         this.credito = credito;
         this.idCliente = idCliente;
         this.idUsuario = idUsuario;
-        if(this.credito){
-            this.saldo = this.total - this.descuento;
-        }
-        else{
-            this.saldo = 0.0;
-        }
     }
 
     public Integer getIdVenta() {
