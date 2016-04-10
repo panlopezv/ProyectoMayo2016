@@ -48,6 +48,9 @@ public class Usuario implements Serializable {
     @Basic(optional = false)
     @Column(name = "esAdministrador", nullable = false)
     private boolean esAdministrador;
+    @Basic(optional = false)
+    @Column(name = "Nombre", nullable = false, length = 100)
+    private String nombre;
 
     public Usuario() {
     }
@@ -56,11 +59,12 @@ public class Usuario implements Serializable {
         this.idUsuario = idUsuario;
     }
 
-    public Usuario(Integer idUsuario, String usuario, String contrasenya, boolean esAdministrador) {
+    public Usuario(Integer idUsuario, String usuario, String contrasenya, boolean esAdministrador, String nombre) {
         this.idUsuario = idUsuario;
         this.usuario = usuario;
         this.contrasenya = contrasenya;
         this.esAdministrador = esAdministrador;
+        this.nombre = nombre;
     }
 
     public Integer getIdUsuario() {
@@ -75,6 +79,10 @@ public class Usuario implements Serializable {
         return usuario;
     }
 
+    public String getNombre() {
+        return nombre;
+    }
+
     public void setUsuario(String usuario) {
         this.usuario = usuario;
     }
@@ -85,6 +93,10 @@ public class Usuario implements Serializable {
 
     public void setContrasenya(String contrasenya) {
         this.contrasenya = contrasenya;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
     public boolean getEsAdministrador() {

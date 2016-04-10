@@ -10,6 +10,7 @@ import java.awt.Component;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import ventas.InterfazVenta;
 
 /**
  *
@@ -18,7 +19,7 @@ import javax.swing.JTextField;
 public class Inicio extends javax.swing.JFrame {
 
     public static Conexion conexion;
-    private InternoA pruebaA;
+    private InterfazVenta venta;
     private InternoB pruebaB;
 
     /**
@@ -238,9 +239,10 @@ public class Inicio extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         limpiarEscritorio();
-        pruebaA = new InternoA();
-        escritorio.add(pruebaA);
-        this.setSize(pruebaA.getWidth()+250, pruebaA.getHeight()+75);
+        venta = new InterfazVenta();
+        escritorio.add(venta);
+        this.setSize(venta.getWidth()+255, venta.getHeight()+85);
+        this.setLocationRelativeTo(null);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
