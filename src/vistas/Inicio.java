@@ -6,6 +6,7 @@
 package vistas;
 
 import conexion.Conexion;
+import inventario.InterfazInventario;
 import java.awt.Component;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
@@ -20,6 +21,7 @@ public class Inicio extends javax.swing.JFrame {
 
     public static Conexion conexion;
     private InterfazVenta venta;
+    private InterfazInventario inventario;
     private InternoB pruebaB;
 
     /**
@@ -248,8 +250,10 @@ public class Inicio extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
         limpiarEscritorio();
-        pruebaB = new InternoB();
-        escritorio.add(pruebaB);
+        inventario = new InterfazInventario();
+        escritorio.add(inventario);
+//        pruebaB = new InternoB();
+//        escritorio.add(pruebaB);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
