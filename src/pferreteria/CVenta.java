@@ -14,7 +14,6 @@ import entidades.Venta;
 import java.util.ArrayList;
 import java.util.Date;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Query;
 
 public class CVenta extends COperacion {
 
@@ -72,11 +71,13 @@ public class CVenta extends COperacion {
      * @param nombre String
      * @param direccion String
      * @param nit String
+     * @return cliente creado
      */
-    public void crearCliente(String nombre, String direccion, String nit){
-        controladorCliente.create(new Cliente(nombre, direccion, nit));
-//        Query consulta = emf.createEntityManager().createNamedQuery("Cliente.findMaxID");
-//        this.idPersona = (int) consulta.getSingleResult();
+    public Cliente crearCliente(String nombre, String direccion, String nit){
+        Cliente nuevo = new Cliente(nombre, direccion, nit);
+        controladorCliente.create(nuevo);
+        this.idPersona = nuevo.getIdCliente();
+        return nuevo;
     }
 
     public double getDescuento() {
