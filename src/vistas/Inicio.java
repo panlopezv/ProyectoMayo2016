@@ -5,6 +5,7 @@
  */
 package vistas;
 
+import productos.CrearProducto;
 import conexion.Conexion;
 import inventario.InterfazInventario;
 import java.awt.Component;
@@ -84,7 +85,7 @@ public class Inicio extends javax.swing.JFrame {
             }
         });
 
-        jButton3.setText("Crear producto");
+        jButton3.setText("Opción C");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
@@ -264,9 +265,6 @@ public class Inicio extends javax.swing.JFrame {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
-        limpiarEscritorio();
-        CrearProducto cp = new CrearProducto();
-        escritorio.add(cp);
     }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
@@ -305,7 +303,7 @@ public class Inicio extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JDesktopPane escritorio;
+    public javax.swing.JDesktopPane escritorio;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;

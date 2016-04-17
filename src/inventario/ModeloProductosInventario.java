@@ -94,6 +94,9 @@ public class ModeloProductosInventario extends AbstractTableModel{
         return productos;
     }
     
+    public Producto getProducto(int index){
+        return productos.get(index);
+    }
     /**
      * Bloquea la edicion de cualquier celda
      * @param rowIndex

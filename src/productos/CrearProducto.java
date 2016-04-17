@@ -3,29 +3,48 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package vistas;
+package productos;
 
+import conexion.Observador;
 import controladores.CategoriaJpaController;
 import controladores.ProductoJpaController;
 import entidades.Categoria;
 import entidades.Producto;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 import javax.persistence.Query;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import vistas.Inicio;
 import static vistas.Inicio.conexion;
 
 /**
  *
  * @author Pablo Lopez <panlopezv@gmail.com>
  */
-public class CrearProducto extends javax.swing.JInternalFrame {
+public class CrearProducto extends javax.swing.JInternalFrame implements Observer {
 
     int idCategoria=0;
     CategoriaJpaController controladorC;
     ProductoJpaController controladorP;
     List<Categoria> listaCategorias;
+    Observador op;
+    
+    /**
+     * Creates new form InternoB
+     * @param op
+     */
+    public CrearProducto(Observador op) {
+        initComponents();
+        setVisible(Boolean.TRUE);
+        this.op = op;
+        controladorC = new CategoriaJpaController(Inicio.conexion.getEmf());
+        controladorP = new ProductoJpaController(Inicio.conexion.getEmf());
+        mostrarCategorias();
+    }
+    
     /**
      * Creates new form InternoB
      */
@@ -111,6 +130,7 @@ public class CrearProducto extends javax.swing.JInternalFrame {
         setBackground(new java.awt.Color(255, 204, 153));
         setClosable(true);
         setMaximizable(true);
+        setTitle("Crear producto");
 
         jLabel1.setText("Nombre:");
 
@@ -171,7 +191,7 @@ public class CrearProducto extends javax.swing.JInternalFrame {
                             .addComponent(jLabel4))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 236, Short.MAX_VALUE)
+                        .addGap(0, 234, Short.MAX_VALUE)
                         .addComponent(botonAceptar)
                         .addGap(18, 18, 18)
                         .addComponent(botonSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -191,7 +211,7 @@ public class CrearProducto extends javax.swing.JInternalFrame {
                 .addGap(18, 18, 18)
                 .addComponent(jLabel2)
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 123, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -224,8 +244,16 @@ public class CrearProducto extends javax.swing.JInternalFrame {
         if(nombreProducto.getText().matches("[ ]*")){
             registro=registro + "Nombre.\n\r";
         }
-        if(precioProducto.getText().matches("[ ]*")){
-            registro=registro + "Precio.\n\r";
+        try{
+            Double.parseDouble(precioProducto.getText());
+        }
+        catch(NumberFormatException ex){
+            if(precioProducto.getText().matches("[ ]*")){
+                registro=registro + "Precio.\n\r";
+            }
+            else{
+                registro=registro + "Precio. (No se permiten letras).\n\r";
+            }
         }
         if(((String)categorias.getSelectedItem()).compareTo("Seleccione una categoría")==0){
             registro=registro + "Categoría.\n\r";
@@ -245,7 +273,11 @@ public class CrearProducto extends javax.swing.JInternalFrame {
                 Producto nuevo = new Producto(nombreProducto.getText(), descripcionProducto.getText(), Double.parseDouble(precioProducto.getText()), idCategoria);
                 controladorP.create(nuevo);
                 JOptionPane.showMessageDialog(this, "Producto creado exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
-                limpiarCampos();
+                if(op!=null){
+                    op.deleteObserver(this);
+                    op.actualizarObservadores();
+                }
+                this.dispose();
             }
             else{
                 JOptionPane.showMessageDialog(this, "El producto ingresado ya existe.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -280,4 +312,9 @@ public class CrearProducto extends javax.swing.JInternalFrame {
     private javax.swing.JTextField nombreProducto;
     private javax.swing.JTextField precioProducto;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void update(Observable o, Object arg) {
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }
