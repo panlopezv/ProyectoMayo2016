@@ -8,6 +8,9 @@ package vistas;
 import conexion.Conexion;
 import inventario.InterfazInventario;
 import java.awt.Component;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -74,14 +77,19 @@ public class Inicio extends javax.swing.JFrame {
             }
         });
 
-        jButton2.setText("Opción B");
+        jButton2.setText("Inventario");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
             }
         });
 
-        jButton3.setText("Opción C");
+        jButton3.setText("Crear producto");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         jButton4.setText("Opción D");
 
@@ -252,9 +260,14 @@ public class Inicio extends javax.swing.JFrame {
         limpiarEscritorio();
         inventario = new InterfazInventario();
         escritorio.add(inventario);
-//        pruebaB = new InternoB();
-//        escritorio.add(pruebaB);
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+        limpiarEscritorio();
+        CrearProducto cp = new CrearProducto();
+        escritorio.add(cp);
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
      * @param args the command line arguments

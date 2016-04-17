@@ -56,7 +56,7 @@ public class ModeloProductosInventario extends AbstractTableModel{
         switch(columnIndex){
             case 0: return p.getNombre();
             case 1: return p.getExistencias();
-            case 2: return p.getPrecio();
+            case 2: return "Q " + p.getPrecio();
             case 3:{
                 Query q = Conexion.getConexion().getEmf().createEntityManager().createNamedQuery("Categoria.findByIdCategoria");
                 q.setParameter("idCategoria", p.getIdCategoria());
@@ -88,6 +88,10 @@ public class ModeloProductosInventario extends AbstractTableModel{
     @Override
     public Class getColumnClass(int columnIndex) {
         return tipos [columnIndex];
+    }
+
+    public ArrayList<Producto> getProductos() {
+        return productos;
     }
     
     /**

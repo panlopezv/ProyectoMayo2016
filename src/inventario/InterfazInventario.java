@@ -33,32 +33,34 @@ public class InterfazInventario extends javax.swing.JInternalFrame {
             modelo = new ModeloProductosInventario(new ArrayList<>());
         }
         tablaProductos.setModel(modelo);
-        
-        tablaProductos.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        TableColumnModel columnModel = tablaProductos.getColumnModel();
-        for (int col = 0; col < tablaProductos.getColumnCount(); col++) {
+        ajustarColumnas(tablaProductos);
+    }
+    
+    public void ajustarColumnas(JTable tabla){
+        tabla.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        TableColumnModel columnModel = tabla.getColumnModel();
+        for (int col = 0; col < tabla.getColumnCount(); col++) {
             int maxwidth = 0;
-            for (int row = 0; row < tablaProductos.getRowCount(); row++) {
-                TableCellRenderer rend = tablaProductos.getCellRenderer(row, col);
-                Object value = tablaProductos.getValueAt(row, col);
+            for (int row = 0; row < tabla.getRowCount(); row++) {
+                TableCellRenderer rend = tabla.getCellRenderer(row, col);
+                Object value = tabla.getValueAt(row, col);
                 Component comp
-                        = rend.getTableCellRendererComponent(tablaProductos, value, false, false, row, col);
+                        = rend.getTableCellRendererComponent(tabla, value, false, false, row, col);
                 maxwidth = Math.max(comp.getPreferredSize().width, maxwidth);
             } // for row
 
             TableColumn column = columnModel.getColumn(col);
             TableCellRenderer headerRenderer = column.getHeaderRenderer();
             if (headerRenderer == null) {
-                headerRenderer = tablaProductos.getTableHeader().getDefaultRenderer();
+                headerRenderer = tabla.getTableHeader().getDefaultRenderer();
             }
             Object headerValue = column.getHeaderValue();
             Component headerComp
-                    = headerRenderer.getTableCellRendererComponent(tablaProductos, headerValue, false, false, 0, col);
+                    = headerRenderer.getTableCellRendererComponent(tabla, headerValue, false, false, 0, col);
             maxwidth = Math.max(maxwidth, headerComp.getPreferredSize().width);
             column.setPreferredWidth(maxwidth);
         }
     }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -78,17 +80,6 @@ public class InterfazInventario extends javax.swing.JInternalFrame {
 
         jLabel1.setText("Productos:");
 
-        tablaProductos.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
         jScrollPane1.setViewportView(tablaProductos);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

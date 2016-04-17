@@ -1,6 +1,5 @@
 package conexion;
 
-import controladores.UsuarioJpaController;
 import entidades.Usuario;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
