@@ -65,7 +65,7 @@ public class Inicio extends javax.swing.JFrame {
 
         tablero.setBackground(new java.awt.Color(51, 153, 255));
 
-        jButton1.setText("Opción A");
+        jButton1.setText("Venta");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
