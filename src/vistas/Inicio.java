@@ -5,8 +5,13 @@
  */
 package vistas;
 
+import productos.CrearProducto;
 import conexion.Conexion;
+import inventario.InterfazInventario;
 import java.awt.Component;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -20,6 +25,7 @@ public class Inicio extends javax.swing.JFrame {
 
     public static Conexion conexion;
     private InterfazVenta venta;
+    private InterfazInventario inventario;
     private InternoB pruebaB;
 
     /**
@@ -72,7 +78,7 @@ public class Inicio extends javax.swing.JFrame {
             }
         });
 
-        jButton2.setText("Opción B");
+        jButton2.setText("Inventario");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
@@ -80,6 +86,11 @@ public class Inicio extends javax.swing.JFrame {
         });
 
         jButton3.setText("Opción C");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         jButton4.setText("Opción D");
 
@@ -248,9 +259,13 @@ public class Inicio extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
         limpiarEscritorio();
-        pruebaB = new InternoB();
-        escritorio.add(pruebaB);
+        inventario = new InterfazInventario();
+        escritorio.add(inventario);
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -288,7 +303,7 @@ public class Inicio extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JDesktopPane escritorio;
+    public javax.swing.JDesktopPane escritorio;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;

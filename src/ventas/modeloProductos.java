@@ -12,7 +12,9 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
+import java.util.List;
 import javax.swing.table.AbstractTableModel;
+import pferreteria.CProducto;
 
 /**
  *
