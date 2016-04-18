@@ -9,13 +9,17 @@ import conexion.Conexion;
 import entidades.Categoria;
 import entidades.Cliente;
 import entidades.Producto;
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import pferreteria.CProducto;
 import pferreteria.CVenta;
 
@@ -50,15 +54,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
         ArrayList<Producto> productosB = new ArrayList<>();
         if (!productosBusqueda.isEmpty()) {
             for (Producto P : productosBusqueda) {
-                if (!primerAdd) {
                     productosB.add(P);
-                } else{
-                    for(CProducto CP : productosVenta){
-                        if(P.getNombre().compareTo(CP.getNombre())!=0){
-                            productosB.add(P);
-                        }
-                    }
-                }
             }
         }
         q = emf.createEntityManager().createNamedQuery("Categoria.findByNombre");
@@ -78,44 +74,47 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
         }
         mp = new modeloProductos(productosB);
         jTable1.setModel(mp);
-        ajustarColumnasTabla1();
+        ajustarColumnas(jTable1);
     }
 
     public void limpiarTabla1() {
         jTable1.setModel(new DefaultTableModel(new Object[]{"Código", "Producto", "Categoría", "Precio", "Existencias"}, 0));
-        ajustarColumnasTabla1();
-    }
-
-    public void ajustarColumnasTabla1() {
-        jTable1.getColumn("Código").setPreferredWidth(50);
-        jTable1.getColumn("Categoría").setPreferredWidth(120);
-        jTable1.getColumn("Precio").setPreferredWidth(80);
-        jTable1.getColumn("Existencias").setPreferredWidth(80);
-        jTable1.getColumn("Código").setMaxWidth(70);
-        jTable1.getColumn("Categoría").setMaxWidth(120);
-        jTable1.getColumn("Precio").setMaxWidth(80);
-        jTable1.getColumn("Existencias").setMaxWidth(80);
-        jTable1.getColumn("Código").setMinWidth(30);
-        jTable1.getColumn("Categoría").setMinWidth(80);
-        jTable1.getColumn("Precio").setMinWidth(50);
-        jTable1.getColumn("Existencias").setMinWidth(40);
+        ajustarColumnas(jTable1);
     }
     
-    public void ajustarColumnasTabla2(){
-        jTable1.getColumn("Código").setPreferredWidth(50);
-        jTable1.getColumn("Cantidad").setPreferredWidth(80);
-        jTable1.getColumn("Precio").setPreferredWidth(80); 
-        jTable1.getColumn("Subtotal").setPreferredWidth(80);
-        jTable1.getColumn("Código").setMinWidth(30);
-        jTable1.getColumn("Cantidad").setMinWidth(60);
-        jTable1.getColumn("Precio").setMinWidth(60); 
-        jTable1.getColumn("Subtotal").setMinWidth(80);
-        jTable1.getColumn("Código").setMaxWidth(70);
-        jTable1.getColumn("Cantidad").setMaxWidth(100);
-        jTable1.getColumn("Precio").setMaxWidth(100); 
-        jTable1.getColumn("Subtotal").setMaxWidth(110);
+    public void ajustarColumnas(JTable tabla){
+        tabla.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        
+        for (int column = 0; column < tabla.getColumnCount(); column++)
+        {
+            TableColumn tableColumn = tabla.getColumnModel().getColumn(column);
+            int preferredWidth = tableColumn.getMinWidth();
+            int maxWidth = tableColumn.getMaxWidth();
+            for (int row = 0; row < tabla.getRowCount(); row++)
+            {
+                TableCellRenderer cellRenderer = tabla.getCellRenderer(row, column);
+                Component c = tabla.prepareRenderer(cellRenderer, row, column);
+                int width = c.getPreferredSize().width + tabla.getIntercellSpacing().width;
+                preferredWidth = Math.max(preferredWidth, width);
+                if (preferredWidth >= maxWidth)
+                {
+                    preferredWidth = maxWidth;
+                    break;
+                }
+            }
+            TableColumn columna = tabla.getColumnModel().getColumn(column);
+            TableCellRenderer headerRenderer = columna.getHeaderRenderer();
+            if (headerRenderer == null) {
+                headerRenderer = tabla.getTableHeader().getDefaultRenderer();
+            }
+            Object headerValue = columna.getHeaderValue();
+            Component headerComp
+                    = headerRenderer.getTableCellRendererComponent(tabla, headerValue, false, false, 0, column);
+            preferredWidth = Math.max(preferredWidth, headerComp.getPreferredSize().width);
+            tableColumn.setPreferredWidth( preferredWidth );
+        }
     }
-
+    
     public int ingresoCantidad(int existencias) {
         JTextField cantidad = new JTextField();
         Object[] objeto = {cantidad};
@@ -561,7 +560,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
         getContentPane().add(jDateChooser1, new org.netbeans.lib.awtextra.AbsoluteConstraints(597, 39, 120, -1));
 
         jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/editar.png"))); // NOI18N
-        jButton5.setBorder(null);
+        jButton5.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jButton5.setEnabled(false);
         jButton5.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton5.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -617,7 +616,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                                 cantidad, productoVenta.getPrecio()));
                         mpv = new modeloProductosVenta(productosVenta);
                         jTable2.setModel(mpv);
-                        ajustarColumnasTabla2();
+                        ajustarColumnas(jTable2);
                     }
 
                 }
@@ -630,6 +629,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                         cantidad, productoVenta.getPrecio()));
                 mpv = new modeloProductosVenta(productosVenta);
                 jTable2.setModel(mpv);
+                ajustarColumnas(jTable2);
             }
         }
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -649,14 +649,17 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
             productosVenta.remove(jTable2.getSelectedRow());
             mpv = new modeloProductosVenta(productosVenta);
             jTable2.setModel(mpv);
-            ajustarColumnasTabla2();
+            ajustarColumnas(jTable2);
         } else{
-            int cant = ingresoCantidad(productosVenta.get(jTable2.getSelectedRow()).getCantidad());
+            EntityManagerFactory emf = Conexion.getConexion().getEmf();
+            Query q = emf.createEntityManager().createNamedQuery("Producto.findByIdProducto");
+            q.setParameter("idProducto", (Integer)jTable2.getValueAt(jTable2.getSelectedRow(), 0));
+            int cant = ingresoCantidad(((Producto)q.getSingleResult()).getExistencias());
             if(cant!=0){
                 productosVenta.get(jTable2.getSelectedRow()).setCantidad(cant);
                 mpv = new modeloProductosVenta(productosVenta);
                 jTable2.setModel(mpv);
-                ajustarColumnasTabla2();
+                ajustarColumnas(jTable2);
             }
         }
         jButton5.setEnabled(false);
@@ -683,7 +686,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                         cantidad, productoVenta.getPrecio()));
                 mpv = new modeloProductosVenta(productosVenta);
                 jTable2.setModel(mpv);
-                ajustarColumnasTabla2();
+                ajustarColumnas(jTable2);
             }
         }
     }//GEN-LAST:event_insertarClienteActionPerformed
