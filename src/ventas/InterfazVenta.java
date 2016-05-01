@@ -6,18 +6,22 @@
 package ventas;
 
 import conexion.Conexion;
-import controladores.ProductoJpaController;
 import entidades.Categoria;
+import entidades.Cliente;
 import entidades.Producto;
-import java.text.DecimalFormat;
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import pferreteria.CProducto;
+import pferreteria.CVenta;
 
 /**
  *
@@ -27,7 +31,10 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
 
     modeloProductos mp;
     modeloProductosVenta mpv;
+    boolean primerAdd = false;
     ArrayList<CProducto> productosVenta = new ArrayList<>();
+    CVenta venta;
+
     /**
      * Creates new form InternoA
      */
@@ -47,7 +54,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
         ArrayList<Producto> productosB = new ArrayList<>();
         if (!productosBusqueda.isEmpty()) {
             for (Producto P : productosBusqueda) {
-                productosB.add(P);
+                    productosB.add(P);
             }
         }
         q = emf.createEntityManager().createNamedQuery("Categoria.findByNombre");
@@ -65,23 +72,50 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                 }
             }
         }
-            mp = new modeloProductos(productosB);
-            jTable1.setModel(mp);
-            jTable1.getColumn(mp.getColumnName(0)).setWidth(50);
-            jTable1.getColumn(mp.getColumnName(2)).setWidth(120);
-            jTable1.getColumn(mp.getColumnName(3)).setWidth(80);
-            jTable1.getColumn(mp.getColumnName(4)).setWidth(80);
+        mp = new modeloProductos(productosB);
+        jTable1.setModel(mp);
+        ajustarColumnas(jTable1);
     }
 
     public void limpiarTabla1() {
-        jTable1.setModel(new DefaultTableModel(new Object[]{"Código", "Producto", "Descripción", "Precio", "Existencias"}, 0));
-        jTable1.getColumn("Código").setPreferredWidth(50);
-        jTable1.getColumn("Descripción").setPreferredWidth(80);
-        jTable1.getColumn("Precio").setPreferredWidth(60);
-        jTable1.getColumn("Existencias").setPreferredWidth(60);
+        jTable1.setModel(new DefaultTableModel(new Object[]{"Código", "Producto", "Categoría", "Precio", "Existencias"}, 0));
+        ajustarColumnas(jTable1);
     }
-
-    public int ingresoCantidad() {
+    
+    public void ajustarColumnas(JTable tabla){
+        tabla.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        
+        for (int column = 0; column < tabla.getColumnCount(); column++)
+        {
+            TableColumn tableColumn = tabla.getColumnModel().getColumn(column);
+            int preferredWidth = tableColumn.getMinWidth();
+            int maxWidth = tableColumn.getMaxWidth();
+            for (int row = 0; row < tabla.getRowCount(); row++)
+            {
+                TableCellRenderer cellRenderer = tabla.getCellRenderer(row, column);
+                Component c = tabla.prepareRenderer(cellRenderer, row, column);
+                int width = c.getPreferredSize().width + tabla.getIntercellSpacing().width;
+                preferredWidth = Math.max(preferredWidth, width);
+                if (preferredWidth >= maxWidth)
+                {
+                    preferredWidth = maxWidth;
+                    break;
+                }
+            }
+            TableColumn columna = tabla.getColumnModel().getColumn(column);
+            TableCellRenderer headerRenderer = columna.getHeaderRenderer();
+            if (headerRenderer == null) {
+                headerRenderer = tabla.getTableHeader().getDefaultRenderer();
+            }
+            Object headerValue = columna.getHeaderValue();
+            Component headerComp
+                    = headerRenderer.getTableCellRendererComponent(tabla, headerValue, false, false, 0, column);
+            preferredWidth = Math.max(preferredWidth, headerComp.getPreferredSize().width);
+            tableColumn.setPreferredWidth( preferredWidth );
+        }
+    }
+    
+    public int ingresoCantidad(int existencias) {
         JTextField cantidad = new JTextField();
         Object[] objeto = {cantidad};
         int opcion = JOptionPane.showConfirmDialog(this, objeto, "Cantidad a vender:", JOptionPane.OK_CANCEL_OPTION);
@@ -93,13 +127,61 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                 if (cantidad.getText().matches("0+")) {
                     throw new NumberFormatException();
                 }
-                return Integer.parseInt(cantidad.getText());
+                if (Integer.parseInt(cantidad.getText()) <= existencias) {
+                    return Integer.parseInt(cantidad.getText());
+                } else {
+                    JOptionPane.showMessageDialog(this, "Solo hay " + String.valueOf(existencias) + " existencias!",
+                            "Existencias insuficientes.", JOptionPane.WARNING_MESSAGE);
+                    ingresoCantidad(existencias);
+                }
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(null, "Debe indicar un valor correcto en cantidad a vender!", "ERROR DE FORMATO", JOptionPane.ERROR_MESSAGE);
-                ingresoCantidad();
+                ingresoCantidad(existencias);
             }
         }
         return 0;
+    }
+
+    /**
+     * Crea un cliente si al indicar el cliente de la venta no existe
+     *
+     * @return true si se agrega el cliente
+     */
+    public boolean insertarCliente() {
+        String registro = "";
+        if (!datoNombre.getText().matches("[ ]*") && !datoNit.getText().matches("[ ]*")) {
+            EntityManagerFactory emf = Conexion.getConexion().getEmf();
+            Query q = emf.createEntityManager().createNamedQuery("Cliente.findByNit");
+            q.setParameter("nit", datoNit.getText());
+            if (q.getResultList().isEmpty()) {
+                venta = new CVenta(emf, Conexion.getConexion().getIdUsuario());
+                Cliente creado = venta.crearCliente(datoNombre.getText(), datoDireccion.getText(), datoNit.getText());
+                primerAdd = true;
+                mostrarDatosCliente(creado);
+                crearCliente.setVisible(false);
+                return true;
+            } else {
+                JOptionPane.showMessageDialog(this, "El NIT ingresado ya pertenece a un cliente!", "Error de nit.", JOptionPane.ERROR_MESSAGE);
+                datoNit.setText("");
+                datoNit.requestFocus();
+            }
+        } else {
+            if (datoNombre.getText().matches("[ ]*")) {
+                registro += "Nombre\n\r";
+            }
+            if (datoNit.getText().matches("[ ]*")) {
+                registro += "NIT\n\r";
+            }
+            JOptionPane.showMessageDialog(this, "Los siguientes campos son requeridos:\n\n\r" + registro, "Error.", JOptionPane.ERROR_MESSAGE);
+        }
+        return false;
+    }
+
+    public void mostrarDatosCliente(Cliente client) {
+        codigoCliente.setText(String.valueOf(client.getIdCliente()));
+        nombreCliente.setText(client.getNombre());
+        direccionCliente.setText(client.getDireccion());
+        nitCliente.setText(client.getNit());
     }
 
     /**
@@ -111,17 +193,26 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        crearCliente = new javax.swing.JDialog();
+        jLabel14 = new javax.swing.JLabel();
+        datoNombre = new javax.swing.JTextField();
+        jLabel15 = new javax.swing.JLabel();
+        datoNit = new javax.swing.JTextField();
+        jLabel16 = new javax.swing.JLabel();
+        datoDireccion = new javax.swing.JTextField();
+        jButton6 = new javax.swing.JButton();
+        insertarCliente = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
+        codigoCliente = new javax.swing.JTextField();
+        nombreCliente = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
-        jTextField4 = new javax.swing.JTextField();
+        direccionCliente = new javax.swing.JTextField();
+        nitCliente = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jTextField5 = new javax.swing.JTextField();
+        numeroVenta = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         jCheckBox1 = new javax.swing.JCheckBox();
         jLabel7 = new javax.swing.JLabel();
@@ -148,6 +239,73 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
         jDateChooser1 = new com.toedter.calendar.JDateChooser();
         jButton5 = new javax.swing.JButton();
 
+        crearCliente.setTitle("Datos de cliente nuevo");
+        crearCliente.setName("agregarCliente"); // NOI18N
+
+        jLabel14.setText("Nombre:");
+
+        jLabel15.setText("N I T:");
+
+        jLabel16.setText("Dirección:");
+
+        jButton6.setText("Cancelar");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
+
+        insertarCliente.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/add.png"))); // NOI18N
+        insertarCliente.setText("Aceptar");
+        insertarCliente.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                insertarClienteActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout crearClienteLayout = new javax.swing.GroupLayout(crearCliente.getContentPane());
+        crearCliente.getContentPane().setLayout(crearClienteLayout);
+        crearClienteLayout.setHorizontalGroup(
+            crearClienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(crearClienteLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(crearClienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel14)
+                    .addComponent(jLabel15)
+                    .addComponent(jLabel16))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(crearClienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(datoNit, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(datoNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(datoDireccion, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, crearClienteLayout.createSequentialGroup()
+                        .addComponent(jButton6)
+                        .addGap(35, 35, 35)
+                        .addComponent(insertarCliente)))
+                .addContainerGap(37, Short.MAX_VALUE))
+        );
+        crearClienteLayout.setVerticalGroup(
+            crearClienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(crearClienteLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(crearClienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel14)
+                    .addComponent(datoNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(crearClienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(datoNit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel15))
+                .addGap(8, 8, 8)
+                .addGroup(crearClienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(datoDireccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel16))
+                .addGap(32, 32, 32)
+                .addGroup(crearClienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(insertarCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton6))
+                .addContainerGap(26, Short.MAX_VALUE))
+        );
+
         setBackground(new java.awt.Color(255, 255, 153));
         setClosable(true);
         setPreferredSize(new java.awt.Dimension(790, 635));
@@ -159,17 +317,18 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
 
         jLabel1.setText("Código");
 
-        jTextField1.setEnabled(false);
+        codigoCliente.setEnabled(false);
+        codigoCliente.setName(""); // NOI18N
 
-        jTextField2.setEnabled(false);
+        nombreCliente.setEnabled(false);
 
         jLabel2.setText("Nombre de cliente");
 
         jLabel3.setText("Dirección");
 
-        jTextField3.setEnabled(false);
+        direccionCliente.setEnabled(false);
 
-        jTextField4.setEnabled(false);
+        nitCliente.setEnabled(false);
 
         jLabel4.setText("N.I.T.");
 
@@ -183,19 +342,19 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(codigoCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(nombreCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel3)
-                            .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(direccionCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel4)
-                            .addComponent(jTextField4))))
+                            .addComponent(nitCliente))))
                 .addContainerGap(48, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -205,31 +364,33 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                        .addComponent(nombreCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(codigoCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                        .addComponent(nitCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(direccionCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(0, 13, Short.MAX_VALUE))
         );
+
+        codigoCliente.getAccessibleContext().setAccessibleName("");
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 12, -1, -1));
 
         jLabel5.setText("Fecha");
         getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(597, 19, -1, -1));
 
-        jTextField5.setEnabled(false);
-        getContentPane().add(jTextField5, new org.netbeans.lib.awtextra.AbsoluteConstraints(459, 39, 120, -1));
+        numeroVenta.setEnabled(false);
+        getContentPane().add(numeroVenta, new org.netbeans.lib.awtextra.AbsoluteConstraints(459, 39, 120, -1));
 
         jLabel6.setText("Número de venta");
         getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(459, 19, -1, -1));
@@ -398,10 +559,8 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
         getContentPane().add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(205, 537, -1, 46));
         getContentPane().add(jDateChooser1, new org.netbeans.lib.awtextra.AbsoluteConstraints(597, 39, 120, -1));
 
-        jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/borrar.png"))); // NOI18N
-        jButton5.setText("Eliminar");
-        jButton5.setActionCommand("");
-        jButton5.setBorder(null);
+        jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/editar.png"))); // NOI18N
+        jButton5.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jButton5.setEnabled(false);
         jButton5.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton5.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -410,7 +569,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                 jButton5ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton5, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 390, 51, -1));
+        getContentPane().add(jButton5, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 400, 40, 40));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -426,20 +585,51 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        int cantidad = ingresoCantidad();
-        if(cantidad!=0){
-            Producto productoVenta = mp.obtenerProducto((String)jTable1.getValueAt(jTable1.getSelectedRow(), 1));
-            if(cantidad <= productoVenta.getExistencias()){
+        if (!primerAdd) {
+            JTextField cliente = new JTextField();
+            Object[] message = {
+                "NIT/Código:", cliente,};
+            int opcion = JOptionPane.showConfirmDialog(this, message, "Indicar cliente.", JOptionPane.OK_CANCEL_OPTION);
+            if (opcion == JOptionPane.OK_OPTION) {
+                EntityManagerFactory emf = Conexion.getConexion().getEmf();
+                Query q = emf.createEntityManager().createNamedQuery("Cliente.findByNit");
+                q.setParameter("nit", cliente.getText());
+                List<Cliente> clienteBusqueda = q.getResultList();
+                if (clienteBusqueda.isEmpty()) {
+                    int crearcliente = JOptionPane.showConfirmDialog(this, "Desea crear un cliente nuevo?", "El cliente no existe.", JOptionPane.OK_OPTION);
+                    if (crearcliente == JOptionPane.OK_OPTION) {
+                        crearCliente.setSize(400, 200);
+                        crearCliente.setLocationRelativeTo(this);
+                        datoNit.setText(cliente.getText());
+                        datoDireccion.setText("Ciudad");
+                        crearCliente.setVisible(true);
+                    }
+                } else {
+                    primerAdd = true;
+                    venta = new CVenta(emf, Conexion.getConexion().getIdUsuario());
+                    venta.setIdPersona(clienteBusqueda.get(0).getIdCliente());
+                    mostrarDatosCliente(clienteBusqueda.get(0));
+                    Producto productoVenta = mp.obtenerProducto((String) jTable1.getValueAt(jTable1.getSelectedRow(), 1));
+                    int cantidad = ingresoCantidad(productoVenta.getExistencias());
+                    if (cantidad != 0) {
+                        productosVenta.add(new CProducto(productoVenta.getIdProducto(), productoVenta.getNombre(),
+                                cantidad, productoVenta.getPrecio()));
+                        mpv = new modeloProductosVenta(productosVenta);
+                        jTable2.setModel(mpv);
+                        ajustarColumnas(jTable2);
+                    }
+
+                }
+            }
+        } else {
+            Producto productoVenta = mp.obtenerProducto((String) jTable1.getValueAt(jTable1.getSelectedRow(), 1));
+            int cantidad = ingresoCantidad(productoVenta.getExistencias());
+            if (cantidad != 0) {
                 productosVenta.add(new CProducto(productoVenta.getIdProducto(), productoVenta.getNombre(),
-                                                cantidad, productoVenta.getPrecio()));
+                        cantidad, productoVenta.getPrecio()));
                 mpv = new modeloProductosVenta(productosVenta);
                 jTable2.setModel(mpv);
-                jTable2.getColumn(mpv.getColumnName(0)).setWidth(50);
-                jTable2.getColumn(mpv.getColumnName(2)).setWidth(80);
-                jTable2.getColumn(mpv.getColumnName(3)).setWidth(80);
-                jTable2.getColumn(mpv.getColumnName(4)).setWidth(80);                
-            } else {
-                JOptionPane.showMessageDialog(null, "No hay suficientes existencias de este producto!", "Existencias Agotadas",JOptionPane.WARNING_MESSAGE);
+                ajustarColumnas(jTable2);
             }
         }
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -451,11 +641,26 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         // TODO add your handling code here:
-        int opc = JOptionPane.showConfirmDialog(null, "Realmente quiere quitar el producto de esta venta?", "Confirmación de borrado", JOptionPane.OK_CANCEL_OPTION);
-        if(opc == JOptionPane.OK_OPTION){
+        int opc = JOptionPane.showOptionDialog(null,"Que desea hacer?","Elija una acción.",
+                               JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE,null,
+                               new Object[]{"Quitar entrada","Editar cantidad"},"Quitar entrada");
+//        int opc = JOptionPane.showConfirmDialog(this, "Realmente quiere quitar el producto de esta venta?", "Confirmación de borrado", JOptionPane.OK_CANCEL_OPTION);
+        if (opc == 0) {// para verificar si eligió editar la cantidad a vender o eliminar el producto del carrito
             productosVenta.remove(jTable2.getSelectedRow());
             mpv = new modeloProductosVenta(productosVenta);
             jTable2.setModel(mpv);
+            ajustarColumnas(jTable2);
+        } else{
+            EntityManagerFactory emf = Conexion.getConexion().getEmf();
+            Query q = emf.createEntityManager().createNamedQuery("Producto.findByIdProducto");
+            q.setParameter("idProducto", (Integer)jTable2.getValueAt(jTable2.getSelectedRow(), 0));
+            int cant = ingresoCantidad(((Producto)q.getSingleResult()).getExistencias());
+            if(cant!=0){
+                productosVenta.get(jTable2.getSelectedRow()).setCantidad(cant);
+                mpv = new modeloProductosVenta(productosVenta);
+                jTable2.setModel(mpv);
+                ajustarColumnas(jTable2);
+            }
         }
         jButton5.setEnabled(false);
     }//GEN-LAST:event_jButton5ActionPerformed
@@ -467,16 +672,44 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
 
     private void jCheckBox1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jCheckBox1StateChanged
         // TODO add your handling code here:
-            jLabel7.setVisible(jCheckBox1.isSelected());
-            jTextField6.setVisible(jCheckBox1.isSelected());
+        jLabel7.setVisible(jCheckBox1.isSelected());
+        jTextField6.setVisible(jCheckBox1.isSelected());
     }//GEN-LAST:event_jCheckBox1StateChanged
 
+    private void insertarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertarClienteActionPerformed
+        // TODO add your handling code here:
+        if (insertarCliente()) {//si se logra insertar el cliente (cuando se inserten datos correctos)
+            Producto productoVenta = mp.obtenerProducto((String) jTable1.getValueAt(jTable1.getSelectedRow(), 1));
+            int cantidad = ingresoCantidad(productoVenta.getExistencias());
+            if (cantidad != 0) {
+                productosVenta.add(new CProducto(productoVenta.getIdProducto(), productoVenta.getNombre(),
+                        cantidad, productoVenta.getPrecio()));
+                mpv = new modeloProductosVenta(productosVenta);
+                jTable2.setModel(mpv);
+                ajustarColumnas(jTable2);
+            }
+        }
+    }//GEN-LAST:event_insertarClienteActionPerformed
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        // TODO add your handling code here:
+        crearCliente.setVisible(false);
+    }//GEN-LAST:event_jButton6ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField codigoCliente;
+    private javax.swing.JDialog crearCliente;
+    private javax.swing.JTextField datoDireccion;
+    private javax.swing.JTextField datoNit;
+    private javax.swing.JTextField datoNombre;
+    private javax.swing.JTextField direccionCliente;
+    private javax.swing.JButton insertarCliente;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
+    private javax.swing.JButton jButton6;
     private javax.swing.JCheckBox jCheckBox1;
     private com.toedter.calendar.JDateChooser jDateChooser1;
     private javax.swing.JLabel jLabel1;
@@ -484,6 +717,9 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -497,16 +733,14 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField10;
     private javax.swing.JTextField jTextField11;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
-    private javax.swing.JTextField jTextField5;
     private javax.swing.JTextField jTextField6;
     private javax.swing.JTextField jTextField7;
     private javax.swing.JTextField jTextField8;
     private javax.swing.JTextField jTextField9;
+    private javax.swing.JTextField nitCliente;
+    private javax.swing.JTextField nombreCliente;
+    private javax.swing.JTextField numeroVenta;
     // End of variables declaration//GEN-END:variables
 }
