@@ -5,13 +5,9 @@
  */
 package vistas;
 
-import productos.CrearProducto;
+import categorias.InterfazCategorias;
 import conexion.Conexion;
 import inventario.InterfazInventario;
-import java.awt.Component;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -85,7 +81,7 @@ public class Inicio extends javax.swing.JFrame {
             }
         });
 
-        jButton3.setText("Opción C");
+        jButton3.setText("Categorías");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
@@ -252,8 +248,8 @@ public class Inicio extends javax.swing.JFrame {
         limpiarEscritorio();
         venta = new InterfazVenta();
         escritorio.add(venta);
-        this.setSize(venta.getWidth()+255, venta.getHeight()+85);
-        this.setLocationRelativeTo(null);
+        //this.setSize(venta.getWidth()+255, venta.getHeight()+85);
+        //this.setLocationRelativeTo(null);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
@@ -265,6 +261,10 @@ public class Inicio extends javax.swing.JFrame {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
+        
+        limpiarEscritorio();
+        InterfazCategorias inf = new InterfazCategorias();
+        escritorio.add(inf);
     }//GEN-LAST:event_jButton3ActionPerformed
 
     /**

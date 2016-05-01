@@ -73,7 +73,6 @@ public class CrearProducto extends javax.swing.JInternalFrame implements Observe
                     Categoria nueva = new Categoria(nombre.getText());
                     controladorC.create(nueva);
                     idCategoria = nueva.getIdCategoria();
-                    
                 }
                 else{
                     JOptionPane.showMessageDialog(this, "La categoría ingresada ya existe.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -211,7 +210,7 @@ public class CrearProducto extends javax.swing.JInternalFrame implements Observe
                 .addGap(18, 18, 18)
                 .addComponent(jLabel2)
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 103, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)

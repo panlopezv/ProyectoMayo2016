@@ -177,7 +177,7 @@ public class ModificarProducto extends javax.swing.JInternalFrame implements Obs
                             .addComponent(jLabel4))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 236, Short.MAX_VALUE)
+                        .addGap(0, 234, Short.MAX_VALUE)
                         .addComponent(botonAceptar)
                         .addGap(18, 18, 18)
                         .addComponent(botonSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
