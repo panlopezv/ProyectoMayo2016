@@ -26,7 +26,7 @@ public class InterfazCategorias extends javax.swing.JInternalFrame {
      */
     public InterfazCategorias() {
         initComponents();
-        controladorC = new CategoriaJpaController(Conexion.getConexion().getEmf());
+        controladorC = new CategoriaJpaController(vistas.Inicio.conexion.getEmf());
         cargarCategorias();
     }
 

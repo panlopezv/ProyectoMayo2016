@@ -11,6 +11,7 @@ import inventario.InterfazInventario;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import usuarios.VistaUsuarios;
 import ventas.InterfazVenta;
 
 /**
@@ -88,7 +89,12 @@ public class Inicio extends javax.swing.JFrame {
             }
         });
 
-        jButton4.setText("Opción D");
+        jButton4.setText("Usuarios");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
 
         jButton5.setText("Opción E");
 
@@ -266,6 +272,13 @@ public class Inicio extends javax.swing.JFrame {
         InterfazCategorias inf = new InterfazCategorias();
         escritorio.add(inf);
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        // TODO add your handling code here: 
+        limpiarEscritorio();
+        VistaUsuarios inu = new VistaUsuarios();
+        escritorio.add(inu);
+    }//GEN-LAST:event_jButton4ActionPerformed
 
     /**
      * @param args the command line arguments
