@@ -66,7 +66,12 @@ public class Inicio extends javax.swing.JFrame {
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         jMenuItem3 = new javax.swing.JMenuItem();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         tablero.setBackground(new java.awt.Color(51, 153, 255));
 
@@ -249,11 +254,14 @@ public class Inicio extends javax.swing.JFrame {
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
         // TODO add your handling code here:
-        if(conexion!=null){
-            conexion.cerrarConexion();
-            conexion=null;
+        int opcion = JOptionPane.showConfirmDialog(this, "¿Realmente desea salir?", "", JOptionPane.OK_CANCEL_OPTION);
+        if (opcion == JOptionPane.OK_OPTION) { 
+            if(conexion!=null){
+                conexion.cerrarConexion();
+                conexion=null;
+            }
+            System.exit(0);
         }
-        System.exit(0);
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -290,12 +298,19 @@ public class Inicio extends javax.swing.JFrame {
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         // TODO add your handling code here:
-//        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-//        String actual = "Actual"+(this.getWidth() + " , " + this.getHeight())+"\n\r";
-//        String pantalla = "Pantalla"+(screenSize.getWidth() + " , " + screenSize.getHeight())+"\n\r";
-//        String maximo = "Maximo"+this.getMaximumSize().getHeight() + " , " +this.getMaximumSize().getHeight();
-//        JOptionPane.showMessageDialog(null, actual+pantalla+maximo);
     }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        // TODO add your handling code here:
+        int opcion = JOptionPane.showConfirmDialog(this, "¿Realmente desea salir?", "", JOptionPane.OK_CANCEL_OPTION);
+        if (opcion == JOptionPane.OK_OPTION) { 
+            if(conexion!=null){
+                conexion.cerrarConexion();
+                conexion=null;
+            }
+            System.exit(0);
+        }
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments

@@ -9,6 +9,8 @@ import conexion.Conexion;
 import controladores.UsuarioJpaController;
 import entidades.Usuario;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.Query;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
@@ -77,6 +79,9 @@ public class VistaUsuarios extends javax.swing.JInternalFrame {
             if(contrasenya.getText().compareTo(verificacion.getText())!=0){
                 registro+="La contraseña debe coincidir con la verificación.\n\r";
             }
+            if(contrasenya.getText().length()<4){
+                registro+="La contraseña debe tener una longitud minima de 4 caracteres.\n\r";
+            }
             if(registro.compareTo("")!=0){
                 JOptionPane.showMessageDialog(this, "Debe rellenar los siguientes campos:\n\r"+registro, "Error", JOptionPane.ERROR_MESSAGE);
                 crearUsuario();
@@ -97,7 +102,102 @@ public class VistaUsuarios extends javax.swing.JInternalFrame {
             }
         }
     }
-
+    
+    public void modificarUsuario(Usuario us){
+        JTextField usuario = new JTextField(us.getUsuario());
+        JTextField nombre = new JTextField(us.getNombre());
+        JCheckBox esAdministrador = new JCheckBox("¿Es administrador?",us.getEsAdministrador());
+        Object[] message = {
+            "Usuario:", usuario,
+            "Nombre:", nombre,
+            esAdministrador,
+        };
+        int opcion = JOptionPane.showConfirmDialog(this, message, "Modificar Usuario.", JOptionPane.OK_CANCEL_OPTION);
+        if (opcion == JOptionPane.OK_OPTION) {String registro = "";
+            if(usuario.getText()==null || usuario.getText().compareTo("")==0){
+                registro+="Usuario.\n\r";
+            }
+            if(nombre.getText()==null || nombre.getText().compareTo("")==0){
+                registro+="Nombre.\n\r";
+            }
+            if(registro.compareTo("")!=0){
+                JOptionPane.showMessageDialog(this, "Debe rellenar los siguientes campos:\n\r"+registro, "Error", JOptionPane.ERROR_MESSAGE);
+                crearUsuario();
+            }
+            else{
+                if(usuario.getText().compareTo(us.getUsuario())!=0){
+                    Query q = Conexion.getConexion().getEmf().createEntityManager().createNamedQuery("Usuario.findByUsuario");
+                    q.setParameter("usuario", usuario.getText()); 
+                    if(q.getResultList().isEmpty()){
+                        try {
+                            us.setUsuario(usuario.getText());
+                            us.setNombre(nombre.getText());
+                            us.setEsAdministrador(esAdministrador.isSelected());
+                            controladorU.edit(us);
+                            JOptionPane.showMessageDialog(this, "Usuario modificado exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
+                            cargarUsuarios();
+                        } catch (Exception ex) {
+                            JOptionPane.showMessageDialog(this, "Algo no ha salido bien, intentelo de nuevo.", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                    else{
+                        JOptionPane.showMessageDialog(this, "El usuario ingresado ya existe.", "Error", JOptionPane.ERROR_MESSAGE);
+                        modificarUsuario(us);
+                    }
+                }
+                else{
+                    try {
+                        us.setNombre(nombre.getText());
+                        us.setEsAdministrador(esAdministrador.isSelected());
+                        controladorU.edit(us);
+                        JOptionPane.showMessageDialog(this, "Usuario modificado exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
+                        cargarUsuarios();
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(this, "Algo no ha salido bien, intentelo de nuevo.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
+        }
+    }
+    public void modificarContrasenya(Usuario us){
+        JTextField contrasenya = new JPasswordField();
+        JTextField verificacion = new JPasswordField();
+        Object[] message = {
+            "Usuario: " + us.getUsuario() + ".",
+            "Contraseña:", contrasenya,
+            "Verificar contraseña:", verificacion,
+        };
+        
+        int opcion = JOptionPane.showConfirmDialog(this, message, "Modificar contraseña.", JOptionPane.OK_CANCEL_OPTION);
+        if (opcion == JOptionPane.OK_OPTION) {
+             String registro = "";
+            if(contrasenya.getText()==null || contrasenya.getText().compareTo("")==0){
+                registro+="Contraseña.\n\r";
+            }
+            if(verificacion.getText()==null || verificacion.getText().compareTo("")==0){
+                registro+="Verificar contraseña.\n\r";
+            }
+            if(contrasenya.getText().compareTo(verificacion.getText())!=0){
+                registro+="La contraseña debe coincidir con la verificación.\n\r";
+            }
+            if(contrasenya.getText().length()<4){
+                registro+="La contraseña debe tener una longitud minima de 4 caracteres.\n\r";
+            }
+            if(registro.compareTo("")!=0){
+                JOptionPane.showMessageDialog(this, "Debe rellenar los siguientes campos:\n\r"+registro, "Error", JOptionPane.ERROR_MESSAGE);
+                modificarContrasenya(us);
+                try {
+                    us.setContrasenya(contrasenya.getText());
+                    JOptionPane.showMessageDialog(this, "Contraseña modificada exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this, "Algo no ha salido bien, intentelo de nuevo.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+            else{
+                
+            }
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -113,7 +213,7 @@ public class VistaUsuarios extends javax.swing.JInternalFrame {
         botonCrear = new javax.swing.JButton();
         botonModificar = new javax.swing.JButton();
         botonSalir = new javax.swing.JButton();
-        botonEliminar = new javax.swing.JButton();
+        botonContrasenya = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(255, 204, 153));
         setClosable(true);
@@ -146,10 +246,10 @@ public class VistaUsuarios extends javax.swing.JInternalFrame {
             }
         });
 
-        botonEliminar.setText("Eliminar");
-        botonEliminar.addActionListener(new java.awt.event.ActionListener() {
+        botonContrasenya.setText("Contraseña");
+        botonContrasenya.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                botonEliminarActionPerformed(evt);
+                botonContrasenyaActionPerformed(evt);
             }
         });
 
@@ -161,13 +261,13 @@ public class VistaUsuarios extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 358, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 384, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(botonModificar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(botonSalir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(botonCrear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(botonEliminar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addComponent(botonContrasenya, javax.swing.GroupLayout.Alignment.TRAILING)))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addGap(0, 0, Short.MAX_VALUE)))
@@ -185,10 +285,10 @@ public class VistaUsuarios extends javax.swing.JInternalFrame {
                         .addGap(18, 18, 18)
                         .addComponent(botonModificar)
                         .addGap(18, 18, 18)
-                        .addComponent(botonEliminar)
+                        .addComponent(botonContrasenya)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(botonSalir))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 309, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 289, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -204,6 +304,7 @@ public class VistaUsuarios extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         int fila=tablaUsuarios.getSelectedRow();
         if(fila>=0){
+            modificarUsuario(((ModeloUsuarios)tablaUsuarios.getModel()).getUsuario(fila));
         }
         else{
             JOptionPane.showMessageDialog(null,"Debe seleccionar un usuario.","Error",JOptionPane.ERROR_MESSAGE);
@@ -215,14 +316,21 @@ public class VistaUsuarios extends javax.swing.JInternalFrame {
         this.dispose();
     }//GEN-LAST:event_botonSalirActionPerformed
 
-    private void botonEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonEliminarActionPerformed
+    private void botonContrasenyaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonContrasenyaActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_botonEliminarActionPerformed
+        int fila=tablaUsuarios.getSelectedRow();
+        if(fila>=0){
+           modificarContrasenya(((ModeloUsuarios)tablaUsuarios.getModel()).getUsuario(fila));
+        }
+        else{
+            JOptionPane.showMessageDialog(null,"Debe seleccionar un usuario.","Error",JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_botonContrasenyaActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton botonContrasenya;
     private javax.swing.JButton botonCrear;
-    private javax.swing.JButton botonEliminar;
     private javax.swing.JButton botonModificar;
     private javax.swing.JButton botonSalir;
     private javax.swing.JLabel jLabel1;

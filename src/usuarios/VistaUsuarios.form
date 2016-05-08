@@ -31,17 +31,17 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="0" attributes="0">
-                      <Component id="jScrollPane1" pref="358" max="32767" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <Component id="jScrollPane1" pref="384" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Component id="botonModificar" alignment="0" max="32767" attributes="0"/>
                           <Component id="botonSalir" alignment="0" max="32767" attributes="0"/>
                           <Component id="botonCrear" alignment="0" max="32767" attributes="0"/>
-                          <Component id="botonEliminar" max="32767" attributes="0"/>
+                          <Component id="botonContrasenya" alignment="1" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
-                  <Group type="102" alignment="0" attributes="0">
+                  <Group type="102" attributes="0">
                       <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
@@ -62,11 +62,11 @@
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="botonModificar" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="botonEliminar" min="-2" max="-2" attributes="0"/>
+                      <Component id="botonContrasenya" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
                       <Component id="botonSalir" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="jScrollPane1" alignment="0" pref="309" max="32767" attributes="0"/>
+                  <Component id="jScrollPane1" alignment="0" pref="289" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -114,12 +114,12 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="botonSalirActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="botonEliminar">
+    <Component class="javax.swing.JButton" name="botonContrasenya">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Eliminar"/>
+        <Property name="text" type="java.lang.String" value="Contrase&#xf1;a"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="botonEliminarActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="botonContrasenyaActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>
