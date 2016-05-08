@@ -65,7 +65,6 @@ public class VerProducto extends javax.swing.JInternalFrame {
 
         setBackground(new java.awt.Color(255, 204, 153));
         setClosable(true);
-        setMaximizable(true);
         setTitle("Ver producto");
 
         jLabel1.setText("Nombre:");

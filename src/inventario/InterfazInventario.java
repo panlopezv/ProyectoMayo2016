@@ -190,6 +190,7 @@ public class InterfazInventario extends javax.swing.JInternalFrame implements Ob
         cp = new CrearProducto(observador);
         observador.addObserver(cp);
         this.getParent().add(cp);
+        cp.setLocation(this.getX()+(this.getWidth()/2 - cp.getWidth()/2), this.getY()+(this.getHeight()/2 - cp.getHeight()/2));
         cp.toFront();
     }//GEN-LAST:event_jButton4ActionPerformed
 
@@ -206,6 +207,7 @@ public class InterfazInventario extends javax.swing.JInternalFrame implements Ob
             ModeloProductosInventario modeloP =(ModeloProductosInventario) tablaProductos.getModel();
             vp = new VerProducto(modeloP.getProducto(fila), (String) modeloP.getValueAt(fila, 3));
             this.getParent().add(vp);
+            vp.setLocation(this.getX()+(this.getWidth()/2 - vp.getWidth()/2), this.getY()+(this.getHeight()/2 - vp.getHeight()/2));
             vp.toFront();
         }
         else{
@@ -222,6 +224,7 @@ public class InterfazInventario extends javax.swing.JInternalFrame implements Ob
             mp = new ModificarProducto(observador, modeloP.getProducto(fila));
             observador.addObserver(mp);
             this.getParent().add(mp);
+            mp.setLocation(this.getX()+(this.getWidth()/2 - mp.getWidth()/2), this.getY()+(this.getHeight()/2 - mp.getHeight()/2));
             mp.toFront();
         }
         else{

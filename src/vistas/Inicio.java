@@ -8,6 +8,8 @@ package vistas;
 import categorias.InterfazCategorias;
 import conexion.Conexion;
 import inventario.InterfazInventario;
+import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -97,6 +99,11 @@ public class Inicio extends javax.swing.JFrame {
         });
 
         jButton5.setText("Opción E");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout tableroLayout = new javax.swing.GroupLayout(tablero);
         tablero.setLayout(tableroLayout);
@@ -125,7 +132,7 @@ public class Inicio extends javax.swing.JFrame {
                 .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(74, Short.MAX_VALUE))
+                .addContainerGap(83, Short.MAX_VALUE))
         );
 
         escritorio.setBackground(new java.awt.Color(255, 255, 255));
@@ -254,8 +261,7 @@ public class Inicio extends javax.swing.JFrame {
         limpiarEscritorio();
         venta = new InterfazVenta();
         escritorio.add(venta);
-        //this.setSize(venta.getWidth()+255, venta.getHeight()+85);
-        //this.setLocationRelativeTo(null);
+        ajustar(venta);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
@@ -263,14 +269,15 @@ public class Inicio extends javax.swing.JFrame {
         limpiarEscritorio();
         inventario = new InterfazInventario();
         escritorio.add(inventario);
+        ajustar(inventario);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
-        
         limpiarEscritorio();
         InterfazCategorias inf = new InterfazCategorias();
         escritorio.add(inf);
+        ajustar(inf);
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
@@ -278,7 +285,17 @@ public class Inicio extends javax.swing.JFrame {
         limpiarEscritorio();
         VistaUsuarios inu = new VistaUsuarios();
         escritorio.add(inu);
+        ajustar(inu);
     }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        // TODO add your handling code here:
+//        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+//        String actual = "Actual"+(this.getWidth() + " , " + this.getHeight())+"\n\r";
+//        String pantalla = "Pantalla"+(screenSize.getWidth() + " , " + screenSize.getHeight())+"\n\r";
+//        String maximo = "Maximo"+this.getMaximumSize().getHeight() + " , " +this.getMaximumSize().getHeight();
+//        JOptionPane.showMessageDialog(null, actual+pantalla+maximo);
+    }//GEN-LAST:event_jButton5ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -315,6 +332,16 @@ public class Inicio extends javax.swing.JFrame {
         });
     }
 
+    public void ajustar(JInternalFrame jif){
+        if(jif.getWidth()>escritorio.getWidth() || jif.getHeight()>escritorio.getHeight()){
+            if(this.getExtendedState()!=JFrame.MAXIMIZED_BOTH){
+                escritorio.setSize(jif.getWidth()+25, jif.getHeight()+25);
+                this.setSize(escritorio.getWidth()+260, jif.getHeight()+125);
+                this.setLocationRelativeTo(null);
+            }
+        }
+        jif.setLocation((escritorio.getWidth() - jif.getWidth())/2, (escritorio.getHeight() - jif.getHeight())/2);
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JDesktopPane escritorio;
     private javax.swing.JButton jButton1;

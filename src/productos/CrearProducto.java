@@ -128,7 +128,6 @@ public class CrearProducto extends javax.swing.JInternalFrame implements Observe
 
         setBackground(new java.awt.Color(255, 204, 153));
         setClosable(true);
-        setMaximizable(true);
         setTitle("Crear producto");
 
         jLabel1.setText("Nombre:");

@@ -144,6 +144,7 @@ public class InterfazCategorias extends javax.swing.JInternalFrame {
         int opcion = JOptionPane.showConfirmDialog(this, message, "Crear categoría.", JOptionPane.OK_CANCEL_OPTION);
         if (opcion == JOptionPane.OK_OPTION) {
             if(nombre.getText()==null || nombre.getText().compareTo("")==0){
+                JOptionPane.showMessageDialog(this, "Debe rellenar los siguientes campos:\n\r"+"Nombre.", "Error", JOptionPane.ERROR_MESSAGE);
                 crearCategoria();
             }
             else{

@@ -115,7 +115,6 @@ public class ModificarProducto extends javax.swing.JInternalFrame implements Obs
 
         setBackground(new java.awt.Color(255, 204, 153));
         setClosable(true);
-        setMaximizable(true);
         setTitle("Modificar producto");
 
         jLabel1.setText("Nombre:");

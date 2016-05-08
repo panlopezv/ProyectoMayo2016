@@ -63,22 +63,22 @@ public class VistaUsuarios extends javax.swing.JInternalFrame {
         if (opcion == JOptionPane.OK_OPTION) {
             String registro = "";
             if(usuario.getText()==null || usuario.getText().compareTo("")==0){
-                registro+="El campo usuario es obligatorio.\n\r";
+                registro+="Usuario.\n\r";
             }
             if(nombre.getText()==null || nombre.getText().compareTo("")==0){
-                registro+="El campo nombre es obligatorio.\n\r";
+                registro+="Nombre.\n\r";
             }
             if(contrasenya.getText()==null || contrasenya.getText().compareTo("")==0){
-                registro+="El campo contraseña es obligatorio.\n\r";
+                registro+="Contraseña.\n\r";
             }
             if(verificacion.getText()==null || verificacion.getText().compareTo("")==0){
-                registro+="El campo verificación es obligatorio.\n\r";
+                registro+="Verificar contraseña.\n\r";
             }
             if(contrasenya.getText().compareTo(verificacion.getText())!=0){
                 registro+="La contraseña debe coincidir con la verificación.\n\r";
             }
             if(registro.compareTo("")!=0){
-                JOptionPane.showMessageDialog(this, registro, "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Debe rellenar los siguientes campos:\n\r"+registro, "Error", JOptionPane.ERROR_MESSAGE);
                 crearUsuario();
             }
             else{
