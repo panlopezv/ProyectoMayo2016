@@ -8,14 +8,16 @@ package usuarios;
 import conexion.Conexion;
 import controladores.UsuarioJpaController;
 import entidades.Usuario;
+import java.awt.Component;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.Query;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
+import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
 /**
  *
@@ -46,6 +48,7 @@ public class VistaUsuarios extends javax.swing.JInternalFrame {
             modelo = new ModeloUsuarios(new ArrayList<>());
         }
         tablaUsuarios.setModel(modelo);
+        ajustarColumnas(tablaUsuarios);
     }
     
     public void crearUsuario(){
@@ -196,6 +199,39 @@ public class VistaUsuarios extends javax.swing.JInternalFrame {
             else{
                 
             }
+        }
+    }
+    
+    public void ajustarColumnas(JTable tabla){
+        tabla.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        
+        for (int column = 0; column < tabla.getColumnCount(); column++)
+        {
+            TableColumn tableColumn = tabla.getColumnModel().getColumn(column);
+            int preferredWidth = tableColumn.getMinWidth();
+            int maxWidth = tableColumn.getMaxWidth();
+            for (int row = 0; row < tabla.getRowCount(); row++)
+            {
+                TableCellRenderer cellRenderer = tabla.getCellRenderer(row, column);
+                Component c = tabla.prepareRenderer(cellRenderer, row, column);
+                int width = c.getPreferredSize().width + tabla.getIntercellSpacing().width;
+                preferredWidth = Math.max(preferredWidth, width);
+                if (preferredWidth >= maxWidth)
+                {
+                    preferredWidth = maxWidth;
+                    break;
+                }
+            }
+            TableColumn columna = tabla.getColumnModel().getColumn(column);
+            TableCellRenderer headerRenderer = columna.getHeaderRenderer();
+            if (headerRenderer == null) {
+                headerRenderer = tabla.getTableHeader().getDefaultRenderer();
+            }
+            Object headerValue = columna.getHeaderValue();
+            Component headerComp
+                    = headerRenderer.getTableCellRendererComponent(tabla, headerValue, false, false, 0, column);
+            preferredWidth = Math.max(preferredWidth, headerComp.getPreferredSize().width);
+            tableColumn.setPreferredWidth( preferredWidth );
         }
     }
     /**
