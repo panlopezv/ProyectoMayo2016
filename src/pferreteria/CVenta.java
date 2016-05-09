@@ -67,7 +67,7 @@ public class CVenta extends COperacion {
         Venta nueva = new Venta(fecha, getTotal(), saldo, descuento, credito, idPersona, idUsuario);//esto no inserta en la DB, nueva no tiene ID aun
         controladorVenta.create(nueva);
         for (CProducto cp : productos) {
-            controladorDetalleVenta.create(new Detalleventa(obtenerIdVenta(), cp.getId(), cp.getCantidad(), cp.getPrecio(), cp.getSubtotal()));
+            controladorDetalleVenta.create(new Detalleventa(nueva.getIdVenta(), cp.getId(), cp.getCantidad(), cp.getPrecio(), cp.getSubtotal()));
         }
         if (credito) {
             if (pagoInicial > 0) {

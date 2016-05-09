@@ -15,7 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-import ventas.InterfazCompra;
+import ventas.InterfazVenta;
 
 /**
  *
@@ -24,7 +24,7 @@ import ventas.InterfazCompra;
 public class Inicio extends javax.swing.JFrame {
 
     public static Conexion conexion;
-    private InterfazCompra venta;
+    private InterfazVenta venta;
     private InterfazInventario inventario;
     private InternoB pruebaB;
 
@@ -250,7 +250,7 @@ public class Inicio extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         limpiarEscritorio();
-        venta = new InterfazCompra();
+        venta = new InterfazVenta();
         escritorio.add(venta);
         this.setSize(venta.getWidth()+255, venta.getHeight()+85);
         this.setLocationRelativeTo(null);

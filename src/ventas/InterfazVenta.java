@@ -12,9 +12,6 @@ import entidades.Producto;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.swing.JOptionPane;
@@ -30,7 +27,7 @@ import pferreteria.CVenta;
  *
  * @author Pablo Lopez <panlopezv@gmail.com>
  */
-public class InterfazCompra extends javax.swing.JInternalFrame {
+public class InterfazVenta extends javax.swing.JInternalFrame {
 
     modeloProductos mp;
     modeloProductosVenta mpv;
@@ -41,7 +38,7 @@ public class InterfazCompra extends javax.swing.JInternalFrame {
     /**
      * Creates new form InternoA
      */
-    public InterfazCompra() {
+    public InterfazVenta() {
         initComponents();
         primerAdd = false;
         cantidad = 0;
@@ -125,6 +122,7 @@ public class InterfazCompra extends javax.swing.JInternalFrame {
         mpv.borrarCProductos();
         jTable2.setModel(new DefaultTableModel(new Object[]{"Código", "Producto", "Cantidad", "Precio", "Subtotal"}, 0));
         ajustarColumnas(jTable2);
+        esAlCredito.setSelected(false);
         codigoCliente.setText("");
         nombreCliente.setText("");
         nitCliente.setText("");
