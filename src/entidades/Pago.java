@@ -59,8 +59,7 @@ public class Pago implements Serializable {
         this.idPago = idPago;
     }
 
-    public Pago(Integer idPago, Date fecha, double total, int idProveedor) {
-        this.idPago = idPago;
+    public Pago(Date fecha, double total, int idProveedor) {
         this.fecha = fecha;
         this.total = total;
         this.idProveedor = idProveedor;

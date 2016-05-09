@@ -3,15 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ventas;
+package compras;
 
 import conexion.Conexion;
 import entidades.Categoria;
 import entidades.Cliente;
 import entidades.Producto;
+import entidades.Proveedor;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.swing.JOptionPane;
@@ -21,29 +25,31 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import pferreteria.CProducto;
-import pferreteria.CVenta;
+import pferreteria.CCompra;
+import ventas.modeloProductos;
+import ventas.modeloProductosVenta;
 
 /**
  *
  * @author Pablo Lopez <panlopezv@gmail.com>
  */
-public class InterfazVenta extends javax.swing.JInternalFrame {
+public class InterfazCompra extends javax.swing.JInternalFrame {
 
     modeloProductos mp;
     modeloProductosVenta mpv;
     boolean primerAdd;
-    CVenta venta;
+    CCompra compra;
     int cantidad;
 
     /**
      * Creates new form InternoA
      */
-    public InterfazVenta() {
+    public InterfazCompra() {
         initComponents();
         primerAdd = false;
         cantidad = 0;
-        venta = new CVenta(Conexion.getConexion().getEmf(), Conexion.getConexion().getIdUsuario());
-        numeroVenta.setText(String.valueOf(venta.obtenerIdVenta()+1));
+        compra = new CCompra(Conexion.getConexion().getEmf(), Conexion.getConexion().getIdUsuario());
+        numeroCompra.setText(String.valueOf(compra.obtenerIdCompra()+1));
         setVisible(true);
         jDateChooser1.setDate(new java.util.Date());
     }
@@ -63,10 +69,10 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
         ArrayList<Producto> productosB = new ArrayList<>();
         if (!productosBusqueda.isEmpty()) {
             for (Producto P : productosBusqueda) {
-                if (venta.getProductos().isEmpty()) {//si no hay productos en el carrito solo lo agrega sin buscarlo
+                if (compra.getProductos().isEmpty()) {//si no hay productos en el carrito solo lo agrega sin buscarlo
                     productosB.add(P);
                 } else {
-                    for (CProducto cp : venta.getProductos()) {//de lo contrario busca coincidencias en los productos encontrados
+                    for (CProducto cp : compra.getProductos()) {//de lo contrario busca coincidencias en los productos encontrados
                         if (cp.getId().equals(P.getIdProducto())) {
                             P.setExistencias(P.getExistencias() - cp.getCantidad()); // al encontrar una coincidencia actualiza las existencias temporales
                         }
@@ -88,7 +94,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                         if (!primerAdd) {
                             productosB.add(P);
                         } else {
-                            for (CProducto cp : venta.getProductos()) {
+                            for (CProducto cp : compra.getProductos()) {
                                 if (cp.getId().equals(P.getIdProducto())) {
                                     P.setExistencias(P.getExistencias() - cp.getCantidad());
                                 }
@@ -114,24 +120,21 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
     public void limpiarFormulario(){
         primerAdd = false;
         cantidad = 0;
-        venta = new CVenta(Conexion.getConexion().getEmf(), Conexion.getConexion().getIdUsuario());
-        numeroVenta.setText(String.valueOf(venta.obtenerIdVenta()+1));
+        compra = new CCompra(Conexion.getConexion().getEmf(), Conexion.getConexion().getIdUsuario());
+        numeroCompra.setText(String.valueOf(compra.obtenerIdCompra()+1));
         jDateChooser1.setDate(new java.util.Date());
         productoBusqueda.setText("");
         limpiarTabla1();
         mpv.borrarCProductos();
         jTable2.setModel(new DefaultTableModel(new Object[]{"Código", "Producto", "Cantidad", "Precio", "Subtotal"}, 0));
         ajustarColumnas(jTable2);
-        esAlCredito.setSelected(false);
         codigoCliente.setText("");
         nombreCliente.setText("");
         nitCliente.setText("");
         direccionCliente.setText("");
-        vuelto.setText("");
         efectivo.setText("");
-        totalVenta.setText("");
-        descuento.setText("");
-        commitVenta.setEnabled(false);
+        totalCompra.setText("");
+        commitCompra.setEnabled(false);
     }
 
     public void ajustarColumnas(JTable tabla) {
@@ -192,20 +195,20 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
     }
 
     /**
-     * Crea un cliente si al indicar el cliente de la venta no existe
+     * Crea un proveedor si al indicar el proveedor de la compra no existe
      *
-     * @return true si se agrega el cliente
+     * @return true si se agrega el proveedor
      */
-    public boolean insertarCliente() {
+    public boolean insertarProveedor() {
         String registro = "";
         if (!datoNombre.getText().matches("[ ]*") && !datoNit.getText().matches("[ ]*")) {
             EntityManagerFactory emf = Conexion.getConexion().getEmf();
             Query q = emf.createEntityManager().createNamedQuery("Cliente.findByNit");
             q.setParameter("nit", datoNit.getText());
             if (q.getResultList().isEmpty()) {
-                Cliente creado = venta.crearCliente(datoNombre.getText(), datoDireccion.getText(), datoNit.getText());
+                Proveedor creado = compra.crearProveedor(datoNombre.getText(), datoDireccion.getText(), datoNit.getText());
                 primerAdd = true;
-                mostrarDatosCliente(creado);
+                mostrarDatosProveedor(creado);
                 Producto productoVenta = mp.obtenerProducto((String) jTable1.getValueAt(jTable1.getSelectedRow(), 1));
                 if (cantidad != 0) {
                     agrearCproducto(productoVenta, cantidad);
@@ -229,55 +232,38 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
         return false;
     }
 
-    public void mostrarDatosCliente(Cliente client) {
-        codigoCliente.setText(String.valueOf(client.getIdCliente()));
-        nombreCliente.setText(client.getNombre());
-        direccionCliente.setText(client.getDireccion());
-        nitCliente.setText(client.getNit());
+    public void mostrarDatosProveedor(Proveedor prov) {
+        codigoCliente.setText(String.valueOf(prov.getIdProveedor()));
+        nombreCliente.setText(prov.getNombre());
+        direccionCliente.setText(prov.getTelefono());
+        nitCliente.setText(prov.getNit());
     }
 
     public void agrearCproducto(Producto prod, int cantidad) {
         boolean yaEstaAgregado = false;
-        for (CProducto cp : venta.getProductos()) {
+        for (CProducto cp : compra.getProductos()) {
             if (prod.getNombre().compareTo(cp.getNombre()) == 0) {
                 //Verifica si se está agregando un producto ya agregado anteriormente y suma las cantidades
                 cp.setCantidad(cp.getCantidad() + cantidad);
-                venta.getProductos().set(venta.getProductos().indexOf(cp), cp);
-                totalVenta.setText("Q. " + venta.getTotal());
+                compra.getProductos().set(compra.getProductos().indexOf(cp), cp);
+                totalCompra.setText("Q. " + compra.getTotal());
                 yaEstaAgregado = true;
                 break;
             }
         }
         if (!yaEstaAgregado) {
-            venta.agregarProducto(new CProducto(prod.getIdProducto(), prod.getNombre(),
+            compra.agregarProducto(new CProducto(prod.getIdProducto(), prod.getNombre(),
                     cantidad, prod.getPrecio()));
-            if (venta.getProductos().size() == 1) {
-                commitVenta.setEnabled(true);
+            if (compra.getProductos().size() == 1) {
+                commitCompra.setEnabled(true);
             }
-            totalVenta.setText("Q. " + venta.getTotal());
+            totalCompra.setText("Q. " + compra.getTotal());
         }
-        mpv = new modeloProductosVenta(venta.getProductos());
+        mpv = new modeloProductosVenta(compra.getProductos());
         jTable2.setModel(mpv);
         ajustarColumnas(jTable2);
         productoBusqueda.requestFocus();
         cargarProductos(productoBusqueda.getText());
-    }
-
-    public Double obtenerDescuento() {
-        try {
-            if (!descuento.getText().matches("[0-9]*(\\.[0-9])*")) {
-                throw new NumberFormatException();
-            }
-            return Double.parseDouble(descuento.getText());
-        } catch (NumberFormatException ex) {
-            if (descuento.getText().length() > 0) {
-                descuento.setText(descuento.getText().substring(0, descuento.getText().length() - 1));
-                if (descuento.getText().length() > 0) {
-                    return Double.parseDouble(descuento.getText());
-                }
-            }
-        }
-        return 0.0;
     }
 
     public Double obtenerMonto() {
@@ -345,7 +331,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
         nitCliente = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        numeroVenta = new javax.swing.JTextField();
+        numeroCompra = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         esAlCredito = new javax.swing.JCheckBox();
         jLabel8 = new javax.swing.JLabel();
@@ -357,15 +343,11 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
         agregarAlCarrito = new javax.swing.JButton();
         jLabel9 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
-        totalVenta = new javax.swing.JTextField();
-        jLabel11 = new javax.swing.JLabel();
-        descuento = new javax.swing.JTextField();
+        totalCompra = new javax.swing.JTextField();
         jLabel12 = new javax.swing.JLabel();
         efectivo = new javax.swing.JTextField();
-        vuelto = new javax.swing.JTextField();
-        jLabel13 = new javax.swing.JLabel();
         cancelar = new javax.swing.JButton();
-        commitVenta = new javax.swing.JButton();
+        commitCompra = new javax.swing.JButton();
         jDateChooser1 = new com.toedter.calendar.JDateChooser();
         modificarEntradaCarrito = new javax.swing.JButton();
         cancelar1 = new javax.swing.JButton();
@@ -444,7 +426,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 153));
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Cliente"));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Proveedor"));
 
         jLabel1.setText("Código");
 
@@ -453,9 +435,9 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
 
         nombreCliente.setEnabled(false);
 
-        jLabel2.setText("Nombre de cliente");
+        jLabel2.setText("Nombre de proveedor");
 
-        jLabel3.setText("Dirección");
+        jLabel3.setText("Teléfono");
 
         direccionCliente.setEnabled(false);
 
@@ -520,16 +502,16 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
         jLabel5.setText("Fecha");
         getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(597, 19, -1, -1));
 
-        numeroVenta.setEditable(false);
-        numeroVenta.setFont(new java.awt.Font("Tempus Sans ITC", 1, 11)); // NOI18N
-        numeroVenta.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        getContentPane().add(numeroVenta, new org.netbeans.lib.awtextra.AbsoluteConstraints(459, 39, 120, -1));
+        numeroCompra.setEditable(false);
+        numeroCompra.setFont(new java.awt.Font("Tempus Sans ITC", 1, 11)); // NOI18N
+        numeroCompra.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        getContentPane().add(numeroCompra, new org.netbeans.lib.awtextra.AbsoluteConstraints(459, 39, 120, -1));
 
-        jLabel6.setText("Número de venta");
+        jLabel6.setText("Número de compra");
         getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(459, 19, -1, -1));
 
         esAlCredito.setBackground(new java.awt.Color(255, 255, 153));
-        esAlCredito.setText("Venta al crédito");
+        esAlCredito.setText("Compra al crédito");
         esAlCredito.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 esAlCreditoStateChanged(evt);
@@ -640,7 +622,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
         getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(29, 352, 647, 130));
 
         agregarAlCarrito.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/purchase.png"))); // NOI18N
-        agregarAlCarrito.setText("Agregar a Venta");
+        agregarAlCarrito.setText("Agregar a Compra");
         agregarAlCarrito.setEnabled(false);
         agregarAlCarrito.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         agregarAlCarrito.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -653,47 +635,22 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
 
         jLabel9.setFont(new java.awt.Font("Droid Serif", 3, 14)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(109, 80, 9));
-        jLabel9.setText("Productos a vender");
+        jLabel9.setText("Productos a comprar");
         getContentPane().add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(29, 327, -1, -1));
 
         jLabel10.setText("TOTAL:");
-        getContentPane().add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 500, -1, -1));
+        getContentPane().add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 550, -1, -1));
 
-        totalVenta.setEditable(false);
-        totalVenta.setFont(new java.awt.Font("Tempus Sans ITC", 1, 12)); // NOI18N
-        totalVenta.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        getContentPane().add(totalVenta, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 500, 121, -1));
-
-        jLabel11.setText("Descuento:");
-        getContentPane().add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 530, -1, -1));
-
-        descuento.setFont(new java.awt.Font("Tempus Sans ITC", 1, 11)); // NOI18N
-        descuento.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        descuento.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                descuentoKeyReleased(evt);
-            }
-        });
-        getContentPane().add(descuento, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 530, 121, -1));
+        totalCompra.setEditable(false);
+        totalCompra.setFont(new java.awt.Font("Tempus Sans ITC", 1, 18)); // NOI18N
+        totalCompra.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        getContentPane().add(totalCompra, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 540, 121, -1));
 
         jLabel12.setText("Efectivo:");
-        getContentPane().add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 560, -1, -1));
+        getContentPane().add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 550, -1, -1));
 
         efectivo.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        efectivo.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                efectivoKeyReleased(evt);
-            }
-        });
-        getContentPane().add(efectivo, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 560, 121, 19));
-
-        vuelto.setEditable(false);
-        vuelto.setFont(new java.awt.Font("Tempus Sans ITC", 1, 11)); // NOI18N
-        vuelto.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        getContentPane().add(vuelto, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 560, 121, 19));
-
-        jLabel13.setText("Cambio:");
-        getContentPane().add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 560, -1, -1));
+        getContentPane().add(efectivo, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 550, 121, 19));
 
         cancelar.setText("Limpiar");
         cancelar.addActionListener(new java.awt.event.ActionListener() {
@@ -703,14 +660,14 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
         });
         getContentPane().add(cancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 540, -1, 46));
 
-        commitVenta.setText("Registrar Venta");
-        commitVenta.setEnabled(false);
-        commitVenta.addActionListener(new java.awt.event.ActionListener() {
+        commitCompra.setText("Registrar Compra");
+        commitCompra.setEnabled(false);
+        commitCompra.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                commitVentaActionPerformed(evt);
+                commitCompraActionPerformed(evt);
             }
         });
-        getContentPane().add(commitVenta, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 540, -1, 46));
+        getContentPane().add(commitCompra, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 540, -1, 46));
         getContentPane().add(jDateChooser1, new org.netbeans.lib.awtextra.AbsoluteConstraints(597, 39, 120, -1));
 
         modificarEntradaCarrito.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/editar.png"))); // NOI18N
@@ -743,38 +700,38 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
 
     private void agregarAlCarritoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agregarAlCarritoActionPerformed
         // TODO add your handling code here:
-        Producto productoVenta = mp.obtenerProducto((String) jTable1.getValueAt(jTable1.getSelectedRow(), 1));
-        cantidad = ingresoCantidad(productoVenta.getExistencias());
+        Producto productoCompra = mp.obtenerProducto((String) jTable1.getValueAt(jTable1.getSelectedRow(), 1));
+        cantidad = ingresoCantidad(productoCompra.getExistencias());
         if (!primerAdd) {
-            JTextField cliente = new JTextField();
+            JTextField proveedor = new JTextField();
             Object[] message = {
-                "NIT/Código:", cliente,};
-            int opcion = JOptionPane.showConfirmDialog(this, message, "Indicar cliente.", JOptionPane.OK_CANCEL_OPTION);
+                "NIT/Código:", proveedor,};
+            int opcion = JOptionPane.showConfirmDialog(this, message, "Indicar Proveedor.", JOptionPane.OK_CANCEL_OPTION);
             if (opcion == JOptionPane.OK_OPTION) {
                 EntityManagerFactory emf = Conexion.getConexion().getEmf();
-                Query q = emf.createEntityManager().createNamedQuery("Cliente.findByNit");
-                q.setParameter("nit", cliente.getText());
-                List<Cliente> clienteBusqueda = q.getResultList();
-                if (clienteBusqueda.isEmpty()) {
-                    int crearcliente = JOptionPane.showConfirmDialog(this, "¿Desea crear un cliente nuevo?", "El cliente no existe.", JOptionPane.OK_OPTION);
+                Query q = emf.createEntityManager().createNamedQuery("Proveedor.findByNit");
+                q.setParameter("nit", proveedor.getText());
+                List<Proveedor> proveedorBusqueda = q.getResultList();
+                if (proveedorBusqueda.isEmpty()) {
+                    int crearcliente = JOptionPane.showConfirmDialog(this, "¿Desea crear un proveedor nuevo?", "El proveedor no existe.", JOptionPane.OK_OPTION);
                     if (crearcliente == JOptionPane.OK_OPTION) {
                         crearCliente.setSize(400, 200);
                         crearCliente.setLocationRelativeTo(this);
-                        datoNit.setText(cliente.getText());
+                        datoNit.setText(proveedor.getText());
                         datoDireccion.setText("Ciudad");
                         crearCliente.setVisible(true);
                     }
                 } else {
                     primerAdd = true;
-                    venta.setIdPersona(clienteBusqueda.get(0).getIdCliente());
-                    mostrarDatosCliente(clienteBusqueda.get(0));
+                    compra.setIdPersona(proveedorBusqueda.get(0).getIdProveedor());
+                    mostrarDatosProveedor(proveedorBusqueda.get(0));
                     if (cantidad != 0) {
-                        agrearCproducto(productoVenta, cantidad);
+                        agrearCproducto(productoCompra, cantidad);
                     }
                 }
             }
         } else if (cantidad != 0) {
-            agrearCproducto(productoVenta, cantidad);
+            agrearCproducto(productoCompra, cantidad);
         }
     }//GEN-LAST:event_agregarAlCarritoActionPerformed
 
@@ -788,14 +745,14 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
         int opc = JOptionPane.showOptionDialog(null, "¿Qué desea hacer?", "Elija una acción.",
                 JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
                 new Object[]{"Quitar entrada", "Editar cantidad", "Cancelar"}, "Editar cantidad");
-//        int opc = JOptionPane.showConfirmDialog(this, "Realmente quiere quitar el producto de esta venta?", "Confirmación de borrado", JOptionPane.OK_CANCEL_OPTION);
+//        int opc = JOptionPane.showConfirmDialog(this, "Realmente quiere quitar el producto de esta compra?", "Confirmación de borrado", JOptionPane.OK_CANCEL_OPTION);
         if (opc == 0) {// para verificar si eligió editar la cantidad a vender o eliminar el producto del carrito
-            venta.quitarProducto(jTable2.getSelectedRow());
-            totalVenta.setText("Q. " + venta.getTotal());
-            if (venta.getProductos().isEmpty()) {
-                commitVenta.setEnabled(false);
+            compra.quitarProducto(jTable2.getSelectedRow());
+            totalCompra.setText("Q. " + compra.getTotal());
+            if (compra.getProductos().isEmpty()) {
+                commitCompra.setEnabled(false);
             }
-            mpv = new modeloProductosVenta(venta.getProductos());
+            mpv = new modeloProductosVenta(compra.getProductos());
             jTable2.setModel(mpv);
             ajustarColumnas(jTable2);
             productoBusqueda.requestFocus();
@@ -806,9 +763,9 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
             q.setParameter("idProducto", (Integer) jTable2.getValueAt(jTable2.getSelectedRow(), 0));
             int cant = ingresoCantidad(((Producto) q.getSingleResult()).getExistencias());
             if (cant != 0) {
-                venta.getProductos().get(jTable2.getSelectedRow()).setCantidad(cant);
-                totalVenta.setText("Q. " + venta.getTotal());
-                mpv = new modeloProductosVenta(venta.getProductos());
+                compra.getProductos().get(jTable2.getSelectedRow()).setCantidad(cant);
+                totalCompra.setText("Q. " + compra.getTotal());
+                mpv = new modeloProductosVenta(compra.getProductos());
                 jTable2.setModel(mpv);
                 ajustarColumnas(jTable2);
                 productoBusqueda.requestFocus();
@@ -825,7 +782,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
 
     private void insertarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertarClienteActionPerformed
         // TODO add your handling code here:
-        insertarCliente();
+        insertarProveedor();
     }//GEN-LAST:event_insertarClienteActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
@@ -833,49 +790,29 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
         crearCliente.setVisible(false);
     }//GEN-LAST:event_jButton6ActionPerformed
 
-    private void commitVentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_commitVentaActionPerformed
+    private void commitCompraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_commitCompraActionPerformed
         // TODO add your handling code here:
-        double total = venta.getTotal() - obtenerDescuento();
+        double total = compra.getTotal();
         boolean mayor = obtenerMonto() >= total;
             if (mayor) {
-                if (obtenerDescuento() > 0.0) {
-                    if (Conexion.getConexion().getEsAdministrador()) {
-                        venta.setFecha(jDateChooser1.getDate());
-                        venta.setDescuento(obtenerDescuento());
-                        venta.setPagoInicial(obtenerMonto());
-                        venta.finalizarVenta();
-                        commitVenta.setEnabled(false);
-                    } else if (autenticacionDeAdministrador()) {
-                        venta.setFecha(jDateChooser1.getDate());
-                        venta.setDescuento(obtenerDescuento());
-                        venta.setPagoInicial(obtenerMonto());
-                        venta.finalizarVenta();
-                        commitVenta.setEnabled(false);
-                    } else {
-                        JOptionPane.showMessageDialog(this, "No es posible aplicar el descuento!", "Permisos insuficientes!", JOptionPane.ERROR_MESSAGE);
-                    }
-                } else {
-                    venta.setFecha(jDateChooser1.getDate());
-                    venta.setPagoInicial(obtenerMonto());
-                    venta.finalizarVenta();
-                    commitVenta.setEnabled(false);
-                }
-            } else if (venta.getCredito()) {
+                    compra.setFecha(jDateChooser1.getDate());
+                    compra.setPagoInicial(obtenerMonto());
+                    compra.finalizarCompra();
+                    commitCompra.setEnabled(false);
+            } else if (compra.getCredito()) {
 //          int opc = JOptionPane.showConfirmDialog(this, "¿Asignar como pago inicial?", "El pago indicado es insuficiente!",
 //                 JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 //          if (opc == JOptionPane.YES_OPTION) {
                 if (Conexion.getConexion().getEsAdministrador()) {
-                    venta.setPagoInicial(obtenerMonto());
-                    venta.setFecha(jDateChooser1.getDate());
-                    venta.setDescuento(obtenerDescuento());
-                    venta.finalizarVenta();
-                    commitVenta.setEnabled(false);
+                    compra.setPagoInicial(obtenerMonto());
+                    compra.setFecha(jDateChooser1.getDate());
+                    compra.finalizarCompra();
+                    commitCompra.setEnabled(false);
                 } else if (autenticacionDeAdministrador()) {
-                    venta.setPagoInicial(obtenerMonto());
-                    venta.setFecha(jDateChooser1.getDate());
-                    venta.setDescuento(obtenerDescuento());
-                    venta.finalizarVenta();
-                    commitVenta.setEnabled(false);
+                    compra.setPagoInicial(obtenerMonto());
+                    compra.setFecha(jDateChooser1.getDate());
+                    compra.finalizarCompra();
+                    commitCompra.setEnabled(false);
                 } else {
                     JOptionPane.showMessageDialog(this, "No es posible vender al crédito!", "Permisos insuficientes!", JOptionPane.ERROR_MESSAGE);
                 }
@@ -884,29 +821,12 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                 JOptionPane.showMessageDialog(this, "Intente las siguientes opciones:\n\n\r\t- Vender al crédito.\n\r\t- Agregar un descuento.",
                         "El monto de efectivo es insuficiente!", JOptionPane.ERROR_MESSAGE);
             }
-    }//GEN-LAST:event_commitVentaActionPerformed
+    }//GEN-LAST:event_commitCompraActionPerformed
 
     private void esAlCreditoStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_esAlCreditoStateChanged
         // TODO add your handling code here:
-        venta.setCredito(esAlCredito.isSelected());
+        compra.setCredito(esAlCredito.isSelected());
     }//GEN-LAST:event_esAlCreditoStateChanged
-
-    private void efectivoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_efectivoKeyReleased
-        // TODO add your handling code here:
-        if (!efectivo.getText().matches("\\.|[0-9]+\\.")) {
-            vuelto.setText("Q. " + String.valueOf(obtenerMonto() - venta.getTotal() + obtenerDescuento()));
-        }
-    }//GEN-LAST:event_efectivoKeyReleased
-
-    private void descuentoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_descuentoKeyReleased
-        // TODO add your handling code here:
-        if (!descuento.getText().matches("\\.|[0-9]+\\.")) {
-            obtenerDescuento();
-            if (efectivo.getText().length() > 0) {
-                vuelto.setText("Q. " + String.valueOf(obtenerMonto() - venta.getTotal() + obtenerDescuento()));
-            }
-        }
-    }//GEN-LAST:event_descuentoKeyReleased
 
     private void cancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelarActionPerformed
         // TODO add your handling code here:
@@ -918,12 +838,11 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
     private javax.swing.JButton cancelar;
     private javax.swing.JButton cancelar1;
     private javax.swing.JTextField codigoCliente;
-    private javax.swing.JButton commitVenta;
+    private javax.swing.JButton commitCompra;
     private javax.swing.JDialog crearCliente;
     private javax.swing.JTextField datoDireccion;
     private javax.swing.JTextField datoNit;
     private javax.swing.JTextField datoNombre;
-    private javax.swing.JTextField descuento;
     private javax.swing.JTextField direccionCliente;
     private javax.swing.JTextField efectivo;
     private javax.swing.JCheckBox esAlCredito;
@@ -932,9 +851,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
     private com.toedter.calendar.JDateChooser jDateChooser1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
@@ -953,9 +870,8 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
     private javax.swing.JButton modificarEntradaCarrito;
     private javax.swing.JTextField nitCliente;
     private javax.swing.JTextField nombreCliente;
-    private javax.swing.JTextField numeroVenta;
+    private javax.swing.JTextField numeroCompra;
     private javax.swing.JTextField productoBusqueda;
-    private javax.swing.JTextField totalVenta;
-    private javax.swing.JTextField vuelto;
+    private javax.swing.JTextField totalCompra;
     // End of variables declaration//GEN-END:variables
 }

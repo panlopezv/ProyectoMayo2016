@@ -66,6 +66,10 @@ public class modeloProductosVenta extends AbstractTableModel{
         return this.productosVenta;
     }
     
+    public void borrarCProductos(){
+        this.productosVenta.clear();
+    }
+    
     public CProducto obtenerProductoVenta(String nombre){
         for(CProducto cp : productosVenta){
             if(cp.getNombre().compareTo(nombre)==0){

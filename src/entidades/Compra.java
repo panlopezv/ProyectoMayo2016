@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Compra.findByCredito", query = "SELECT c FROM Compra c WHERE c.credito = :credito"),
     @NamedQuery(name = "Compra.findByAnulada", query = "SELECT c FROM Compra c WHERE c.anulada = :anulada"),
     @NamedQuery(name = "Compra.findBySaldo", query = "SELECT c FROM Compra c WHERE c.saldo = :saldo"),
+    @NamedQuery(name = "Compra.findMaxId", query = "SELECT MAX(c.idCompra) FROM Compra c"),
     @NamedQuery(name = "Compra.findByIdProveedor", query = "SELECT c FROM Compra c WHERE c.idProveedor = :idProveedor")})
 public class Compra implements Serializable {
 
