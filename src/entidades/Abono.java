@@ -59,8 +59,7 @@ public class Abono implements Serializable {
         this.idAbono = idAbono;
     }
 
-    public Abono(Integer idAbono, Date fecha, double total, int idCliente) {
-        this.idAbono = idAbono;
+    public Abono(Date fecha, double total, int idCliente) {
         this.fecha = fecha;
         this.total = total;
         this.idCliente = idCliente;

@@ -84,4 +84,8 @@ public class modeloProductos extends AbstractTableModel{
         }
         return null;
     }
+    
+    public void borrarProductos(){
+        productos.clear();
+    }
 }
