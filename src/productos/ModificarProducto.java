@@ -125,7 +125,7 @@ public class ModificarProducto extends javax.swing.JInternalFrame implements Obs
             }
         });
 
-        jLabel2.setText("Descripción:");
+        jLabel2.setText("Descripción: (opcional)");
 
         descripcionProducto.setColumns(20);
         descripcionProducto.setRows(5);

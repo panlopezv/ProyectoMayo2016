@@ -22,6 +22,6 @@ public class PFerreteria {
         // TODO code application logic here
         Inicio nuevo = new Inicio();
         nuevo.setVisible(true);
-    }
-    
+
+    }    
 }

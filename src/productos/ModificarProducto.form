@@ -102,7 +102,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Descripci&#xf3;n:"/>
+        <Property name="text" type="java.lang.String" value="Descripci&#xf3;n: (opcional)"/>
       </Properties>
     </Component>
     <Container class="javax.swing.JScrollPane" name="jScrollPane1">

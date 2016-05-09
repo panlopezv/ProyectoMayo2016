@@ -138,7 +138,7 @@ public class CrearProducto extends javax.swing.JInternalFrame implements Observe
             }
         });
 
-        jLabel2.setText("Descripción:");
+        jLabel2.setText("Descripción: (opcional)");
 
         descripcionProducto.setColumns(20);
         descripcionProducto.setRows(5);

@@ -13,9 +13,8 @@ public class InternoB extends javax.swing.JInternalFrame {
 
     /**
      * Creates new form InternoB
-     * @param idVenta
      */
-    public InternoB(int idVenta) {
+    public InternoB() {
         initComponents();
         setVisible(Boolean.TRUE);
     }

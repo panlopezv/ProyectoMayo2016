@@ -13,6 +13,7 @@ import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import personas.VistaPersonas;
 import usuarios.VistaUsuarios;
 import ventas.InterfazVenta;
 
@@ -116,7 +117,7 @@ public class Inicio extends javax.swing.JFrame {
             }
         });
 
-        jButton5.setText("Opción E");
+        jButton5.setText("Personas");
         jButton5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton5ActionPerformed(evt);
@@ -311,6 +312,10 @@ public class Inicio extends javax.swing.JFrame {
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         // TODO add your handling code here:
+        limpiarEscritorio();
+        VistaPersonas vp = new VistaPersonas();
+        escritorio.add(vp);
+        ajustar(vp);
         //mostrarReporte(3);
     }//GEN-LAST:event_jButton5ActionPerformed
 

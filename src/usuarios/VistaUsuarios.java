@@ -40,7 +40,6 @@ public class VistaUsuarios extends javax.swing.JInternalFrame {
     }
     
     public void cargarUsuarios(){
-        setVisible(Boolean.TRUE);
         Query q = Conexion.getConexion().getEmf().createEntityManager().createNamedQuery("Usuario.findAll");
         try {
             modelo = new ModeloUsuarios(new ArrayList<>(q.getResultList()));
@@ -115,7 +114,7 @@ public class VistaUsuarios extends javax.swing.JInternalFrame {
             "Nombre:", nombre,
             esAdministrador,
         };
-        int opcion = JOptionPane.showConfirmDialog(this, message, "Modificar Usuario.", JOptionPane.OK_CANCEL_OPTION);
+        int opcion = JOptionPane.showConfirmDialog(this, message, "Modificar usuario.", JOptionPane.OK_CANCEL_OPTION);
         if (opcion == JOptionPane.OK_OPTION) {String registro = "";
             if(usuario.getText()==null || usuario.getText().compareTo("")==0){
                 registro+="Usuario.\n\r";
@@ -162,6 +161,7 @@ public class VistaUsuarios extends javax.swing.JInternalFrame {
             }
         }
     }
+    
     public void modificarContrasenya(Usuario us){
         JTextField contrasenya = new JPasswordField();
         JTextField verificacion = new JPasswordField();
