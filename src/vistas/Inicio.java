@@ -43,6 +43,19 @@ public class Inicio extends javax.swing.JFrame {
         }
         escritorio.removeAll();
     }
+    
+//    public void mostrarReporte(int id){
+//        try {
+//            Class.forName("com.mysql.jdbc.Driver");
+//            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/ferreteria", "root", "root");
+//            HashMap parametros = new HashMap();
+//            parametros.put("ventaid", id);
+//            JasperPrint print = JasperFillManager.fillReport("src\\reportes\\Ventas.jasper", parametros, con);
+//            JasperViewer.viewReport(print);
+//        } catch (ClassNotFoundException | SQLException | JRException ex) {
+//            Logger.getLogger(InternoB.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -298,6 +311,7 @@ public class Inicio extends javax.swing.JFrame {
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         // TODO add your handling code here:
+        //mostrarReporte(3);
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
