@@ -23,7 +23,7 @@ import javax.swing.table.TableColumn;
  *
  * @author Pablo Lopez <panlopezv@gmail.com>
  */
-public class VistaPersonas extends javax.swing.JInternalFrame {
+public class InterfazPersonas extends javax.swing.JInternalFrame {
 
     ModeloClientes modeloC;
     ModeloProveedores modeloP;
@@ -32,7 +32,7 @@ public class VistaPersonas extends javax.swing.JInternalFrame {
     /**
      * Creates new form InternoB
      */
-    public VistaPersonas() {
+    public InterfazPersonas() {
         initComponents();
         setVisible(Boolean.TRUE);
         controladorC = new ClienteJpaController(Conexion.getConexion().getEmf());
@@ -52,8 +52,32 @@ public class VistaPersonas extends javax.swing.JInternalFrame {
         //ajustarColumnas(tablaClientes);
     }
     
+    public void buscarCliente(String nombre){
+        Query q = Conexion.getConexion().getEmf().createEntityManager().createNamedQuery("Cliente.findLikeNombre");
+        q.setParameter("nombre", nombre + "%");
+        try {
+            modeloC = new ModeloClientes(new ArrayList<>(q.getResultList()));
+        } catch (Exception ex) {
+            modeloC = new ModeloClientes(new ArrayList<>());
+        }
+        tablaClientes.setModel(modeloC);
+        //ajustarColumnas(tablaClientes);
+    }
+    
     public void cargarProveedores(){
         Query q = Conexion.getConexion().getEmf().createEntityManager().createNamedQuery("Proveedor.findAll");
+        try {
+            modeloP = new ModeloProveedores(new ArrayList<>(q.getResultList()));
+        } catch (Exception ex) {
+            modeloP = new ModeloProveedores(new ArrayList<>());
+        }
+        tablaProveedores.setModel(modeloP);
+        //ajustarColumnas(tablaProveedores);
+    }
+    
+    public void buscarProveedor(String nombre){
+        Query q = Conexion.getConexion().getEmf().createEntityManager().createNamedQuery("Proveedor.findLikeNombre");
+        q.setParameter("nombre", nombre + "%");
         try {
             modeloP = new ModeloProveedores(new ArrayList<>(q.getResultList()));
         } catch (Exception ex) {
@@ -389,13 +413,17 @@ public class VistaPersonas extends javax.swing.JInternalFrame {
         botonVerCliente = new javax.swing.JButton();
         botonModificarCliente = new javax.swing.JButton();
         botonSalirCliente = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        busquedaCliente = new javax.swing.JTextField();
         panelProveedores = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        tablaProveedores = new javax.swing.JTable();
         botonCrearProveedor = new javax.swing.JButton();
         botonVerProveedor = new javax.swing.JButton();
         botonModificarProveedor = new javax.swing.JButton();
         botonSalirProveedor = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        busquedaProveedor = new javax.swing.JTextField();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        tablaProveedores = new javax.swing.JTable();
 
         setBackground(new java.awt.Color(255, 204, 153));
         setClosable(true);
@@ -432,41 +460,58 @@ public class VistaPersonas extends javax.swing.JInternalFrame {
             }
         });
 
+        jLabel1.setText("Buscar:");
+
+        busquedaCliente.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                busquedaClienteKeyReleased(evt);
+            }
+        });
+
         javax.swing.GroupLayout panelClientesLayout = new javax.swing.GroupLayout(panelClientes);
         panelClientes.setLayout(panelClientesLayout);
         panelClientesLayout.setHorizontalGroup(
             panelClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelClientesLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 459, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(botonCrearCliente, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(botonSalirCliente, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(botonVerCliente, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(botonModificarCliente, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(panelClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelClientesLayout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(panelClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(botonSalirCliente, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(botonCrearCliente, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(botonVerCliente, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(botonModificarCliente, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(panelClientesLayout.createSequentialGroup()
+                        .addGroup(panelClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addComponent(busquedaCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 244, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panelClientesLayout.setVerticalGroup(
             panelClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelClientesLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelClientesLayout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(busquedaCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(panelClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 328, Short.MAX_VALUE)
                     .addGroup(panelClientesLayout.createSequentialGroup()
                         .addComponent(botonCrearCliente)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(botonVerCliente)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(botonModificarCliente)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(botonSalirCliente)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 60, Short.MAX_VALUE)
+                        .addComponent(botonSalirCliente))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
         jTabbedPersonas.addTab("Clientes", panelClientes);
-
-        jScrollPane2.setViewportView(tablaProveedores);
 
         botonCrearProveedor.setText("Crear");
         botonCrearProveedor.addActionListener(new java.awt.event.ActionListener() {
@@ -496,36 +541,52 @@ public class VistaPersonas extends javax.swing.JInternalFrame {
             }
         });
 
+        jLabel2.setText("Buscar:");
+
+        busquedaProveedor.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                busquedaProveedorKeyReleased(evt);
+            }
+        });
+
+        jScrollPane3.setViewportView(tablaProveedores);
+
         javax.swing.GroupLayout panelProveedoresLayout = new javax.swing.GroupLayout(panelProveedores);
         panelProveedores.setLayout(panelProveedoresLayout);
         panelProveedoresLayout.setHorizontalGroup(
             panelProveedoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelProveedoresLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 459, Short.MAX_VALUE)
+                .addGroup(panelProveedoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2)
+                    .addComponent(busquedaProveedor, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 435, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelProveedoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelProveedoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(botonCrearProveedor, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(botonSalirProveedor, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(botonVerProveedor, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(botonModificarProveedor, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(botonSalirProveedor, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(botonCrearProveedor, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(botonVerProveedor, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(botonModificarProveedor, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
         panelProveedoresLayout.setVerticalGroup(
             panelProveedoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelProveedoresLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelProveedoresLayout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(busquedaProveedor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(panelProveedoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 328, Short.MAX_VALUE)
                     .addGroup(panelProveedoresLayout.createSequentialGroup()
                         .addComponent(botonCrearProveedor)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(botonVerProveedor)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(botonModificarProveedor)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(botonSalirProveedor)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 60, Short.MAX_VALUE)
+                        .addComponent(botonSalirProveedor))
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -615,6 +676,26 @@ public class VistaPersonas extends javax.swing.JInternalFrame {
         this.dispose();
     }//GEN-LAST:event_botonSalirProveedorActionPerformed
 
+    private void busquedaClienteKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_busquedaClienteKeyReleased
+        // TODO add your handling code here:
+        if (busquedaCliente.getText().compareTo("") != 0) {
+            buscarCliente(busquedaCliente.getText());
+        }
+        else{
+            cargarClientes();
+        }
+    }//GEN-LAST:event_busquedaClienteKeyReleased
+
+    private void busquedaProveedorKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_busquedaProveedorKeyReleased
+        // TODO add your handling code here:
+        if (busquedaProveedor.getText().compareTo("") != 0) {
+            buscarProveedor(busquedaProveedor.getText());
+        }
+        else{
+            cargarProveedores();
+        }
+    }//GEN-LAST:event_busquedaProveedorKeyReleased
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton botonCrearCliente;
@@ -625,8 +706,12 @@ public class VistaPersonas extends javax.swing.JInternalFrame {
     private javax.swing.JButton botonSalirProveedor;
     private javax.swing.JButton botonVerCliente;
     private javax.swing.JButton botonVerProveedor;
+    private javax.swing.JTextField busquedaCliente;
+    private javax.swing.JTextField busquedaProveedor;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTabbedPane jTabbedPersonas;
     private javax.swing.JPanel panelClientes;
     private javax.swing.JPanel panelProveedores;
