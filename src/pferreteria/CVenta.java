@@ -5,6 +5,7 @@
  */
 package pferreteria;
 
+import conexion.Conexion;
 import controladores.AbonoJpaController;
 import controladores.ClienteJpaController;
 import controladores.DetalleventaJpaController;
@@ -74,6 +75,7 @@ public class CVenta extends COperacion {
                 crearAbono();
             }
         }
+        Conexion.getConexion().getEmf().getCache().evictAll();
     }
 
     /**
@@ -103,6 +105,9 @@ public class CVenta extends COperacion {
      * @return cliente creado
      */
     public Cliente crearCliente(String nombre, String direccion, String nit) {
+        if(direccion.compareTo("")==0){
+            direccion="Ciudad";
+        }
         Cliente nuevo = new Cliente(nombre, direccion, nit);
         controladorCliente.create(nuevo);
         this.idPersona = nuevo.getIdCliente();
