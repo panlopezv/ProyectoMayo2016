@@ -23,7 +23,7 @@ import javax.swing.table.TableColumn;
  *
  * @author Pablo Lopez <panlopezv@gmail.com>
  */
-public class VistaUsuarios extends javax.swing.JInternalFrame {
+public class InterfazUsuarios extends javax.swing.JInternalFrame {
 
     ModeloUsuarios modelo;
     UsuarioJpaController controladorU;
@@ -31,7 +31,7 @@ public class VistaUsuarios extends javax.swing.JInternalFrame {
     /**
      * Creates new form VistaUsuarios
      */
-    public VistaUsuarios() {
+    public InterfazUsuarios() {
         initComponents();
         setVisible(Boolean.TRUE);
         controladorU = new UsuarioJpaController(vistas.Inicio.conexion.getEmf());
@@ -189,15 +189,15 @@ public class VistaUsuarios extends javax.swing.JInternalFrame {
             if(registro.compareTo("")!=0){
                 JOptionPane.showMessageDialog(this, "Debe rellenar los siguientes campos:\n\r"+registro, "Error", JOptionPane.ERROR_MESSAGE);
                 modificarContrasenya(us);
+            }
+            else{
                 try {
                     us.setContrasenya(contrasenya.getText());
+                    controladorU.edit(us);
                     JOptionPane.showMessageDialog(this, "Contraseña modificada exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(this, "Algo no ha salido bien, intentelo de nuevo.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
-            }
-            else{
-                
             }
         }
     }

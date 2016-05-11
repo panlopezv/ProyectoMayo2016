@@ -14,7 +14,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import personas.InterfazPersonas;
-import usuarios.VistaUsuarios;
+import usuarios.InterfazPerfil;
+import usuarios.InterfazUsuarios;
 import ventas.InterfazVenta;
 
 /**
@@ -36,6 +37,10 @@ public class Inicio extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
         tablero.setVisible(Boolean.FALSE);
         escritorio.setVisible(Boolean.FALSE);
+        menuGestionar.setVisible(Boolean.FALSE);
+        menuCerrarSesion.setVisible(Boolean.FALSE);
+        menuUsuario.setVisible(Boolean.FALSE);
+        menuAyuda.setVisible(Boolean.FALSE);
     }
     
     public void limpiarEscritorio(){
@@ -74,11 +79,20 @@ public class Inicio extends javax.swing.JFrame {
         jButton5 = new javax.swing.JButton();
         escritorio = new javax.swing.JDesktopPane();
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
-        jMenuItem2 = new javax.swing.JMenuItem();
+        menuArchivo = new javax.swing.JMenu();
+        menuIniciarSesion = new javax.swing.JMenuItem();
+        menuCerrarSesion = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
-        jMenuItem3 = new javax.swing.JMenuItem();
+        menuSalir = new javax.swing.JMenuItem();
+        menuGestionar = new javax.swing.JMenu();
+        menuCategorias = new javax.swing.JMenuItem();
+        menuInventario = new javax.swing.JMenuItem();
+        menuPersonas = new javax.swing.JMenuItem();
+        menuUsuarios = new javax.swing.JMenuItem();
+        menuUsuario = new javax.swing.JMenu();
+        menuPerfil = new javax.swing.JMenuItem();
+        menuAyuda = new javax.swing.JMenu();
+        menuAcercade = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -167,35 +181,70 @@ public class Inicio extends javax.swing.JFrame {
             .addGap(0, 0, Short.MAX_VALUE)
         );
 
-        jMenu1.setText("Archivo");
+        menuArchivo.setText("Archivo");
 
-        jMenuItem1.setText("Iniciar sesión");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        menuIniciarSesion.setText("Iniciar sesión");
+        menuIniciarSesion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
+                menuIniciarSesionActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem1);
+        menuArchivo.add(menuIniciarSesion);
 
-        jMenuItem2.setText("Cerrar sesión");
-        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+        menuCerrarSesion.setText("Cerrar sesión");
+        menuCerrarSesion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem2ActionPerformed(evt);
+                menuCerrarSesionActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem2);
-        jMenu1.add(jSeparator1);
+        menuArchivo.add(menuCerrarSesion);
+        menuArchivo.add(jSeparator1);
 
-        jMenuItem3.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.ALT_MASK));
-        jMenuItem3.setText("Salir");
-        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+        menuSalir.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.ALT_MASK));
+        menuSalir.setText("Salir");
+        menuSalir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem3ActionPerformed(evt);
+                menuSalirActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem3);
+        menuArchivo.add(menuSalir);
 
-        jMenuBar1.add(jMenu1);
+        jMenuBar1.add(menuArchivo);
+
+        menuGestionar.setText("Gestionar");
+
+        menuCategorias.setText("Categorías");
+        menuGestionar.add(menuCategorias);
+
+        menuInventario.setText("Inventario");
+        menuGestionar.add(menuInventario);
+
+        menuPersonas.setText("Personas");
+        menuGestionar.add(menuPersonas);
+
+        menuUsuarios.setText("Usuarios");
+        menuGestionar.add(menuUsuarios);
+
+        jMenuBar1.add(menuGestionar);
+
+        menuUsuario.setText("Usuario");
+
+        menuPerfil.setText("Perfil");
+        menuPerfil.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuPerfilActionPerformed(evt);
+            }
+        });
+        menuUsuario.add(menuPerfil);
+
+        jMenuBar1.add(menuUsuario);
+
+        menuAyuda.setText("Ayuda");
+
+        menuAcercade.setText("Acerca de");
+        menuAyuda.add(menuAcercade);
+
+        jMenuBar1.add(menuAyuda);
 
         setJMenuBar(jMenuBar1);
 
@@ -223,7 +272,7 @@ public class Inicio extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+    private void menuIniciarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuIniciarSesionActionPerformed
         // TODO add your handling code here:
         if(conexion == null){    
             JTextField user = new JTextField();
@@ -239,6 +288,10 @@ public class Inicio extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(this, "Inicio de sesión exitoso.", "", JOptionPane.INFORMATION_MESSAGE);   
                     tablero.setVisible(Boolean.TRUE);
                     escritorio.setVisible(Boolean.TRUE);
+                    menuGestionar.setVisible(Boolean.TRUE);
+                    menuCerrarSesion.setVisible(Boolean.TRUE);
+                    menuUsuario.setVisible(Boolean.TRUE);
+                    menuAyuda.setVisible(Boolean.TRUE);
                 } else{
                     JOptionPane.showMessageDialog(this, "Usuario y/o contraseña inválidos.", "", JOptionPane.ERROR_MESSAGE); 
                 }
@@ -250,9 +303,9 @@ public class Inicio extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Ya existe una sesion abierta.\n\r"
                     + "Si desea ingresar como otro usuario, cierre esta sesion e ingrese de nuevo.", "", JOptionPane.INFORMATION_MESSAGE);
         }
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
+    }//GEN-LAST:event_menuIniciarSesionActionPerformed
 
-    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+    private void menuCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuCerrarSesionActionPerformed
         // TODO add your handling code here:
         int opcion = JOptionPane.showConfirmDialog(this, "¿Realmente desea cerrar sesión?", "", JOptionPane.OK_CANCEL_OPTION);
         if (opcion == JOptionPane.OK_OPTION) { 
@@ -260,13 +313,17 @@ public class Inicio extends javax.swing.JFrame {
                 conexion.cerrarConexion();
                 conexion=null;
             }
-            tablero.setVisible(Boolean.FALSE);
             limpiarEscritorio();
+            tablero.setVisible(Boolean.FALSE);
             escritorio.setVisible(Boolean.FALSE);
+            menuGestionar.setVisible(Boolean.FALSE);
+            menuCerrarSesion.setVisible(Boolean.FALSE);
+            menuUsuario.setVisible(Boolean.FALSE);
+            menuAyuda.setVisible(Boolean.FALSE);
         }
-    }//GEN-LAST:event_jMenuItem2ActionPerformed
+    }//GEN-LAST:event_menuCerrarSesionActionPerformed
 
-    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+    private void menuSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuSalirActionPerformed
         // TODO add your handling code here:
         int opcion = JOptionPane.showConfirmDialog(this, "¿Realmente desea salir?", "", JOptionPane.OK_CANCEL_OPTION);
         if (opcion == JOptionPane.OK_OPTION) { 
@@ -276,7 +333,7 @@ public class Inicio extends javax.swing.JFrame {
             }
             System.exit(0);
         }
-    }//GEN-LAST:event_jMenuItem3ActionPerformed
+    }//GEN-LAST:event_menuSalirActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
@@ -305,7 +362,7 @@ public class Inicio extends javax.swing.JFrame {
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here: 
         limpiarEscritorio();
-        VistaUsuarios inu = new VistaUsuarios();
+        InterfazUsuarios inu = new InterfazUsuarios();
         escritorio.add(inu);
         ajustar(inu);
     }//GEN-LAST:event_jButton4ActionPerformed
@@ -330,6 +387,14 @@ public class Inicio extends javax.swing.JFrame {
             System.exit(0);
         }
     }//GEN-LAST:event_formWindowClosing
+
+    private void menuPerfilActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuPerfilActionPerformed
+        // TODO add your handling code here:
+        limpiarEscritorio();
+        InterfazPerfil ip = new InterfazPerfil(Conexion.getConexion().getIdUsuario());
+        escritorio.add(ip);
+        ajustar(ip);        
+    }//GEN-LAST:event_menuPerfilActionPerformed
 
     /**
      * @param args the command line arguments
@@ -383,12 +448,21 @@ public class Inicio extends javax.swing.JFrame {
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
-    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JPopupMenu.Separator jSeparator1;
+    private javax.swing.JMenuItem menuAcercade;
+    private javax.swing.JMenu menuArchivo;
+    private javax.swing.JMenu menuAyuda;
+    private javax.swing.JMenuItem menuCategorias;
+    private javax.swing.JMenuItem menuCerrarSesion;
+    private javax.swing.JMenu menuGestionar;
+    private javax.swing.JMenuItem menuIniciarSesion;
+    private javax.swing.JMenuItem menuInventario;
+    private javax.swing.JMenuItem menuPerfil;
+    private javax.swing.JMenuItem menuPersonas;
+    private javax.swing.JMenuItem menuSalir;
+    private javax.swing.JMenu menuUsuario;
+    private javax.swing.JMenuItem menuUsuarios;
     private javax.swing.JPanel tablero;
     // End of variables declaration//GEN-END:variables
 }

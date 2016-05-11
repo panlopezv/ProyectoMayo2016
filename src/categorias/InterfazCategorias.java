@@ -7,8 +7,11 @@ package categorias;
 
 import conexion.Conexion;
 import controladores.CategoriaJpaController;
+import controladores.exceptions.NonexistentEntityException;
 import entidades.Categoria;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.Query;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -42,9 +45,10 @@ public class InterfazCategorias extends javax.swing.JInternalFrame {
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaCategorias = new javax.swing.JTable();
-        jButton4 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        crearCategoria = new javax.swing.JButton();
+        modificarCategoria = new javax.swing.JButton();
+        salir = new javax.swing.JButton();
+        eliminarCategoria = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(255, 204, 153));
         setClosable(true);
@@ -55,24 +59,31 @@ public class InterfazCategorias extends javax.swing.JInternalFrame {
 
         jScrollPane1.setViewportView(tablaCategorias);
 
-        jButton4.setText("Crear");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        crearCategoria.setText("Crear");
+        crearCategoria.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+                crearCategoriaActionPerformed(evt);
             }
         });
 
-        jButton2.setText("Modificar");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        modificarCategoria.setText("Modificar");
+        modificarCategoria.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                modificarCategoriaActionPerformed(evt);
             }
         });
 
-        jButton3.setText("Salir");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        salir.setText("Salir");
+        salir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                salirActionPerformed(evt);
+            }
+        });
+
+        eliminarCategoria.setText("Eliminar");
+        eliminarCategoria.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                eliminarCategoriaActionPerformed(evt);
             }
         });
 
@@ -87,9 +98,10 @@ public class InterfazCategorias extends javax.swing.JInternalFrame {
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 323, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addComponent(modificarCategoria, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(salir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(crearCategoria, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(eliminarCategoria, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addGap(0, 0, Short.MAX_VALUE)))
@@ -103,11 +115,13 @@ public class InterfazCategorias extends javax.swing.JInternalFrame {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton4)
+                        .addComponent(crearCategoria)
                         .addGap(18, 18, 18)
-                        .addComponent(jButton2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 159, Short.MAX_VALUE)
-                        .addComponent(jButton3))
+                        .addComponent(modificarCategoria)
+                        .addGap(18, 18, 18)
+                        .addComponent(eliminarCategoria)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 116, Short.MAX_VALUE)
+                        .addComponent(salir))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 264, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -115,12 +129,12 @@ public class InterfazCategorias extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+    private void crearCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_crearCategoriaActionPerformed
         // TODO add your handling code here:
         crearCategoria();
-    }//GEN-LAST:event_jButton4ActionPerformed
+    }//GEN-LAST:event_crearCategoriaActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void modificarCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modificarCategoriaActionPerformed
         // TODO add your handling code here:
         int fila=tablaCategorias.getSelectedRow();
         if(fila>=0){
@@ -129,12 +143,23 @@ public class InterfazCategorias extends javax.swing.JInternalFrame {
         else{
             JOptionPane.showMessageDialog(null,"Debe seleccionar una categoría.","Error",JOptionPane.ERROR_MESSAGE);
         }
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_modificarCategoriaActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void salirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_salirActionPerformed
         // TODO add your handling code here:
         this.dispose();
-    }//GEN-LAST:event_jButton3ActionPerformed
+    }//GEN-LAST:event_salirActionPerformed
+
+    private void eliminarCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminarCategoriaActionPerformed
+        // TODO add your handling code here:
+        int fila=tablaCategorias.getSelectedRow();
+        if(fila>=0){
+            eliminarCategoria(modeloC.getCategoria(fila).getIdCategoria());
+        }
+        else{
+            JOptionPane.showMessageDialog(null,"Debe seleccionar una categoría.","Error",JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_eliminarCategoriaActionPerformed
     
     public void crearCategoria(){
         JTextField nombre = new JTextField();
@@ -204,7 +229,21 @@ public class InterfazCategorias extends javax.swing.JInternalFrame {
         }
     }
     
-     public void cargarCategorias(){
+    public void eliminarCategoria(int idCategoria){
+        int opcion = JOptionPane.showConfirmDialog(this, "¿Realmente desea eliminar la categoría?", "Eliminar categoría.", JOptionPane.OK_CANCEL_OPTION);
+        if (opcion == JOptionPane.OK_OPTION) {
+            try { 
+                controladorC.destroy(idCategoria);
+                JOptionPane.showMessageDialog(this, "Categoría eliminada exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
+                cargarCategorias();
+            }
+            catch (NonexistentEntityException ex) {
+                JOptionPane.showMessageDialog(this, "Imposible eliminar la categoría seleccionada.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+    
+    public void cargarCategorias(){
         setVisible(Boolean.TRUE);
         Query q = Conexion.getConexion().getEmf().createEntityManager().createNamedQuery("Categoria.findAll");
         try {
@@ -216,11 +255,12 @@ public class InterfazCategorias extends javax.swing.JInternalFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
+    private javax.swing.JButton crearCategoria;
+    private javax.swing.JButton eliminarCategoria;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JButton modificarCategoria;
+    private javax.swing.JButton salir;
     private javax.swing.JTable tablaCategorias;
     // End of variables declaration//GEN-END:variables
 }

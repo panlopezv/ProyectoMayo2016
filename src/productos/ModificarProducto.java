@@ -231,6 +231,9 @@ public class ModificarProducto extends javax.swing.JInternalFrame implements Obs
         }
         try{
             Double.parseDouble(precioProducto.getText());
+            if(Double.parseDouble(precioProducto.getText())<=0){
+                registro=registro + "Precio. (No se permiten valores negativos o 0).\n\r";
+            }
         }
         catch(NumberFormatException ex){
             if(precioProducto.getText().matches("[ ]*")){
