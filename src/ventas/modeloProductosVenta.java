@@ -17,11 +17,16 @@ import pferreteria.CProducto;
  */
 public class modeloProductosVenta extends AbstractTableModel{
     private ArrayList<CProducto> productosVenta;
-    private String columnas[] = {"Código", "Producto", "Cantidad" , "Precio", "Subtotal"};
+    private String columnas[];
     private Class[] tipos= new Class [] {java.lang.Integer.class, java.lang.String.class, java.lang.Integer.class,
         java.text.DecimalFormat.class, java.text.DecimalFormat.class};
 
-    public modeloProductosVenta(ArrayList<CProducto> productos) {
+    public modeloProductosVenta(ArrayList<CProducto> productos, int opc) {
+        if(opc==0){
+            columnas = new String[]{"Código", "Producto", "Cantidad" , "Precio", "Subtotal"};
+        } else{
+            columnas = new String[]{"Código", "Producto", "Cantidad" , "Costo", "Subtotal"};
+        }
         this.productosVenta = productos;
     }   
     @Override

@@ -99,7 +99,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                 }
             }
         }
-        mp = new modeloProductos(productosB);
+        mp = new modeloProductos(productosB,0);
         jTable1.setModel(mp);
         ajustarColumnas(jTable1);
         agregarAlCarrito.setEnabled(false);
@@ -256,7 +256,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
             }
             totalVenta.setText("Q. " + venta.getTotal());
         }
-        mpv = new modeloProductosVenta(venta.getProductos());
+        mpv = new modeloProductosVenta(venta.getProductos(),0);
         jTable2.setModel(mpv);
         ajustarColumnas(jTable2);
         productoBusqueda.requestFocus();
@@ -748,7 +748,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
         if (!primerAdd) {
             JTextField cliente = new JTextField();
             Object[] message = {
-                "NIT/Código:", cliente,};
+                "NIT:", cliente,};
             int opcion = JOptionPane.showConfirmDialog(this, message, "Indicar cliente.", JOptionPane.OK_CANCEL_OPTION);
             if (opcion == JOptionPane.OK_OPTION) {
                 EntityManagerFactory emf = Conexion.getConexion().getEmf();
@@ -795,7 +795,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
             if (venta.getProductos().isEmpty()) {
                 commitVenta.setEnabled(false);
             }
-            mpv = new modeloProductosVenta(venta.getProductos());
+            mpv = new modeloProductosVenta(venta.getProductos(),0);
             jTable2.setModel(mpv);
             ajustarColumnas(jTable2);
             productoBusqueda.requestFocus();
@@ -808,7 +808,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
             if (cant != 0) {
                 venta.getProductos().get(jTable2.getSelectedRow()).setCantidad(cant);
                 totalVenta.setText("Q. " + venta.getTotal());
-                mpv = new modeloProductosVenta(venta.getProductos());
+                mpv = new modeloProductosVenta(venta.getProductos(),0);
                 jTable2.setModel(mpv);
                 ajustarColumnas(jTable2);
                 productoBusqueda.requestFocus();

@@ -27,10 +27,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "Detallecompra.findAll", query = "SELECT d FROM Detallecompra d"),
     @NamedQuery(name = "Detallecompra.findByIdDetalleCompra", query = "SELECT d FROM Detallecompra d WHERE d.idDetalleCompra = :idDetalleCompra"),
-    @NamedQuery(name = "Detallecompra.findByCompraidCompra", query = "SELECT d FROM Detallecompra d WHERE d.compraidCompra = :compraidCompra"),
-    @NamedQuery(name = "Detallecompra.findByProductoidProducto", query = "SELECT d FROM Detallecompra d WHERE d.productoidProducto = :productoidProducto"),
+    @NamedQuery(name = "Detallecompra.findByCompraidCompra", query = "SELECT d FROM Detallecompra d WHERE d.idCompra = :idCompra"),
+    @NamedQuery(name = "Detallecompra.findByProductoidProducto", query = "SELECT d FROM Detallecompra d WHERE d.idProducto = :idProducto"),
     @NamedQuery(name = "Detallecompra.findByCantidad", query = "SELECT d FROM Detallecompra d WHERE d.cantidad = :cantidad"),
     @NamedQuery(name = "Detallecompra.findByCosto", query = "SELECT d FROM Detallecompra d WHERE d.costo = :costo"),
+    @NamedQuery(name = "Detallecompra.findLastId", query = "SELECT MAX(d.idDetalleCompra) FROM Detallecompra d WHERE d.idProducto = :idProducto"),
     @NamedQuery(name = "Detallecompra.findBySubtotal", query = "SELECT d FROM Detallecompra d WHERE d.subtotal = :subtotal")})
 public class Detallecompra implements Serializable {
 
@@ -41,11 +42,11 @@ public class Detallecompra implements Serializable {
     @Column(name = "idDetalleCompra", nullable = false)
     private Long idDetalleCompra;
     @Basic(optional = false)
-    @Column(name = "Compra_idCompra", nullable = false)
-    private int compraidCompra;
+    @Column(name = "idCompra", nullable = false)
+    private int idCompra;
     @Basic(optional = false)
-    @Column(name = "Producto_idProducto", nullable = false)
-    private int productoidProducto;
+    @Column(name = "idProducto", nullable = false)
+    private int idProducto;
     @Basic(optional = false)
     @Column(name = "Cantidad", nullable = false)
     private int cantidad;
@@ -64,8 +65,8 @@ public class Detallecompra implements Serializable {
     }
 
     public Detallecompra(int compraidCompra, int productoidProducto, Integer cantidad, Double costo, Double subtotal) {
-        this.compraidCompra = compraidCompra;
-        this.productoidProducto = productoidProducto;
+        this.idCompra = compraidCompra;
+        this.idProducto = productoidProducto;
         this.cantidad = cantidad;
         this.costo = costo;
         this.subtotal = subtotal;
@@ -79,20 +80,20 @@ public class Detallecompra implements Serializable {
         this.idDetalleCompra = idDetalleCompra;
     }
 
-    public int getCompraidCompra() {
-        return compraidCompra;
+    public int getIdCompra() {
+        return idCompra;
     }
 
-    public void setCompraidCompra(int compraidCompra) {
-        this.compraidCompra = compraidCompra;
+    public void setIdCompra(int idCompra) {
+        this.idCompra = idCompra;
     }
 
-    public int getProductoidProducto() {
-        return productoidProducto;
+    public int getIdProducto() {
+        return idProducto;
     }
 
-    public void setProductoidProducto(int productoidProducto) {
-        this.productoidProducto = productoidProducto;
+    public void setIdProducto(int idProducto) {
+        this.idProducto = idProducto;
     }
 
     public int getCantidad() {

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
+import java.util.Calendar;
 
 public class CCompra extends COperacion {
 
@@ -32,7 +33,6 @@ public class CCompra extends COperacion {
     private final PagoJpaController controladorPago;
     public ArrayList<CProducto> productos;
     private double pagoInicial;
-    private Date fecha;
 
     /**
      * Constructor de la clase
@@ -78,6 +78,11 @@ public class CCompra extends COperacion {
         for (int i = 0; i < productos.size(); i++) {
             controladorDetalleCompra.create(new Detallecompra(nueva.getIdCompra(), productos.get(i).getId(), productos.get(i).getCantidad(), productos.get(i).getPrecio(), productos.get(i).getSubtotal()));
         }
+        if (credito) {
+            if (pagoInicial > 0) {
+                crearPago();
+            }
+        }
     }
 
     /**
@@ -98,10 +103,13 @@ public class CCompra extends COperacion {
      * Inserta una nueva categoria a la base de datos
      *
      * @param nombre String
+     * @return retornará la categoría creada para asignarla al producto
      * @throws Exception
      */
-    public void crearCategoria(String nombre) throws Exception {
-        controladorCategoria.create(new Categoria(nombre));
+    public Categoria crearCategoria(String nombre) throws Exception {
+        Categoria nueva = new Categoria(nombre);
+        controladorCategoria.create(nueva);
+        return nueva;
     }
 
     /**
@@ -130,7 +138,7 @@ public class CCompra extends COperacion {
     }
 
     public void crearPago() {
-        Pago nuevo = new Pago(fecha, getPagoInicial(), getIdPersona());
+        Pago nuevo = new Pago(new Date(), getPagoInicial(), getIdPersona());
         controladorPago.create(nuevo);
     }
 
@@ -149,10 +157,6 @@ public class CCompra extends COperacion {
 
     public void setPagoInicial(double pagoInicial) {
         this.pagoInicial = pagoInicial;
-    }
-
-    public void setFecha(Date fecha) {
-        this.fecha = fecha;
     }
 
     /**
