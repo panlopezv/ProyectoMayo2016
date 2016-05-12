@@ -44,6 +44,7 @@ public class Inicio extends javax.swing.JFrame {
         menuUsuario.setVisible(Boolean.FALSE);
         menuAyuda.setVisible(Boolean.FALSE);
         botonCompras.setVisible(Boolean.FALSE);
+        botonOperaciones.setVisible(Boolean.FALSE);
     }
     
     public void limpiarEscritorio(){
@@ -93,7 +94,7 @@ public class Inicio extends javax.swing.JFrame {
         botonAbonos_Pagos = new javax.swing.JButton();
         botonCompras = new javax.swing.JButton();
         botonPersonas = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        botonOperaciones = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         menuArchivo = new javax.swing.JMenu();
         menuIniciarSesion = new javax.swing.JMenuItem();
@@ -165,10 +166,10 @@ public class Inicio extends javax.swing.JFrame {
             }
         });
 
-        jButton1.setText("Operaciones");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        botonOperaciones.setText("Operaciones");
+        botonOperaciones.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                botonOperacionesActionPerformed(evt);
             }
         });
 
@@ -184,7 +185,7 @@ public class Inicio extends javax.swing.JFrame {
                     .addComponent(botonPersonas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(botonAbonos_Pagos, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE)
                     .addComponent(botonInventario, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(botonOperaciones, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         tableroLayout.setVerticalGroup(
@@ -201,7 +202,7 @@ public class Inicio extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(botonCompras, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(botonOperaciones, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(114, Short.MAX_VALUE))
         );
 
@@ -325,6 +326,7 @@ public class Inicio extends javax.swing.JFrame {
                     if(Conexion.getConexion().getEsAdministrador()){
                         menuGestionar.setVisible(Boolean.TRUE);
                         botonCompras.setVisible(Boolean.TRUE);
+                        botonOperaciones.setVisible(Boolean.TRUE);
                     }
                 } else{
                     JOptionPane.showMessageDialog(this, "Usuario y/o contraseña inválidos.", "", JOptionPane.ERROR_MESSAGE);
@@ -355,6 +357,7 @@ public class Inicio extends javax.swing.JFrame {
             menuUsuario.setVisible(Boolean.FALSE);
             menuAyuda.setVisible(Boolean.FALSE);
             botonCompras.setVisible(Boolean.FALSE);
+            botonOperaciones.setVisible(Boolean.FALSE);
         }
     }//GEN-LAST:event_menuCerrarSesionActionPerformed
 
@@ -450,13 +453,13 @@ public class Inicio extends javax.swing.JFrame {
         ajustar(vp);
     }//GEN-LAST:event_botonPersonasActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void botonOperacionesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonOperacionesActionPerformed
         // TODO add your handling code here:
         InterfazOperaciones io = new InterfazOperaciones();
         limpiarEscritorio();
         escritorio.add(io);
         ajustar(io);
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_botonOperacionesActionPerformed
 
     /**
      * @param args the command line arguments
@@ -498,10 +501,10 @@ public class Inicio extends javax.swing.JFrame {
     private javax.swing.JButton botonAbonos_Pagos;
     private javax.swing.JButton botonCompras;
     private javax.swing.JButton botonInventario;
+    private javax.swing.JButton botonOperaciones;
     private javax.swing.JButton botonPersonas;
     private javax.swing.JButton botonVentas;
     public javax.swing.JDesktopPane escritorio;
-    private javax.swing.JButton jButton1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JMenuItem menuAcercade;
