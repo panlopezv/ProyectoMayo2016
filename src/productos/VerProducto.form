@@ -30,7 +30,7 @@
                   <Component id="nombreProducto" alignment="0" max="32767" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                      <Component id="botonSalir" min="-2" pref="75" max="-2" attributes="0"/>
+                      <Component id="botonSalir" min="-2" pref="125" max="-2" attributes="0"/>
                   </Group>
                   <Component id="categoriaProducto" alignment="0" max="32767" attributes="0"/>
                   <Group type="102" attributes="0">
@@ -139,6 +139,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="botonSalir">
       <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/recursos/exit.png"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="Salir"/>
       </Properties>
       <Events>
