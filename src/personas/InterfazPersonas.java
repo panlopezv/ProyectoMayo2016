@@ -36,7 +36,6 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
     public InterfazPersonas() {
         initComponents();
         setVisible(Boolean.TRUE);
-        this.getContentPane().setBackground(Color.getHSBColor(0.142f,0.09f,1f));
         controladorC = new ClienteJpaController(Conexion.getConexion().getEmf());
         cargarClientes();
         if(Conexion.getConexion().getEsAdministrador()){
@@ -432,7 +431,7 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
         jScrollPane3 = new javax.swing.JScrollPane();
         tablaProveedores = new javax.swing.JTable();
 
-        setBackground(new java.awt.Color(255, 204, 153));
+        setBackground(new java.awt.Color(181, 232, 205));
         setClosable(true);
         setMaximizable(true);
         setTitle("Personas");

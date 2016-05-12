@@ -251,7 +251,7 @@ public class InterfazUsuarios extends javax.swing.JInternalFrame {
         botonSalir = new javax.swing.JButton();
         botonContrasenya = new javax.swing.JButton();
 
-        setBackground(new java.awt.Color(255, 204, 153));
+        setBackground(new java.awt.Color(181, 232, 205));
         setClosable(true);
         setMaximizable(true);
         setResizable(true);

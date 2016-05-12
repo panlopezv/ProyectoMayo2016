@@ -37,13 +37,13 @@ public class Inicio extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
         //this.getContentPane().setBackground(Color.getHSBColor(0.525f,0.33f,0.91f));
         this.getContentPane().setBackground(Color.getHSBColor(0.144f,0.09f,1f));
-        
         tablero.setVisible(Boolean.FALSE);
         escritorio.setVisible(Boolean.FALSE);
         menuGestionar.setVisible(Boolean.FALSE);
         menuCerrarSesion.setVisible(Boolean.FALSE);
         menuUsuario.setVisible(Boolean.FALSE);
         menuAyuda.setVisible(Boolean.FALSE);
+        botonCompras.setVisible(Boolean.FALSE);
     }
     
     public void limpiarEscritorio(){
@@ -88,12 +88,11 @@ public class Inicio extends javax.swing.JFrame {
 
         escritorio = new javax.swing.JDesktopPane();
         tablero = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
-        jButton6 = new javax.swing.JButton();
+        botonVentas = new javax.swing.JButton();
+        botonInventario = new javax.swing.JButton();
+        botonAbonos_Pagos = new javax.swing.JButton();
+        botonCompras = new javax.swing.JButton();
+        botonPersonas = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         menuArchivo = new javax.swing.JMenu();
         menuIniciarSesion = new javax.swing.JMenuItem();
@@ -102,15 +101,18 @@ public class Inicio extends javax.swing.JFrame {
         menuSalir = new javax.swing.JMenuItem();
         menuGestionar = new javax.swing.JMenu();
         menuCategorias = new javax.swing.JMenuItem();
-        menuInventario = new javax.swing.JMenuItem();
-        menuPersonas = new javax.swing.JMenuItem();
         menuUsuarios = new javax.swing.JMenuItem();
         menuUsuario = new javax.swing.JMenu();
         menuPerfil = new javax.swing.JMenuItem();
         menuAyuda = new javax.swing.JMenu();
         menuAcercade = new javax.swing.JMenuItem();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         escritorio.setBackground(new java.awt.Color(255, 252, 233));
 
@@ -118,54 +120,47 @@ public class Inicio extends javax.swing.JFrame {
         escritorio.setLayout(escritorioLayout);
         escritorioLayout.setHorizontalGroup(
             escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 475, Short.MAX_VALUE)
+            .addGap(0, 530, Short.MAX_VALUE)
         );
         escritorioLayout.setVerticalGroup(
             escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 431, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
 
         tablero.setBackground(new java.awt.Color(181, 232, 205));
 
-        jButton1.setText("Venta");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        botonVentas.setText("Ventas");
+        botonVentas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                botonVentasActionPerformed(evt);
             }
         });
 
-        jButton2.setText("Inventario");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        botonInventario.setText("Inventario");
+        botonInventario.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                botonInventarioActionPerformed(evt);
             }
         });
 
-        jButton3.setText("Categorías");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        botonAbonos_Pagos.setText("Abonos/Pagos");
+        botonAbonos_Pagos.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                botonAbonos_PagosActionPerformed(evt);
             }
         });
 
-        jButton4.setText("Usuarios");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        botonCompras.setText("Compras");
+        botonCompras.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+                botonComprasActionPerformed(evt);
             }
         });
 
-        jButton5.setText("Personas");
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
+        botonPersonas.setText("Personas");
+        botonPersonas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
-            }
-        });
-
-        jButton6.setText("Compras");
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton6ActionPerformed(evt);
+                botonPersonasActionPerformed(evt);
             }
         });
 
@@ -175,36 +170,28 @@ public class Inicio extends javax.swing.JFrame {
             tableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(tableroLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(tableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(tableroLayout.createSequentialGroup()
-                        .addGroup(tableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jButton6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, tableroLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                .addGroup(tableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(botonCompras, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(botonVentas, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(botonPersonas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(botonAbonos_Pagos, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE)
+                    .addComponent(botonInventario, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         tableroLayout.setVerticalGroup(
             tableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(tableroLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(botonInventario, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(botonAbonos_Pagos, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(botonPersonas, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(botonVentas, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(botonCompras, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(192, Short.MAX_VALUE))
         );
 
         menuArchivo.setText("Archivo");
@@ -242,20 +229,19 @@ public class Inicio extends javax.swing.JFrame {
         menuGestionar.setText("Gestionar");
 
         menuCategorias.setText("Categorías");
-        menuGestionar.add(menuCategorias);
-
-        menuInventario.setText("Inventario");
-        menuGestionar.add(menuInventario);
-
-        menuPersonas.setText("Personas");
-        menuPersonas.addActionListener(new java.awt.event.ActionListener() {
+        menuCategorias.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menuPersonasActionPerformed(evt);
+                menuCategoriasActionPerformed(evt);
             }
         });
-        menuGestionar.add(menuPersonas);
+        menuGestionar.add(menuCategorias);
 
         menuUsuarios.setText("Usuarios");
+        menuUsuarios.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuUsuariosActionPerformed(evt);
+            }
+        });
         menuGestionar.add(menuUsuarios);
 
         jMenuBar1.add(menuGestionar);
@@ -319,12 +305,16 @@ public class Inicio extends javax.swing.JFrame {
                 conexion=Conexion.getConexion(user.getText(), pass.getText());
                 if(conexion!=null){
                     JOptionPane.showMessageDialog(this, "Inicio de sesión exitoso.", "", JOptionPane.INFORMATION_MESSAGE);
+                    
                     tablero.setVisible(Boolean.TRUE);
                     escritorio.setVisible(Boolean.TRUE);
-                    menuGestionar.setVisible(Boolean.TRUE);
                     menuCerrarSesion.setVisible(Boolean.TRUE);
                     menuUsuario.setVisible(Boolean.TRUE);
                     menuAyuda.setVisible(Boolean.TRUE);
+                    if(Conexion.getConexion().getEsAdministrador()){
+                        menuGestionar.setVisible(Boolean.TRUE);
+                        botonCompras.setVisible(Boolean.TRUE);
+                    }
                 } else{
                     JOptionPane.showMessageDialog(this, "Usuario y/o contraseña inválidos.", "", JOptionPane.ERROR_MESSAGE);
                 }
@@ -353,6 +343,7 @@ public class Inicio extends javax.swing.JFrame {
             menuCerrarSesion.setVisible(Boolean.FALSE);
             menuUsuario.setVisible(Boolean.FALSE);
             menuAyuda.setVisible(Boolean.FALSE);
+            botonCompras.setVisible(Boolean.FALSE);
         }
     }//GEN-LAST:event_menuCerrarSesionActionPerformed
 
@@ -376,39 +367,23 @@ public class Inicio extends javax.swing.JFrame {
         ajustar(ip);
     }//GEN-LAST:event_menuPerfilActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void botonVentasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonVentasActionPerformed
         // TODO add your handling code here:
         limpiarEscritorio();
         InterfazVenta venta = new InterfazVenta();
         escritorio.add(venta);
         ajustar(venta);
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_botonVentasActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void botonInventarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonInventarioActionPerformed
         // TODO add your handling code here:
         limpiarEscritorio();
         InterfazInventario inventario = new InterfazInventario();
         escritorio.add(inventario);
         ajustar(inventario);
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_botonInventarioActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
-        limpiarEscritorio();
-        InterfazCategorias inf = new InterfazCategorias();
-        escritorio.add(inf);
-        ajustar(inf);
-    }//GEN-LAST:event_jButton3ActionPerformed
-
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        // TODO add your handling code here:
-        limpiarEscritorio();
-        InterfazUsuarios inu = new InterfazUsuarios();
-        escritorio.add(inu);
-        ajustar(inu);
-    }//GEN-LAST:event_jButton4ActionPerformed
-
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+    private void botonAbonos_PagosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonAbonos_PagosActionPerformed
         // TODO add your handling code here:
         limpiarEscritorio();
         //        VistaPersonas vp = new VistaPersonas();
@@ -418,23 +393,51 @@ public class Inicio extends javax.swing.JFrame {
         controlPagos cp = new controlPagos();
         escritorio.add(cp);
         ajustar(cp);
-    }//GEN-LAST:event_jButton5ActionPerformed
+    }//GEN-LAST:event_botonAbonos_PagosActionPerformed
 
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+    private void botonComprasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonComprasActionPerformed
         // TODO add your handling code here:
         limpiarEscritorio();
         InterfazCompra compra = new InterfazCompra();
         escritorio.add(compra);
         ajustar(compra);
-    }//GEN-LAST:event_jButton6ActionPerformed
+    }//GEN-LAST:event_botonComprasActionPerformed
 
-    private void menuPersonasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuPersonasActionPerformed
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        // TODO add your handling code here:
+        int opcion = JOptionPane.showConfirmDialog(this, "¿Realmente desea salir?", "", JOptionPane.OK_CANCEL_OPTION);
+        if (opcion == JOptionPane.OK_OPTION) {
+            if(conexion!=null){
+                conexion.cerrarConexion();
+                conexion=null;
+            }
+            System.exit(0);
+        }
+    }//GEN-LAST:event_formWindowClosing
+
+    private void menuCategoriasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuCategoriasActionPerformed
+        // TODO add your handling code here:
+        limpiarEscritorio();
+        InterfazCategorias inf = new InterfazCategorias();
+        escritorio.add(inf);
+        ajustar(inf);
+    }//GEN-LAST:event_menuCategoriasActionPerformed
+
+    private void menuUsuariosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuUsuariosActionPerformed
+        // TODO add your handling code here:
+        limpiarEscritorio();
+        InterfazUsuarios inu = new InterfazUsuarios();
+        escritorio.add(inu);
+        ajustar(inu);
+    }//GEN-LAST:event_menuUsuariosActionPerformed
+
+    private void botonPersonasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonPersonasActionPerformed
         // TODO add your handling code here:
         limpiarEscritorio();
         InterfazPersonas vp = new InterfazPersonas();
         escritorio.add(vp);
         ajustar(vp);
-    }//GEN-LAST:event_menuPersonasActionPerformed
+    }//GEN-LAST:event_botonPersonasActionPerformed
 
     /**
      * @param args the command line arguments
@@ -473,13 +476,12 @@ public class Inicio extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton botonAbonos_Pagos;
+    private javax.swing.JButton botonCompras;
+    private javax.swing.JButton botonInventario;
+    private javax.swing.JButton botonPersonas;
+    private javax.swing.JButton botonVentas;
     public javax.swing.JDesktopPane escritorio;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JMenuItem menuAcercade;
@@ -489,9 +491,7 @@ public class Inicio extends javax.swing.JFrame {
     private javax.swing.JMenuItem menuCerrarSesion;
     private javax.swing.JMenu menuGestionar;
     private javax.swing.JMenuItem menuIniciarSesion;
-    private javax.swing.JMenuItem menuInventario;
     private javax.swing.JMenuItem menuPerfil;
-    private javax.swing.JMenuItem menuPersonas;
     private javax.swing.JMenuItem menuSalir;
     private javax.swing.JMenu menuUsuario;
     private javax.swing.JMenuItem menuUsuarios;

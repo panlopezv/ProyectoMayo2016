@@ -50,7 +50,7 @@ public class InterfazCategorias extends javax.swing.JInternalFrame {
         salir = new javax.swing.JButton();
         eliminarCategoria = new javax.swing.JButton();
 
-        setBackground(new java.awt.Color(255, 204, 153));
+        setBackground(new java.awt.Color(181, 232, 205));
         setClosable(true);
         setMaximizable(true);
         setTitle("Categorías");

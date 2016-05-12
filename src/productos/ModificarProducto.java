@@ -113,7 +113,6 @@ public class ModificarProducto extends javax.swing.JInternalFrame implements Obs
         botonAceptar = new javax.swing.JButton();
         botonAgregarCategoria = new javax.swing.JButton();
 
-        setBackground(new java.awt.Color(255, 204, 153));
         setClosable(true);
         setTitle("Modificar producto");
 
