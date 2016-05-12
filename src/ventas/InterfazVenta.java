@@ -207,6 +207,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
             q.setParameter("nit", datoNit.getText());
             if (q.getResultList().isEmpty()) {
                 Cliente creado = venta.crearCliente(datoNombre.getText(), datoDireccion.getText(), datoNit.getText());
+                venta.setIdPersona(creado.getIdCliente());
                 primerAdd = true;
                 mostrarDatosCliente(creado);
                 Producto productoVenta = mp.obtenerProducto((String) jTable1.getValueAt(jTable1.getSelectedRow(), 1));
