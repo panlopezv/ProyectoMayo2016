@@ -5,6 +5,7 @@
  */
 package pferreteria;
 
+import conexion.Conexion;
 import controladores.CategoriaJpaController;
 import controladores.CompraJpaController;
 import controladores.DetallecompraJpaController;
@@ -83,6 +84,7 @@ public class CCompra extends COperacion {
                 crearPago();
             }
         }
+        Conexion.getConexion().getEmf().getCache().evictAll();
     }
 
     /**

@@ -240,7 +240,7 @@ public class InterfazCompra extends javax.swing.JInternalFrame {
      *
      * @param NIT
      */
-    public void insertarProveedor(String NIT) {
+    public void insertarProveedor(String NIT, Producto prod) {
         JTextField nombre = new JTextField();
         JTextField nit = new JTextField(NIT);
         JTextField telefono = new JTextField();
@@ -265,13 +265,14 @@ public class InterfazCompra extends javax.swing.JInternalFrame {
             }
             if (registro.compareTo("") == 0) {
                 EntityManagerFactory emf = Conexion.getConexion().getEmf();
-                Query q = emf.createEntityManager().createNamedQuery("Cliente.findByNit");
+                Query q = emf.createEntityManager().createNamedQuery("Proveedor.findByNit");
                 q.setParameter("nit", nit.getText());
                 if (q.getResultList().isEmpty()) {
                     Proveedor creado = compra.crearProveedor(nombre.getText(), nit.getText(), telefono.getText());
+                    compra.setIdPersona(creado.getIdProveedor());
                     primerAdd = true;
                     mostrarDatosProveedor(creado);
-                    Producto productoCompra = mp.obtenerProducto((String) jTable1.getValueAt(jTable1.getSelectedRow(), 1));
+                    Producto productoCompra = prod;
                     if (cantidad != 0) {
                         insertarCproducto(productoCompra);
                     }
@@ -281,7 +282,7 @@ public class InterfazCompra extends javax.swing.JInternalFrame {
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "Los siguientes campos son requeridos:\n\n\r" + registro, "Error.", JOptionPane.ERROR_MESSAGE);
-                insertarProveedor(NIT);
+                insertarProveedor(NIT,prod);
             }
         }
     }
@@ -345,9 +346,9 @@ public class InterfazCompra extends javax.swing.JInternalFrame {
                 q.setParameter("nit", proveedor.getText());
                 List<Proveedor> proveedorBusqueda = q.getResultList();
                 if (proveedorBusqueda.isEmpty()) {
-                    int crearcliente = JOptionPane.showConfirmDialog(this, "¿Desea crear un proveedor nuevo?", "El proveedor no existe.", JOptionPane.OK_OPTION);
-                    if (crearcliente == JOptionPane.OK_OPTION) {
-                        insertarProveedor(proveedor.getText());
+                    int crearProveedor = JOptionPane.showConfirmDialog(this, "¿Desea crear un proveedor nuevo?", "El proveedor no existe.", JOptionPane.OK_OPTION);
+                    if (crearProveedor == JOptionPane.OK_OPTION) {
+                        insertarProveedor(proveedor.getText(),p);
                     }
                 } else {
                     primerAdd = true;
@@ -636,7 +637,8 @@ public class InterfazCompra extends javax.swing.JInternalFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(telefonoProveedor, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addComponent(telefonoProveedor, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         codigoProveedor.getAccessibleContext().setAccessibleName("");
@@ -834,7 +836,7 @@ public class InterfazCompra extends javax.swing.JInternalFrame {
                                 .addComponent(cancelar1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(cancelar)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 78, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -864,12 +866,13 @@ public class InterfazCompra extends javax.swing.JInternalFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(productoBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 373, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(productoBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 373, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel8))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(nuevoProducto, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(jLabel7))
-                            .addComponent(jLabel8)
                             .addComponent(jLabel9))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
@@ -880,13 +883,14 @@ public class InterfazCompra extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel8)
-                        .addGap(6, 6, 6)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(productoBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(nuevoProducto)))
+                            .addComponent(nuevoProducto)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel8)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(productoBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING)
@@ -910,7 +914,7 @@ public class InterfazCompra extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 187, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
