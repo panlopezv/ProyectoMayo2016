@@ -6,15 +6,28 @@
 package vistas;
 
 import categorias.InterfazCategorias;
+import com.toedter.calendar.JDateChooser;
 import compras.InterfazCompra;
 import conexion.Conexion;
 import inventario.InterfazInventario;
 import java.awt.Color;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.view.JasperViewer;
 import pagos.controlPagos;
 import personas.InterfazPersonas;
 import usuarios.InterfazPerfil;
@@ -45,6 +58,7 @@ public class Inicio extends javax.swing.JFrame {
         menuAyuda.setVisible(Boolean.FALSE);
         botonCompras.setVisible(Boolean.FALSE);
         botonOperaciones.setVisible(Boolean.FALSE);
+        menuReportes.setVisible(Boolean.FALSE);
     }
     
     public void limpiarEscritorio(){
@@ -54,18 +68,56 @@ public class Inicio extends javax.swing.JFrame {
         escritorio.removeAll();
     }
     
-//    public void mostrarReporte(int id){
-//        try {
-//            Class.forName("com.mysql.jdbc.Driver");
-//            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/ferreteria", "root", "root");
-//            HashMap parametros = new HashMap();
-//            parametros.put("ventaid", id);
-//            JasperPrint print = JasperFillManager.fillReport("src\\reportes\\Ventas.jasper", parametros, con);
-//            JasperViewer.viewReport(print);
-//        } catch (ClassNotFoundException | SQLException | JRException ex) {
-//            Logger.getLogger(InternoB.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//    }
+    /**
+     * Muestra el comprobante de venta.
+     * @param ventaID 
+     */
+    public void mostrarComprobanteDeVenta(int ventaID){
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/ferreteria", "root", "root");
+            HashMap parametros = new HashMap();
+            parametros.put("ventaid", ventaID);
+            JasperPrint print = JasperFillManager.fillReport("src\\reportes\\Ventas.jasper", parametros, con);
+            JasperViewer.viewReport(print, Boolean.FALSE);
+        } catch (ClassNotFoundException | SQLException | JRException ex) {
+            Logger.getLogger(InternoB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    /**
+     * Muestra el total de ventas por fecha. La fecha debe ir entre apostrofes y de la siguiente manera 'AAAA-MM-DD'
+     * @param fecha 
+     */
+    public void mostrarReporteDeVentasPorFecha(String fecha){
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/ferreteria", "root", "root");
+            HashMap parametros = new HashMap();
+            parametros.put("fechaFiltro", fecha);
+            JasperPrint print = JasperFillManager.fillReport("src\\reportes\\VentasPorFecha.jasper", parametros, con);
+            JasperViewer.viewReport(print, Boolean.FALSE);
+        } catch (ClassNotFoundException | SQLException | JRException ex) {
+            Logger.getLogger(InternoB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    /**
+     * Muestra el comprobante de abono.
+     * @param abonoID 
+     */
+    public void mostrarComprobanteAbono(int abonoID){
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/ferreteria", "root", "root");
+            HashMap parametros = new HashMap();
+            parametros.put("abonoID", abonoID);
+            JasperPrint print = JasperFillManager.fillReport("src\\reportes\\ComprobanteAbono.jasper", parametros, con);
+            JasperViewer.viewReport(print, Boolean.FALSE);
+        } catch (ClassNotFoundException | SQLException | JRException ex) {
+            Logger.getLogger(InternoB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     
     public void ajustar(JInternalFrame jif){
         if(jif.getWidth()>escritorio.getWidth() || jif.getHeight()>escritorio.getHeight()){
@@ -104,6 +156,10 @@ public class Inicio extends javax.swing.JFrame {
         menuGestionar = new javax.swing.JMenu();
         menuCategorias = new javax.swing.JMenuItem();
         menuUsuarios = new javax.swing.JMenuItem();
+        menuReportes = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
+        jMenuItem3 = new javax.swing.JMenuItem();
         menuUsuario = new javax.swing.JMenu();
         menuPerfil = new javax.swing.JMenuItem();
         menuAyuda = new javax.swing.JMenu();
@@ -258,6 +314,34 @@ public class Inicio extends javax.swing.JFrame {
 
         jMenuBar1.add(menuGestionar);
 
+        menuReportes.setText("Reportes");
+
+        jMenuItem1.setText("Comprobante de abono");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        menuReportes.add(jMenuItem1);
+
+        jMenuItem2.setText("Comprobante de venta");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
+        menuReportes.add(jMenuItem2);
+
+        jMenuItem3.setText("Reporte de ventas");
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
+            }
+        });
+        menuReportes.add(jMenuItem3);
+
+        jMenuBar1.add(menuReportes);
+
         menuUsuario.setText("Usuario");
 
         menuPerfil.setText("Perfil");
@@ -323,6 +407,7 @@ public class Inicio extends javax.swing.JFrame {
                     menuCerrarSesion.setVisible(Boolean.TRUE);
                     menuUsuario.setVisible(Boolean.TRUE);
                     menuAyuda.setVisible(Boolean.TRUE);
+                    menuReportes.setVisible(Boolean.TRUE);
                     if(Conexion.getConexion().getEsAdministrador()){
                         menuGestionar.setVisible(Boolean.TRUE);
                         botonCompras.setVisible(Boolean.TRUE);
@@ -358,6 +443,7 @@ public class Inicio extends javax.swing.JFrame {
             menuAyuda.setVisible(Boolean.FALSE);
             botonCompras.setVisible(Boolean.FALSE);
             botonOperaciones.setVisible(Boolean.FALSE);
+            menuReportes.setVisible(Boolean.FALSE);
         }
     }//GEN-LAST:event_menuCerrarSesionActionPerformed
 
@@ -461,6 +547,44 @@ public class Inicio extends javax.swing.JFrame {
         ajustar(io);
     }//GEN-LAST:event_botonOperacionesActionPerformed
 
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        // TODO add your handling code here:
+        JTextField abonoID = new JTextField();
+        Object[] message = {
+            "ID abono:", abonoID
+        };
+        int opcion = JOptionPane.showConfirmDialog(this, message, "Comprobante de abono.", JOptionPane.OK_CANCEL_OPTION);
+        if (opcion == JOptionPane.OK_OPTION) {
+            mostrarComprobanteAbono(Integer.parseInt(abonoID.getText()));
+        }
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        // TODO add your handling code here:
+        JTextField ventaID = new JTextField();
+        Object[] message = {
+            "ID venta:", ventaID
+        };
+        int opcion = JOptionPane.showConfirmDialog(this, message, "Comprobante de venta.", JOptionPane.OK_CANCEL_OPTION);
+        if (opcion == JOptionPane.OK_OPTION) {
+            mostrarComprobanteDeVenta(Integer.parseInt(ventaID.getText()));
+        }
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+        // TODO add your handling code here:
+        JDateChooser jdc = new JDateChooser();
+        Object[] message = {
+            "Fecha", jdc
+        };
+        int opcion = JOptionPane.showConfirmDialog(this, message, "Reporte de ventas", JOptionPane.OK_CANCEL_OPTION);
+        if (opcion == JOptionPane.OK_OPTION) {
+            DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
+            System.out.println(fmt.format(jdc.getDate()));
+            mostrarReporteDeVentasPorFecha("'"+fmt.format(jdc.getDate())+"'");
+        }
+    }//GEN-LAST:event_jMenuItem3ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -506,6 +630,9 @@ public class Inicio extends javax.swing.JFrame {
     private javax.swing.JButton botonVentas;
     public javax.swing.JDesktopPane escritorio;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JMenuItem menuAcercade;
     private javax.swing.JMenu menuArchivo;
@@ -515,6 +642,7 @@ public class Inicio extends javax.swing.JFrame {
     private javax.swing.JMenu menuGestionar;
     private javax.swing.JMenuItem menuIniciarSesion;
     private javax.swing.JMenuItem menuPerfil;
+    private javax.swing.JMenu menuReportes;
     private javax.swing.JMenuItem menuSalir;
     private javax.swing.JMenu menuUsuario;
     private javax.swing.JMenuItem menuUsuarios;
