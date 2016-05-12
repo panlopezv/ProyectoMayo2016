@@ -63,7 +63,6 @@ public class VerProducto extends javax.swing.JInternalFrame {
         existenciasProducto = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
 
-        setBackground(new java.awt.Color(255, 204, 153));
         setClosable(true);
         setTitle("Ver producto");
 

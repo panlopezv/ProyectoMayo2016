@@ -126,7 +126,6 @@ public class CrearProducto extends javax.swing.JInternalFrame implements Observe
         botonAceptar = new javax.swing.JButton();
         botonAgregarCategoria = new javax.swing.JButton();
 
-        setBackground(new java.awt.Color(255, 204, 153));
         setClosable(true);
         setTitle("Crear producto");
 

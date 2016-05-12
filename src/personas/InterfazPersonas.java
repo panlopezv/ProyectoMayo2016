@@ -432,7 +432,7 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
         jScrollPane3 = new javax.swing.JScrollPane();
         tablaProveedores = new javax.swing.JTable();
 
-        setBackground(new java.awt.Color(255, 204, 153));
+        setBackground(new java.awt.Color(181, 232, 205));
         setClosable(true);
         setMaximizable(true);
         setTitle("Personas");

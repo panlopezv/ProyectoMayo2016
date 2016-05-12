@@ -107,7 +107,7 @@ public class InterfazInventario extends javax.swing.JInternalFrame implements Ob
         botonSalir = new javax.swing.JButton();
         botonCrear = new javax.swing.JButton();
 
-        setBackground(new java.awt.Color(255, 204, 153));
+        setBackground(new java.awt.Color(181, 232, 205));
         setClosable(true);
         setMaximizable(true);
         setTitle("Inventario");
