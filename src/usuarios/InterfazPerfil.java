@@ -8,6 +8,7 @@ package usuarios;
 import conexion.Conexion;
 import controladores.UsuarioJpaController;
 import entidades.Usuario;
+import java.awt.Color;
 import javax.persistence.Query;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
@@ -28,6 +29,7 @@ public class InterfazPerfil extends javax.swing.JInternalFrame {
     public InterfazPerfil(int idUsuario) {
         initComponents();
         setVisible(Boolean.TRUE);
+        this.getContentPane().setBackground(Color.getHSBColor(0.142f,0.09f,1f));
         controladorU = new UsuarioJpaController(Conexion.getConexion().getEmf());
         this.us = controladorU.findUsuario(idUsuario);
         cargarUsuario();

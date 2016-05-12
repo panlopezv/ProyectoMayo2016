@@ -10,6 +10,7 @@ import controladores.ClienteJpaController;
 import controladores.ProveedorJpaController;
 import entidades.Cliente;
 import entidades.Proveedor;
+import java.awt.Color;
 import java.awt.Component;
 import java.util.ArrayList;
 import javax.persistence.Query;
@@ -35,10 +36,16 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
     public InterfazPersonas() {
         initComponents();
         setVisible(Boolean.TRUE);
+        this.getContentPane().setBackground(Color.getHSBColor(0.142f,0.09f,1f));
         controladorC = new ClienteJpaController(Conexion.getConexion().getEmf());
-        controladorP = new ProveedorJpaController(Conexion.getConexion().getEmf());
         cargarClientes();
-        cargarProveedores();
+        if(Conexion.getConexion().getEsAdministrador()){
+            cargarProveedores();
+            controladorP = new ProveedorJpaController(Conexion.getConexion().getEmf());
+        }
+        else{
+            jTabbedPersonas.setEnabledAt(1, Boolean.FALSE);
+        }
     }
     
     public void cargarClientes(){

@@ -9,7 +9,7 @@ import categorias.InterfazCategorias;
 import compras.InterfazCompra;
 import conexion.Conexion;
 import inventario.InterfazInventario;
-import javax.swing.JButton;
+import java.awt.Color;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
@@ -27,19 +27,17 @@ import ventas.InterfazVenta;
  */
 public class Inicio extends javax.swing.JFrame {
 
-    public static Conexion conexion;
-    private InterfazVenta venta;
-    private InterfazCompra compra;
-    private InterfazInventario inventario;
-    private InternoB pruebaB;
-    private JButton jButton6;
 
+    public static Conexion conexion;
     /**
-     * Creates new form Inicio
+     * Creates new form Principal
      */
     public Inicio() {
         initComponents();
         this.setLocationRelativeTo(null);
+        //this.getContentPane().setBackground(Color.getHSBColor(0.525f,0.33f,0.91f));
+        this.getContentPane().setBackground(Color.getHSBColor(0.144f,0.09f,1f));
+        
         tablero.setVisible(Boolean.FALSE);
         escritorio.setVisible(Boolean.FALSE);
         menuGestionar.setVisible(Boolean.FALSE);
@@ -67,6 +65,18 @@ public class Inicio extends javax.swing.JFrame {
 //            Logger.getLogger(InternoB.class.getName()).log(Level.SEVERE, null, ex);
 //        }
 //    }
+    
+    public void ajustar(JInternalFrame jif){
+        if(jif.getWidth()>escritorio.getWidth() || jif.getHeight()>escritorio.getHeight()){
+            if(this.getExtendedState()!=JFrame.MAXIMIZED_BOTH){
+                escritorio.setSize(jif.getWidth()+25, jif.getHeight()+25);
+                this.setSize(escritorio.getWidth()+260, jif.getHeight()+125);
+                this.setLocationRelativeTo(null);
+            }
+        }
+        jif.setLocation((escritorio.getWidth() - jif.getWidth())/2, (escritorio.getHeight() - jif.getHeight())/2);
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -76,6 +86,7 @@ public class Inicio extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        escritorio = new javax.swing.JDesktopPane();
         tablero = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
@@ -83,7 +94,6 @@ public class Inicio extends javax.swing.JFrame {
         jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
-        escritorio = new javax.swing.JDesktopPane();
         jMenuBar1 = new javax.swing.JMenuBar();
         menuArchivo = new javax.swing.JMenu();
         menuIniciarSesion = new javax.swing.JMenuItem();
@@ -100,14 +110,22 @@ public class Inicio extends javax.swing.JFrame {
         menuAyuda = new javax.swing.JMenu();
         menuAcercade = new javax.swing.JMenuItem();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(java.awt.event.WindowEvent evt) {
-                formWindowClosing(evt);
-            }
-        });
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        tablero.setBackground(new java.awt.Color(51, 153, 255));
+        escritorio.setBackground(new java.awt.Color(255, 252, 233));
+
+        javax.swing.GroupLayout escritorioLayout = new javax.swing.GroupLayout(escritorio);
+        escritorio.setLayout(escritorioLayout);
+        escritorioLayout.setHorizontalGroup(
+            escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 625, Short.MAX_VALUE)
+        );
+        escritorioLayout.setVerticalGroup(
+            escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+
+        tablero.setBackground(new java.awt.Color(181, 232, 205));
 
         jButton1.setText("Venta");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -186,24 +204,12 @@ public class Inicio extends javax.swing.JFrame {
                 .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(41, Short.MAX_VALUE))
-        );
-
-        escritorio.setBackground(new java.awt.Color(255, 255, 255));
-
-        javax.swing.GroupLayout escritorioLayout = new javax.swing.GroupLayout(escritorio);
-        escritorio.setLayout(escritorioLayout);
-        escritorioLayout.setHorizontalGroup(
-            escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 578, Short.MAX_VALUE)
-        );
-        escritorioLayout.setVerticalGroup(
-            escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+                .addContainerGap(137, Short.MAX_VALUE))
         );
 
         menuArchivo.setText("Archivo");
 
+        menuIniciarSesion.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_I, java.awt.event.InputEvent.CTRL_MASK));
         menuIniciarSesion.setText("Iniciar sesión");
         menuIniciarSesion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -212,6 +218,7 @@ public class Inicio extends javax.swing.JFrame {
         });
         menuArchivo.add(menuIniciarSesion);
 
+        menuCerrarSesion.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
         menuCerrarSesion.setText("Cerrar sesión");
         menuCerrarSesion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -241,6 +248,11 @@ public class Inicio extends javax.swing.JFrame {
         menuGestionar.add(menuInventario);
 
         menuPersonas.setText("Personas");
+        menuPersonas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuPersonasActionPerformed(evt);
+            }
+        });
         menuGestionar.add(menuPersonas);
 
         menuUsuarios.setText("Usuarios");
@@ -273,20 +285,20 @@ public class Inicio extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(tablero, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(escritorio)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(escritorio)
-                    .addComponent(tablero, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(tablero, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(escritorio))
                 .addContainerGap())
         );
 
@@ -295,7 +307,7 @@ public class Inicio extends javax.swing.JFrame {
 
     private void menuIniciarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuIniciarSesionActionPerformed
         // TODO add your handling code here:
-        if(conexion == null){    
+        if(conexion == null){
             JTextField user = new JTextField();
             JTextField pass = new JPasswordField();
             Object[] message = {
@@ -303,10 +315,10 @@ public class Inicio extends javax.swing.JFrame {
                 "Contraseña:", pass
             };
             int opcion = JOptionPane.showConfirmDialog(this, message, "Inicio de sesión.", JOptionPane.OK_CANCEL_OPTION);
-            if (opcion == JOptionPane.OK_OPTION) { 
+            if (opcion == JOptionPane.OK_OPTION) {
                 conexion=Conexion.getConexion(user.getText(), pass.getText());
                 if(conexion!=null){
-                    JOptionPane.showMessageDialog(this, "Inicio de sesión exitoso.", "", JOptionPane.INFORMATION_MESSAGE);   
+                    JOptionPane.showMessageDialog(this, "Inicio de sesión exitoso.", "", JOptionPane.INFORMATION_MESSAGE);
                     tablero.setVisible(Boolean.TRUE);
                     escritorio.setVisible(Boolean.TRUE);
                     menuGestionar.setVisible(Boolean.TRUE);
@@ -314,7 +326,7 @@ public class Inicio extends javax.swing.JFrame {
                     menuUsuario.setVisible(Boolean.TRUE);
                     menuAyuda.setVisible(Boolean.TRUE);
                 } else{
-                    JOptionPane.showMessageDialog(this, "Usuario y/o contraseña inválidos.", "", JOptionPane.ERROR_MESSAGE); 
+                    JOptionPane.showMessageDialog(this, "Usuario y/o contraseña inválidos.", "", JOptionPane.ERROR_MESSAGE);
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "Inicio de sesión cancelado.", "", JOptionPane.ERROR_MESSAGE);
@@ -322,14 +334,14 @@ public class Inicio extends javax.swing.JFrame {
         }
         else{
             JOptionPane.showMessageDialog(this, "Ya existe una sesion abierta.\n\r"
-                    + "Si desea ingresar como otro usuario, cierre esta sesion e ingrese de nuevo.", "", JOptionPane.INFORMATION_MESSAGE);
+                + "Si desea ingresar como otro usuario, cierre esta sesion e ingrese de nuevo.", "", JOptionPane.INFORMATION_MESSAGE);
         }
     }//GEN-LAST:event_menuIniciarSesionActionPerformed
 
     private void menuCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuCerrarSesionActionPerformed
         // TODO add your handling code here:
         int opcion = JOptionPane.showConfirmDialog(this, "¿Realmente desea cerrar sesión?", "", JOptionPane.OK_CANCEL_OPTION);
-        if (opcion == JOptionPane.OK_OPTION) { 
+        if (opcion == JOptionPane.OK_OPTION) {
             if(conexion!=null){
                 conexion.cerrarConexion();
                 conexion=null;
@@ -347,7 +359,7 @@ public class Inicio extends javax.swing.JFrame {
     private void menuSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuSalirActionPerformed
         // TODO add your handling code here:
         int opcion = JOptionPane.showConfirmDialog(this, "¿Realmente desea salir?", "", JOptionPane.OK_CANCEL_OPTION);
-        if (opcion == JOptionPane.OK_OPTION) { 
+        if (opcion == JOptionPane.OK_OPTION) {
             if(conexion!=null){
                 conexion.cerrarConexion();
                 conexion=null;
@@ -356,10 +368,18 @@ public class Inicio extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_menuSalirActionPerformed
 
+    private void menuPerfilActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuPerfilActionPerformed
+        // TODO add your handling code here:
+        limpiarEscritorio();
+        InterfazPerfil ip = new InterfazPerfil(Conexion.getConexion().getIdUsuario());
+        escritorio.add(ip);
+        ajustar(ip);
+    }//GEN-LAST:event_menuPerfilActionPerformed
+
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         limpiarEscritorio();
-        venta = new InterfazVenta();
+        InterfazVenta venta = new InterfazVenta();
         escritorio.add(venta);
         ajustar(venta);
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -367,7 +387,7 @@ public class Inicio extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
         limpiarEscritorio();
-        inventario = new InterfazInventario();
+        InterfazInventario inventario = new InterfazInventario();
         escritorio.add(inventario);
         ajustar(inventario);
     }//GEN-LAST:event_jButton2ActionPerformed
@@ -381,7 +401,7 @@ public class Inicio extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        // TODO add your handling code here: 
+        // TODO add your handling code here:
         limpiarEscritorio();
         InterfazUsuarios inu = new InterfazUsuarios();
         escritorio.add(inu);
@@ -391,27 +411,30 @@ public class Inicio extends javax.swing.JFrame {
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         // TODO add your handling code here:
         limpiarEscritorio();
-//        VistaPersonas vp = new VistaPersonas();
-//        escritorio.add(vp);
-//        ajustar(vp);
+        //        VistaPersonas vp = new VistaPersonas();
+        //        escritorio.add(vp);
+        //        ajustar(vp);
         //mostrarReporte(3);
         controlPagos cp = new controlPagos();
         escritorio.add(cp);
         ajustar(cp);
     }//GEN-LAST:event_jButton5ActionPerformed
 
-    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         // TODO add your handling code here:
-        int opcion = JOptionPane.showConfirmDialog(this, "¿Realmente desea salir?", "", JOptionPane.OK_CANCEL_OPTION);
-        if (opcion == JOptionPane.OK_OPTION) { 
-            if(conexion!=null){
-                conexion.cerrarConexion();
-                conexion=null;
-            }
-            System.exit(0);
-        }
-    }//GEN-LAST:event_formWindowClosing
+        limpiarEscritorio();
+        InterfazCompra compra = new InterfazCompra();
+        escritorio.add(compra);
+        ajustar(compra);
+    }//GEN-LAST:event_jButton6ActionPerformed
 
+    private void menuPersonasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuPersonasActionPerformed
+        // TODO add your handling code here:
+        limpiarEscritorio();
+        InterfazPersonas vp = new InterfazPersonas();
+        escritorio.add(vp);
+        ajustar(vp);
+    }//GEN-LAST:event_menuPersonasActionPerformed
 
     /**
      * @param args the command line arguments
@@ -424,7 +447,7 @@ public class Inicio extends javax.swing.JFrame {
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
+                if ("System".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
@@ -439,6 +462,7 @@ public class Inicio extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(Inicio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -448,39 +472,14 @@ public class Inicio extends javax.swing.JFrame {
         });
     }
 
-    public void ajustar(JInternalFrame jif){
-        if(jif.getWidth()>escritorio.getWidth() || jif.getHeight()>escritorio.getHeight()){
-            if(this.getExtendedState()!=JFrame.MAXIMIZED_BOTH){
-                escritorio.setSize(jif.getWidth()+25, jif.getHeight()+25);
-                this.setSize(escritorio.getWidth()+260, jif.getHeight()+125);
-                this.setLocationRelativeTo(null);
-            }
-        }
-        jif.setLocation((escritorio.getWidth() - jif.getWidth())/2, (escritorio.getHeight() - jif.getHeight())/2);
-    }
-    // Variables declaration - do not modify                     
+    // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JDesktopPane escritorio;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
-    private void menuPerfilActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuPerfilActionPerformed
-        // TODO add your handling code here:
-        limpiarEscritorio();
-        InterfazPerfil ip = new InterfazPerfil(Conexion.getConexion().getIdUsuario());
-        escritorio.add(ip);
-        ajustar(ip);        
-    }//GEN-LAST:event_menuPerfilActionPerformed
-
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        // TODO add your handling code here:
-        limpiarEscritorio();
-        compra = new InterfazCompra();
-        escritorio.add(compra);
-        ajustar(compra);
-    }//GEN-LAST:event_jButton6ActionPerformed
-
+    private javax.swing.JButton jButton6;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JMenuItem menuAcercade;
@@ -497,5 +496,5 @@ public class Inicio extends javax.swing.JFrame {
     private javax.swing.JMenu menuUsuario;
     private javax.swing.JMenuItem menuUsuarios;
     private javax.swing.JPanel tablero;
-    // End of variables declaration                   
+    // End of variables declaration//GEN-END:variables
 }
