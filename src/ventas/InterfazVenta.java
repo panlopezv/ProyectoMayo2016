@@ -42,7 +42,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
     public InterfazVenta() {
         initComponents();
         this.setVisible(Boolean.TRUE);
-        this.setSize(810, 680);
+        this.setSize(780, 635);
         this.getContentPane().setBackground(Color.getHSBColor(0.1f,0.15f,1f));
         primerAdd = false;
         cantidad = 0;

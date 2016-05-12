@@ -58,7 +58,7 @@ public class InterfazCompra extends javax.swing.JInternalFrame {
     public InterfazCompra() {
         initComponents();
         this.setVisible(Boolean.TRUE);
-        this.setSize(765, 645);
+        this.setSize(780, 635);
         this.getContentPane().setBackground(Color.getHSBColor(0.142f,0.09f,1f));
         primerAdd = false;
         cantidad = 0;
