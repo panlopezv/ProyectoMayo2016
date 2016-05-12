@@ -28,7 +28,7 @@ public class InternoB extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        setBackground(new java.awt.Color(255, 204, 153));
+        setBackground(new java.awt.Color(181, 232, 205));
         setClosable(true);
         setMaximizable(true);
 
