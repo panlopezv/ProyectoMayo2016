@@ -36,7 +36,6 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
     public InterfazPersonas() {
         initComponents();
         setVisible(Boolean.TRUE);
-        this.getContentPane().setBackground(Color.getHSBColor(0.142f,0.09f,1f));
         controladorC = new ClienteJpaController(Conexion.getConexion().getEmf());
         cargarClientes();
         if(Conexion.getConexion().getEsAdministrador()){
