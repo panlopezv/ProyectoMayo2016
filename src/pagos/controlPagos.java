@@ -7,6 +7,8 @@ package pagos;
 
 import conexion.Conexion;
 import entidades.Cliente;
+import entidades.Compra;
+import entidades.Proveedor;
 import entidades.Venta;
 import java.awt.Component;
 import java.util.ArrayList;
@@ -24,7 +26,8 @@ import javax.swing.table.TableColumn;
  */
 public class controlPagos extends javax.swing.JInternalFrame {
 
-    List<Cliente> encontrados;
+    List<Cliente> encontradosC;
+    List<Proveedor> encontradosP;
     modeloComprasAbono mca;
     modeloVentasAbono mva;
     int idCliente;
@@ -73,7 +76,7 @@ public class controlPagos extends javax.swing.JInternalFrame {
             EntityManagerFactory emf = Conexion.getConexion().getEmf();
             if (!saldo0.isSelected()) {
                 Query q = emf.createEntityManager().createNamedQuery("Venta.findByIdClienteAndCreditoSaldo");
-                q.setParameter("idCliente", encontrados.get(clientesAlCredito.getSelectedIndex() - 1).getIdCliente());
+                q.setParameter("idCliente", encontradosC.get(clientesAlCredito.getSelectedIndex() - 1).getIdCliente());
                 q.setParameter("credito", true);
                 q.setParameter("saldo", 0.00);
                 if (!q.getResultList().isEmpty()) {
@@ -92,7 +95,7 @@ public class controlPagos extends javax.swing.JInternalFrame {
                 }
             } else {
                 Query q = emf.createEntityManager().createNamedQuery("Venta.findByIdClienteAndCredito");
-                q.setParameter("idCliente", encontrados.get(clientesAlCredito.getSelectedIndex() - 1).getIdCliente());
+                q.setParameter("idCliente", encontradosC.get(clientesAlCredito.getSelectedIndex() - 1).getIdCliente());
                 q.setParameter("credito", true);
                 if (!q.getResultList().isEmpty()) {
                     List<Venta> temporal = q.getResultList();
@@ -110,6 +113,50 @@ public class controlPagos extends javax.swing.JInternalFrame {
                 }
             }
         }        
+    }
+    
+    public void cargarCompras(){
+        if (proveedoresAlCredito.getSelectedIndex() > 0) {
+            EntityManagerFactory emf = Conexion.getConexion().getEmf();
+            if (!saldo1.isSelected()) {
+                Query q = emf.createEntityManager().createNamedQuery("Compra.findByIdProvAndCreditoSaldo");
+                q.setParameter("idProveedor", encontradosP.get(proveedoresAlCredito.getSelectedIndex() - 1).getIdProveedor());
+                q.setParameter("credito", true);
+                q.setParameter("saldo", 0.00);
+                if (!q.getResultList().isEmpty()) {
+                    List<Compra> temporal = q.getResultList();
+                    ArrayList<Compra> encontradas = new ArrayList<>();
+                    for (Compra c : temporal) {
+                        encontradas.add(c);
+                    }
+                    mca = new modeloComprasAbono(encontradas);
+                    jTable2.setModel(mca);
+                    ajustarColumnas(jTable2);
+                } else {
+                    mca = new modeloComprasAbono(new ArrayList<>());
+                    jTable2.setModel(mca);
+                    ajustarColumnas(jTable2);
+                }
+            } else {
+                Query q = emf.createEntityManager().createNamedQuery("Compra.findByIdProvAndCredito");
+                q.setParameter("idProveedor", encontradosP.get(proveedoresAlCredito.getSelectedIndex() - 1).getIdProveedor());
+                q.setParameter("credito", true);
+                if (!q.getResultList().isEmpty()) {
+                    List<Compra> temporal = q.getResultList();
+                    ArrayList<Compra> encontradas = new ArrayList<>();
+                    for (Compra c : temporal) {
+                        encontradas.add(c);
+                    }
+                    mca = new modeloComprasAbono(encontradas);
+                    jTable2.setModel(mca);
+                    ajustarColumnas(jTable2);
+                } else {
+                    mca = new modeloComprasAbono(new ArrayList<>());
+                    jTable2.setModel(mca);
+                    ajustarColumnas(jTable2);
+                }
+            }
+        }         
     }
 
     /**
@@ -135,7 +182,7 @@ public class controlPagos extends javax.swing.JInternalFrame {
         jButton8 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        nombreCliente1 = new javax.swing.JTextField();
+        nombreProveedor = new javax.swing.JTextField();
         jButton3 = new javax.swing.JButton();
         proveedoresAlCredito = new javax.swing.JComboBox<>();
         saldo1 = new javax.swing.JCheckBox();
@@ -144,6 +191,9 @@ public class controlPagos extends javax.swing.JInternalFrame {
         pagar = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
+
+        setClosable(true);
+        setMaximizable(true);
 
         jLabel1.setText("Nombre de Cliente con Crédito:");
 
@@ -360,7 +410,7 @@ public class controlPagos extends javax.swing.JInternalFrame {
                             .addGroup(jPanel3Layout.createSequentialGroup()
                                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(jPanel3Layout.createSequentialGroup()
-                                        .addComponent(nombreCliente1, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(nombreProveedor, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(36, 36, 36)
                                         .addComponent(jButton3))
                                     .addGroup(jPanel3Layout.createSequentialGroup()
@@ -392,7 +442,7 @@ public class controlPagos extends javax.swing.JInternalFrame {
                         .addComponent(pagar)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(nombreCliente1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(nombreProveedor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton3))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -426,22 +476,22 @@ public class controlPagos extends javax.swing.JInternalFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         EntityManagerFactory emf = Conexion.getConexion().getEmf();
-        Query q = emf.createEntityManager().createNamedQuery("Cliente.findByNombre");
-        q.setParameter("nombre", nombreCliente.getText());
-        encontrados = q.getResultList();
+        Query q = emf.createEntityManager().createNamedQuery("Cliente.findLikeNombre");
+        q.setParameter("nombre", "%"+nombreCliente.getText()+"%");
+        encontradosC = q.getResultList();
         DefaultComboBoxModel modelo = new DefaultComboBoxModel();
-        if (!encontrados.isEmpty()) {
+        if (!encontradosC.isEmpty()) {
             modelo.addElement("Seleccione un cliente");
-            if (encontrados.size() == 1) {
-                modelo.addElement(encontrados.get(0).getNombre() + " " + encontrados.get(0).getNit());
-                modelo.setSelectedItem(encontrados.get(0).getNombre() + " " + encontrados.get(0).getNit());
+            if (encontradosC.size() == 1) {
+                modelo.addElement(encontradosC.get(0).getNombre() + " " + encontradosC.get(0).getNit());
+                modelo.setSelectedItem(encontradosC.get(0).getNombre() + " " + encontradosC.get(0).getNit());
             } else {
-                for (int i = 0; i < encontrados.size(); i++) {
-                    modelo.addElement(encontrados.get(i).getNombre() + " " + encontrados.get(i).getNit());
+                for (int i = 0; i < encontradosC.size(); i++) {
+                    modelo.addElement(encontradosC.get(i).getNombre() + " " + encontradosC.get(i).getNit());
                 }
             }
         } else {
-            encontrados = new ArrayList<>();
+            encontradosC = new ArrayList<>();
             modelo.addElement("No hay coincidencias.");
         }
         clientesAlCredito.setModel(modelo);
@@ -453,6 +503,26 @@ public class controlPagos extends javax.swing.JInternalFrame {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
+        EntityManagerFactory emf = Conexion.getConexion().getEmf();
+        Query q = emf.createEntityManager().createNamedQuery("Proveedor.findLikeNombre");
+        q.setParameter("nombre", "%"+nombreProveedor.getText()+"%");
+        encontradosP = q.getResultList();
+        DefaultComboBoxModel modelo = new DefaultComboBoxModel();
+        if (!encontradosP.isEmpty()) {
+            modelo.addElement("Seleccione un proveedor");
+            if (encontradosP.size() == 1) {
+                modelo.addElement(encontradosP.get(0).getNombre() + " " + encontradosP.get(0).getNit());
+                modelo.setSelectedItem(encontradosP.get(0).getNombre() + " " + encontradosP.get(0).getNit());
+            } else {
+                for (int i = 0; i < encontradosP.size(); i++) {
+                    modelo.addElement(encontradosP.get(i).getNombre() + " " + encontradosP.get(i).getNit());
+                }
+            }
+        } else {
+            encontradosP = new ArrayList<>();
+            modelo.addElement("No hay coincidencias.");
+        }
+        proveedoresAlCredito.setModel(modelo);
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void proveedoresAlCreditoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_proveedoresAlCreditoItemStateChanged
@@ -491,7 +561,7 @@ public class controlPagos extends javax.swing.JInternalFrame {
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
     private javax.swing.JTextField nombreCliente;
-    private javax.swing.JTextField nombreCliente1;
+    private javax.swing.JTextField nombreProveedor;
     private javax.swing.JButton pagar;
     private javax.swing.JComboBox<String> proveedoresAlCredito;
     private javax.swing.JCheckBox saldo0;
