@@ -419,7 +419,7 @@ public class InterfazOperaciones extends javax.swing.JInternalFrame {
             if(((ModeloVentas)tablaVentas.getModel()).getVenta(fila).getAnulada()==null ||
                     !((ModeloVentas)tablaVentas.getModel()).getVenta(fila).getAnulada()){
                 Object[] message = {
-                    "Ventas:", new DetalleVenta(((ModeloVentas)tablaVentas.getModel()).getVenta(fila).getIdVenta())
+                    new DetalleVenta(((ModeloVentas)tablaVentas.getModel()).getVenta(fila).getIdVenta())
                 };
                 JOptionPane.showMessageDialog(this,message,"Detalle venta.", JOptionPane.INFORMATION_MESSAGE);
             }
@@ -483,7 +483,7 @@ public class InterfazOperaciones extends javax.swing.JInternalFrame {
             if(((ModeloCompras)tablaCompras.getModel()).getCompra(fila).getAnulada()==null ||
                     !((ModeloCompras)tablaCompras.getModel()).getCompra(fila).getAnulada()){
                 Object[] message = {
-                    "Compras:", new DetalleCompra(((ModeloCompras)tablaCompras.getModel()).getCompra(fila).getIdCompra())
+                    new DetalleCompra(((ModeloCompras)tablaCompras.getModel()).getCompra(fila).getIdCompra())
                 };
                 JOptionPane.showMessageDialog(this,message,"Detalle compra.", JOptionPane.INFORMATION_MESSAGE);
             } else{
