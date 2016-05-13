@@ -811,6 +811,11 @@ public class InterfazCompra extends javax.swing.JInternalFrame {
 
         cancelar1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/cancelar.png"))); // NOI18N
         cancelar1.setText("Cancelar");
+        cancelar1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancelar1ActionPerformed(evt);
+            }
+        });
 
         nuevoProducto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/addItem.png"))); // NOI18N
         nuevoProducto.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -1106,6 +1111,11 @@ public class InterfazCompra extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         crearProducto.setVisible(false);
     }//GEN-LAST:event_botonSalirActionPerformed
+
+    private void cancelar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelar1ActionPerformed
+        // TODO add your handling code here:
+        this.dispose();
+    }//GEN-LAST:event_cancelar1ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton agregarAlCarrito;
