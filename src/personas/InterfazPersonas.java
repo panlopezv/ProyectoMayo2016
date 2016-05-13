@@ -130,7 +130,7 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
             else{
                 Query q = Conexion.getConexion().getEmf().createEntityManager().createNamedQuery("Cliente.findByNit");
                 q.setParameter("nit", nit.getText());
-                if(nit.getText().matches("CF|cf|C/F|c/f|c.f.|C.F.")||q.getResultList().isEmpty()){
+                if(!nit.getText().matches("CF|cf|C/F|c/f|c.f.|C.F.")||q.getResultList().isEmpty()){
                     controladorC.create(new Cliente(nombre.getText(), direccion.getText(), nit.getText(), telefono.getText()));
                     JOptionPane.showMessageDialog(this, "Cliente creado exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
                     cargarClientes();
@@ -348,7 +348,7 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
                 valido = Boolean.TRUE;
 //            }
         }
-        else if(numero.matches("([0-9]+-(|K|k))|CF|cf|C/F|c/f|c.f.|C.F.")){
+        else if(numero.matches("([0-9]+-(|K|k))")){
             valido = Boolean.TRUE;
         }
         return valido;

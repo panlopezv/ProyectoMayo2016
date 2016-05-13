@@ -708,6 +708,7 @@ public class controlPagos extends javax.swing.JInternalFrame {
         if (proveedoresAlCredito.getSelectedIndex() > 0) {
             historialDePagos hp = new historialDePagos(encontradosP.get(proveedoresAlCredito.getSelectedIndex()-1));
             JOptionPane.showMessageDialog(this, hp, "Historial de Pagos", JOptionPane.INFORMATION_MESSAGE);
+            buscarProveedores(1);
             cargarCompras();
         } else {
             JOptionPane.showMessageDialog(this, "Debe seleccionar un Proveedor.", "Ningun proveedor seleccionado.", JOptionPane.WARNING_MESSAGE);
@@ -742,6 +743,7 @@ public class controlPagos extends javax.swing.JInternalFrame {
         if (clientesAlCredito.getSelectedIndex() > 0) {
             historialDeAbonos ha = new historialDeAbonos(encontradosC.get(clientesAlCredito.getSelectedIndex()-1));
             JOptionPane.showMessageDialog(this, ha, "Historial de Abonos", JOptionPane.INFORMATION_MESSAGE);
+            buscarClientes(1);
             cargarVentas();
         } else {
             JOptionPane.showMessageDialog(this, "Debe seleccionar un Cliente.", "Ningun cliente seleccionado.", JOptionPane.WARNING_MESSAGE);

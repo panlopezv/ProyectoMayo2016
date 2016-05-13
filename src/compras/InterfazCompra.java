@@ -1010,6 +1010,8 @@ public class InterfazCompra extends javax.swing.JInternalFrame {
             compra.setPagoInicial(obtenerMonto());
             compra.finalizarCompra();
             commitCompra.setEnabled(false);
+            JOptionPane.showMessageDialog(this, "Compra realizada exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
+            limpiarFormulario();
         } else if (compra.getCredito()) {
 //          int opc = JOptionPane.showConfirmDialog(this, "¿Asignar como pago inicial?", "El pago indicado es insuficiente!",
 //                 JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
@@ -1017,6 +1019,8 @@ public class InterfazCompra extends javax.swing.JInternalFrame {
                 compra.setPagoInicial(obtenerMonto());
                 compra.finalizarCompra();
                 commitCompra.setEnabled(false);
+                JOptionPane.showMessageDialog(this, "Compra realizada exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
+                limpiarFormulario();
 //      }
         } else {
             JOptionPane.showMessageDialog(this, "Intente efectuar la compra al crédito.", "El monto de efectivo es insuficiente!", JOptionPane.ERROR_MESSAGE);

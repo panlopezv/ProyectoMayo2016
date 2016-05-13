@@ -985,6 +985,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                                 //mostrar reporte
                                 mostrarComprobanteDeVenta(venta.getIdVenta());
                             }
+                            limpiarFormulario();
                         } else{
                             JOptionPane.showMessageDialog(this, "Por favor revise las existencias.", "No se pudo finalizar la venta.", JOptionPane.ERROR_MESSAGE);
                             limpiarTabla2();
@@ -1001,6 +1002,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                                 //mostrar reporte
                                 mostrarComprobanteDeVenta(venta.getIdVenta());
                             }
+                            limpiarFormulario();
                         } else{
                             JOptionPane.showMessageDialog(this, "Por favor revise las existencias.", "No se pudo finalizar la venta.", JOptionPane.ERROR_MESSAGE);
                             limpiarTabla2();
@@ -1019,6 +1021,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                                 //mostrar reporte
                                 mostrarComprobanteDeVenta(venta.getIdVenta());
                             }
+                            limpiarFormulario();
                         } else{
                             JOptionPane.showMessageDialog(this, "Por favor revise las existencias.", "No se pudo finalizar la venta.", JOptionPane.ERROR_MESSAGE);
                             limpiarTabla2();
@@ -1040,6 +1043,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                                 //mostrar reporte
                                 mostrarComprobanteDeVenta(venta.getIdVenta());
                             }
+                            limpiarFormulario();
                         } else{
                             JOptionPane.showMessageDialog(this, "Por favor revise las existencias.", "No se pudo finalizar la venta.", JOptionPane.ERROR_MESSAGE);
                             limpiarTabla2();
@@ -1056,6 +1060,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                                 //mostrar reporte
                                 mostrarComprobanteDeVenta(venta.getIdVenta());
                             }
+                            limpiarFormulario();
                         } else{
                             JOptionPane.showMessageDialog(this, "Por favor revise las existencias.", "No se pudo finalizar la venta.", JOptionPane.ERROR_MESSAGE);
                             limpiarTabla2();
