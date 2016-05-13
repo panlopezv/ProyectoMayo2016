@@ -13,6 +13,7 @@ import controladores.VentaJpaController;
 import entidades.Abono;
 import entidades.Cliente;
 import entidades.Detalleventa;
+import entidades.Producto;
 import entidades.Venta;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,6 +28,7 @@ public class CVenta extends COperacion {
     private final DetalleventaJpaController controladorDetalleVenta;
     private final ClienteJpaController controladorCliente;
     private final AbonoJpaController controladorAbono;
+    private int idVenta;
     private double descuento;
     private double saldo;
     private double pagoInicial;
@@ -46,6 +48,7 @@ public class CVenta extends COperacion {
         this.descuento = 0.0;
         this.saldo = 0.0;
         this.pagoInicial = 0.0;
+        this.idVenta = 0;
         this.credito = false;
         controladorVenta = new VentaJpaController(emf);
         controladorDetalleVenta = new DetalleventaJpaController(emf);
@@ -56,26 +59,41 @@ public class CVenta extends COperacion {
     /**
      * Crea la venta, los detalles de venta y los almacena en la base de datos.
      *
+     * @return 
      */
-    public void finalizarVenta() {
-        if(credito){
-            saldo = getTotal() - this.descuento;
-            if(pagoInicial>=saldo){
-                credito=false;
-                saldo=0.00;
-            }
-        }
-        Venta nueva = new Venta(fecha, getTotal(), saldo, descuento, credito, idPersona, idUsuario);//esto no inserta en la DB, nueva no tiene ID aun
-        controladorVenta.create(nueva);
-        for (CProducto cp : productos) {
-            controladorDetalleVenta.create(new Detalleventa(nueva.getIdVenta(), cp.getId(), cp.getCantidad(), cp.getPrecio(), cp.getSubtotal()));
-        }
-        if (credito) {
-            if (pagoInicial > 0) {
-                crearAbono();
-            }
-        }
+    public boolean finalizarVenta() {
         Conexion.getConexion().getEmf().getCache().evictAll();
+        boolean verificacionDeExistencias = Boolean.TRUE;
+        for (CProducto cp : productos) {
+            Query q = emf.createEntityManager().createNamedQuery("Producto.findByIdProducto");
+            q.setParameter("idProducto", cp.getId());
+            if (((Producto) q.getSingleResult()).getExistencias() < cp.getCantidad()) {
+                verificacionDeExistencias = Boolean.FALSE;
+                break;
+            }
+        }
+        if (verificacionDeExistencias) {
+            if (credito) {
+                saldo = getTotal() - this.descuento;
+                if (pagoInicial >= saldo) {
+                    credito = false;
+                    saldo = 0.00;
+                }
+            }
+            Venta nueva = new Venta(fecha, getTotal(), saldo, descuento, credito, idPersona, idUsuario);//esto no inserta en la DB, nueva no tiene ID aun
+            controladorVenta.create(nueva);
+            idVenta = nueva.getIdVenta();
+            for (CProducto cp : productos) {
+                controladorDetalleVenta.create(new Detalleventa(nueva.getIdVenta(), cp.getId(), cp.getCantidad(), cp.getPrecio(), cp.getSubtotal()));
+            }
+            if (credito) {
+                if (pagoInicial > 0) {
+                    crearAbono();
+                }
+            }
+            Conexion.getConexion().getEmf().getCache().evictAll();
+        } 
+        return verificacionDeExistencias;
     }
 
     /**
@@ -95,6 +113,10 @@ public class CVenta extends COperacion {
     public void quitarProducto(int posicion) {
         productos.remove(posicion);
     }
+    
+    public void borrarProductos(){
+        productos.clear();
+    }
 
     /**
      * Inserta un nuevo cliente en la base de datos
@@ -105,8 +127,8 @@ public class CVenta extends COperacion {
      * @return cliente creado
      */
     public Cliente crearCliente(String nombre, String direccion, String nit) {
-        if(direccion.compareTo("")==0){
-            direccion="Ciudad";
+        if (direccion.compareTo("") == 0) {
+            direccion = "Ciudad";
         }
         Cliente nuevo = new Cliente(nombre, direccion, nit);
         controladorCliente.create(nuevo);
@@ -146,14 +168,22 @@ public class CVenta extends COperacion {
     public void setPagoInicial(double pagoInicial) {
         this.pagoInicial = pagoInicial;
     }
-    
-    public int obtenerIdVenta(){
+
+    public int getIdVenta() {
+        return idVenta;
+    }
+
+    public void setIdVenta(int idVenta) {
+        this.idVenta = idVenta;
+    }
+
+    public int obtenerIdVenta() {
         Query q = emf.createEntityManager().createNamedQuery("Venta.findMaxID");
         if ((Integer) q.getSingleResult() == null) {
             return 0;
         } else {
             return ((Integer) q.getSingleResult());
-    }
+        }
     }
 
     /**

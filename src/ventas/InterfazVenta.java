@@ -114,6 +114,12 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
         ajustarColumnas(jTable1);
     }
     
+    public void limpiarTabla2(){
+        venta.borrarProductos();
+        jTable2.setModel(new DefaultTableModel(new Object[]{"Código","Producto","Cantidad","Precio","Subtotal"}, 0));
+        ajustarColumnas(jTable2);
+    }
+    
     public void limpiarFormulario(){
         primerAdd = false;
         cantidad = 0;
@@ -512,7 +518,8 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(direccionCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addComponent(direccionCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         codigoCliente.getAccessibleContext().setAccessibleName("");
@@ -710,27 +717,13 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(jLabel6)
-                                .addGap(26, 26, 26)
-                                .addComponent(jLabel5)
-                                .addGap(80, 80, 80))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(numeroVenta, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(esAlCredito)))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(commitVenta)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(cancelar1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(cancelar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 127, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addComponent(jLabel12)
@@ -759,10 +752,24 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(modificarEntradaCarrito, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jLabel10)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(totalVenta, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                    .addComponent(jLabel6)
+                                    .addGap(26, 26, 26)
+                                    .addComponent(jLabel5)
+                                    .addGap(80, 80, 80))
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                    .addComponent(numeroVenta, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(esAlCredito))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jLabel10)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(totalVenta, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -782,8 +789,8 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                         .addComponent(esAlCredito))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel8)
                 .addGap(6, 6, 6)
                 .addComponent(productoBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -797,7 +804,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(modificarEntradaCarrito, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 57, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(totalVenta, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING))
@@ -845,7 +852,11 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
             if (opcion == JOptionPane.OK_OPTION) {
                 EntityManagerFactory emf = Conexion.getConexion().getEmf();
                 Query q = emf.createEntityManager().createNamedQuery("Cliente.findByNit");
-                q.setParameter("nit", cliente.getText());
+                if(cliente.getText().matches("CF|cf|C/F|c/f|c.f.|C.F.")){
+                    q.setParameter("nit", "C/F");
+                }else{
+                    q.setParameter("nit", cliente.getText());                    
+                }
                 List<Cliente> clienteBusqueda = q.getResultList();
                 if (clienteBusqueda.isEmpty()) {
                     int crearcliente = JOptionPane.showConfirmDialog(this, "¿Desea crear un cliente nuevo?", "El cliente no existe.", JOptionPane.OK_OPTION);
@@ -935,22 +946,49 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                         venta.setFecha(jDateChooser1.getDate());
                         venta.setDescuento(obtenerDescuento());
                         venta.setPagoInicial(obtenerMonto());
-                        venta.finalizarVenta();
-                        commitVenta.setEnabled(false);
+                        if(venta.finalizarVenta()){
+                            commitVenta.setEnabled(false);
+                            int opc = JOptionPane.showConfirmDialog(this, "¿Desea ver el comprobante de esta venta?", 
+                                    "Venta efectuada con éxito.", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                            if(opc == JOptionPane.OK_OPTION){
+                                //mostrar reporte
+                            }
+                        } else{
+                            JOptionPane.showMessageDialog(this, "Por favor revise las existencias.", "No se pudo finalizar la venta.", JOptionPane.ERROR_MESSAGE);
+                            limpiarTabla2();
+                        }
                     } else if (autenticacionDeAdministrador()) {
                         venta.setFecha(jDateChooser1.getDate());
                         venta.setDescuento(obtenerDescuento());
                         venta.setPagoInicial(obtenerMonto());
-                        venta.finalizarVenta();
-                        commitVenta.setEnabled(false);
+                        if(venta.finalizarVenta()){
+                            commitVenta.setEnabled(false);
+                            int opc = JOptionPane.showConfirmDialog(this, "¿Desea ver el comprobante de esta venta?", 
+                                    "Venta efectuada con éxito.", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                            if(opc == JOptionPane.OK_OPTION){
+                                //mostrar reporte
+                            }
+                        } else{
+                            JOptionPane.showMessageDialog(this, "Por favor revise las existencias.", "No se pudo finalizar la venta.", JOptionPane.ERROR_MESSAGE);
+                            limpiarTabla2();
+                        }
                     } else {
                         JOptionPane.showMessageDialog(this, "No es posible aplicar el descuento!", "Permisos insuficientes!", JOptionPane.ERROR_MESSAGE);
                     }
                 } else {
                     venta.setFecha(jDateChooser1.getDate());
                     venta.setPagoInicial(obtenerMonto());
-                    venta.finalizarVenta();
-                    commitVenta.setEnabled(false);
+                        if(venta.finalizarVenta()){
+                            commitVenta.setEnabled(false);
+                            int opc = JOptionPane.showConfirmDialog(this, "¿Desea ver el comprobante de esta venta?", 
+                                    "Venta efectuada con éxito.", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                            if(opc == JOptionPane.OK_OPTION){
+                                //mostrar reporte
+                            }
+                        } else{
+                            JOptionPane.showMessageDialog(this, "Por favor revise las existencias.", "No se pudo finalizar la venta.", JOptionPane.ERROR_MESSAGE);
+                            limpiarTabla2();
+                        }
                 }
             } else if (venta.getCredito()) {
 //          int opc = JOptionPane.showConfirmDialog(this, "¿Asignar como pago inicial?", "El pago indicado es insuficiente!",
@@ -960,20 +998,38 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                     venta.setPagoInicial(obtenerMonto());
                     venta.setFecha(jDateChooser1.getDate());
                     venta.setDescuento(obtenerDescuento());
-                    venta.finalizarVenta();
-                    commitVenta.setEnabled(false);
+                        if(venta.finalizarVenta()){
+                            commitVenta.setEnabled(false);
+                            int opc = JOptionPane.showConfirmDialog(this, "¿Desea ver el comprobante de esta venta?", 
+                                    "Venta efectuada con éxito.", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                            if(opc == JOptionPane.OK_OPTION){
+                                //mostrar reporte
+                            }
+                        } else{
+                            JOptionPane.showMessageDialog(this, "Por favor revise las existencias.", "No se pudo finalizar la venta.", JOptionPane.ERROR_MESSAGE);
+                            limpiarTabla2();
+                        }
                 } else if (autenticacionDeAdministrador()) {
                     venta.setPagoInicial(obtenerMonto());
                     venta.setFecha(jDateChooser1.getDate());
                     venta.setDescuento(obtenerDescuento());
-                    venta.finalizarVenta();
-                    commitVenta.setEnabled(false);
+                        if(venta.finalizarVenta()){
+                            commitVenta.setEnabled(false);
+                            int opc = JOptionPane.showConfirmDialog(this, "¿Desea ver el comprobante de esta venta?", 
+                                    "Venta efectuada con éxito.", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                            if(opc == JOptionPane.OK_OPTION){
+                                //mostrar reporte
+                            }
+                        } else{
+                            JOptionPane.showMessageDialog(this, "Por favor revise las existencias.", "No se pudo finalizar la venta.", JOptionPane.ERROR_MESSAGE);
+                            limpiarTabla2();
+                        }
                 } else {
-                    JOptionPane.showMessageDialog(this, "No es posible vender al crédito!", "Permisos insuficientes!", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "No es posible vender al crédito.", "Permisos insuficientes.", JOptionPane.ERROR_MESSAGE);
                 }
 //      }
             } else {
-                JOptionPane.showMessageDialog(this, "Intente las siguientes opciones:\n\n\r\t- Vender al crédito.\n\r\t- Agregar un descuento.",
+                JOptionPane.showMessageDialog(this, "Intente las siguientes opciones:\n\r\t- Vender al crédito.\n\r\t- Agregar un descuento.",
                         "El monto de efectivo es insuficiente!", JOptionPane.ERROR_MESSAGE);
             }
     }//GEN-LAST:event_commitVentaActionPerformed
