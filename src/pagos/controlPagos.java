@@ -38,8 +38,8 @@ import pferreteria.CPago;
  */
 public class controlPagos extends javax.swing.JInternalFrame {
 
-    Proveedor prov;
-    Cliente client;
+    List<Cliente> encontradosC;
+    List<Proveedor> encontradosP;
     modeloComprasAbono mca;
     modeloVentasAbono mva;
     modeloPagos mcp;
@@ -86,225 +86,238 @@ public class controlPagos extends javax.swing.JInternalFrame {
     }
 
     public void limpiarTabla1() {
-        if(mva!=null){
-        mva.borrarVentas();
-        jTable1.setModel(new DefaultTableModel(new Object[]{"No. Venta", "Total", "Saldo", "Cliente", "Fecha"}, 0));
-        ajustarColumnas(jTable1);
+        if (mva != null) {
+            mva.borrarVentas();
+            jTable1.setModel(new DefaultTableModel(new Object[]{"No. Venta", "Total", "Saldo", "Cliente", "Fecha"}, 0));
+            ajustarColumnas(jTable1);
         }
     }
 
     public void limpiarTabla2() {
-        if(mca!=null){
-        mca.borrarCompras();
-        jTable2.setModel(new DefaultTableModel(new Object[]{"No. Compra", "Total", "Saldo", "Proveedor", "Fecha"}, 0));
-        ajustarColumnas(jTable2);
-        }        
+        if (mca != null) {
+            mca.borrarCompras();
+            jTable2.setModel(new DefaultTableModel(new Object[]{"No. Compra", "Total", "Saldo", "Proveedor", "Fecha"}, 0));
+            ajustarColumnas(jTable2);
+        }
+    }
+
+    public void buscarClientes(int opc) {
+        EntityManagerFactory emf = Conexion.getConexion().getEmf();
+        DefaultComboBoxModel modelo;
+        Query q = emf.createEntityManager().createNamedQuery("Cliente.findLikeNombre");
+        q.setParameter("nombre", nombreCliente.getText() + "%");
+        if (!q.getResultList().isEmpty()) {
+            modelo = new DefaultComboBoxModel();
+            encontradosC = q.getResultList();
+            if (opc == 0) {
+                modelo.addElement("Seleccione un Cliente.");
+                for (Cliente c : encontradosC) {
+                    modelo.addElement(c.getNombre() + ", " + c.getNit());
+                }
+                clientesAlCredito.setModel(modelo);
+            }
+        } else {
+            modelo = new DefaultComboBoxModel();
+            modelo.addElement("No ha resultados.");
+            clientesAlCredito.setModel(modelo);
+        }
+    }
+
+    public void buscarProveedores(int opc) {
+        EntityManagerFactory emf = Conexion.getConexion().getEmf();
+        DefaultComboBoxModel modelo;
+        Query q = emf.createEntityManager().createNamedQuery("Proveedor.findLikeNombre");
+        q.setParameter("nombre", nombreProveedor.getText() + "%");
+        if (!q.getResultList().isEmpty()) {
+            modelo = new DefaultComboBoxModel();
+            encontradosP = q.getResultList();
+            if (opc == 0) {
+                modelo.addElement("Seleccione un Proveedor.");
+                for (Proveedor p : encontradosP) {
+                    modelo.addElement(p.getNombre() + ", " + p.getNit());
+                }
+                proveedoresAlCredito.setModel(modelo);
+            }
+        } else {
+            modelo = new DefaultComboBoxModel();
+            modelo.addElement("No ha resultados.");
+            proveedoresAlCredito.setModel(modelo);
+        }
     }
 
     public void cargarVentas() {
         EntityManagerFactory emf = Conexion.getConexion().getEmf();
-        Query q = emf.createEntityManager().createNamedQuery("Cliente.findByNit");
-        q.setParameter("nit", nitCliente.getText());
-        if (!q.getResultList().isEmpty()) {
-            client = (Cliente) q.getSingleResult();
-            if (!saldo0.isSelected()) {
-                q = emf.createEntityManager().createNamedQuery("Venta.findByIdClienteAndCreditoSaldo");
-                q.setParameter("idCliente", client.getIdCliente());
-                q.setParameter("credito", Boolean.TRUE);
-                q.setParameter("saldo", 0.00);
-                if (!q.getResultList().isEmpty()) {
-                    List<Venta> temporal = q.getResultList();
-                    ArrayList<Venta> encontradas = new ArrayList<>();
-                    for (Venta v : temporal) {
-                        encontradas.add(v);
-                    }
-                    mva = new modeloVentasAbono(encontradas);
-                    jTable1.setModel(mva);
-                    ajustarColumnas(jTable1);
-                } else {
-                    limpiarTabla1();
-                    client = null;
+        if (!saldo0.isSelected()) {
+            Query q = emf.createEntityManager().createNamedQuery("Venta.findByIdClienteAndCreditoSaldo");
+            q.setParameter("idCliente", encontradosC.get(clientesAlCredito.getSelectedIndex() - 1).getIdCliente());
+            q.setParameter("credito", Boolean.TRUE);
+            q.setParameter("saldo", 0.00);
+            if (!q.getResultList().isEmpty()) {
+                List<Venta> temporal = q.getResultList();
+                ArrayList<Venta> encontradas = new ArrayList<>();
+                for (Venta v : temporal) {
+                    encontradas.add(v);
                 }
-                saldoCliente.setText(String.valueOf(client.getSaldo()));
+                mva = new modeloVentasAbono(encontradas);
+                jTable1.setModel(mva);
+                ajustarColumnas(jTable1);
             } else {
-                q = emf.createEntityManager().createNamedQuery("Venta.findByIdClienteAndCredito");
-                q.setParameter("idCliente", client.getIdCliente());
-                q.setParameter("credito", Boolean.TRUE);
-                if (!q.getResultList().isEmpty()) {
-                    List<Venta> temporal = q.getResultList();
-                    ArrayList<Venta> encontradas = new ArrayList<>();
-                    for (Venta v : temporal) {
-                        encontradas.add(v);
-                    }
-                    mva = new modeloVentasAbono(encontradas);
-                    jTable1.setModel(mca);
-                    ajustarColumnas(jTable1);
-                } else {
-                    limpiarTabla1();
-                    client = null;
-                }
-                saldoCliente.setText(String.valueOf(client.getSaldo()));
+                limpiarTabla1();
             }
+
+            saldoCliente.setText(String.valueOf(encontradosC.get(clientesAlCredito.getSelectedIndex() - 1).getSaldo()));
         } else {
-            JOptionPane.showMessageDialog(this, "El NIT indicado no pertenece a ningun cliente.", "Sin resultados.", JOptionPane.WARNING_MESSAGE);
+            Query q = emf.createEntityManager().createNamedQuery("Venta.findByIdClienteAndCredito");
+            q.setParameter("idCliente", encontradosC.get(clientesAlCredito.getSelectedIndex() - 1).getIdCliente());
+            q.setParameter("credito", Boolean.TRUE);
+            if (!q.getResultList().isEmpty()) {
+                List<Venta> temporal = q.getResultList();
+                ArrayList<Venta> encontradas = new ArrayList<>();
+                for (Venta v : temporal) {
+                    encontradas.add(v);
+                }
+                mva = new modeloVentasAbono(encontradas);
+                jTable1.setModel(mca);
+                ajustarColumnas(jTable1);
+            } else {
+                limpiarTabla1();
+            }
+            saldoCliente.setText(String.valueOf(encontradosC.get(clientesAlCredito.getSelectedIndex() - 1).getSaldo()));
         }
     }
 
     public void cargarCompras() {
         EntityManagerFactory emf = Conexion.getConexion().getEmf();
-        Query q = emf.createEntityManager().createNamedQuery("Proveedor.findByNit");
-        q.setParameter("nit", nitProveedor.getText());
-        if (!q.getResultList().isEmpty()) {
-            prov = (Proveedor) q.getSingleResult();
-            if (!saldo1.isSelected()) {
-                q = emf.createEntityManager().createNamedQuery("Compra.findByIdProvAndCreditoSaldo");
-                q.setParameter("idProveedor", prov.getIdProveedor());
-                q.setParameter("credito", Boolean.TRUE);
-                q.setParameter("saldo", 0.00);
-                if (!q.getResultList().isEmpty()) {
-                    List<Compra> temporal = q.getResultList();
-                    ArrayList<Compra> encontradas = new ArrayList<>();
-                    for (Compra c : temporal) {
-                        encontradas.add(c);
-                    }
-                    mca = new modeloComprasAbono(encontradas);
-                    jTable2.setModel(mca);
-                    ajustarColumnas(jTable2);
-                } else {
-                    limpiarTabla2();
+        if (!saldo1.isSelected()) {
+            Query q = emf.createEntityManager().createNamedQuery("Compra.findByIdProvAndCreditoSaldo");
+            q.setParameter("idProveedor", encontradosP.get(proveedoresAlCredito.getSelectedIndex() - 1).getIdProveedor());
+            q.setParameter("credito", Boolean.TRUE);
+            q.setParameter("saldo", 0.00);
+            if (!q.getResultList().isEmpty()) {
+                List<Compra> temporal = q.getResultList();
+                ArrayList<Compra> encontradas = new ArrayList<>();
+                for (Compra c : temporal) {
+                    encontradas.add(c);
                 }
-                saldoProveedor.setText(String.valueOf(prov.getSaldo()));
+                mca = new modeloComprasAbono(encontradas);
+                jTable2.setModel(mca);
+                ajustarColumnas(jTable2);
             } else {
-                q = emf.createEntityManager().createNamedQuery("Compra.findByIdProvAndCredito");
-                q.setParameter("idProveedor", prov.getIdProveedor());
-                q.setParameter("credito", Boolean.TRUE);
-                if (!q.getResultList().isEmpty()) {
-                    List<Compra> temporal = q.getResultList();
-                    ArrayList<Compra> encontradas = new ArrayList<>();
-                    for (Compra c : temporal) {
-                        encontradas.add(c);
-                    }
-                    mca = new modeloComprasAbono(encontradas);
-                    jTable2.setModel(mca);
-                    ajustarColumnas(jTable2);
-                } else {
-                    limpiarTabla2();
-                }
-                saldoProveedor.setText(String.valueOf(prov.getSaldo()));
+                limpiarTabla2();
             }
+            saldoProveedor.setText(String.valueOf(encontradosP.get(proveedoresAlCredito.getSelectedIndex() - 1).getSaldo()));
         } else {
-            JOptionPane.showMessageDialog(this, "El NIT indicado no pertenece a ningun proveedor.", "Sin resultados.", JOptionPane.WARNING_MESSAGE);
+            Query q = emf.createEntityManager().createNamedQuery("Compra.findByIdProvAndCredito");
+            q.setParameter("idProveedor", encontradosP.get(proveedoresAlCredito.getSelectedIndex() - 1).getIdProveedor());
+            q.setParameter("credito", Boolean.TRUE);
+            if (!q.getResultList().isEmpty()) {
+                List<Compra> temporal = q.getResultList();
+                ArrayList<Compra> encontradas = new ArrayList<>();
+                for (Compra c : temporal) {
+                    encontradas.add(c);
+                }
+                mca = new modeloComprasAbono(encontradas);
+                jTable2.setModel(mca);
+                ajustarColumnas(jTable2);
+            } else {
+                limpiarTabla2();
+            }
+            saldoProveedor.setText(String.valueOf(encontradosP.get(proveedoresAlCredito.getSelectedIndex() - 1).getSaldo()));
         }
     }
 
     public void efectuarAbono() {
-            JTextField nit = new JTextField();
-            JTextField abono = new JTextField();
-            Object[] objetos = {
-                "NIT: ", nit,
-                "Monto: ", abono
-            };
-            int opc = JOptionPane.showConfirmDialog(this, objetos, "Datos de abono",
-                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-            if (opc == JOptionPane.OK_OPTION) {
-                String registro = "";
-                if (!abono.getText().matches("[0-9]*(\\.[0-9]+)?")) {
-                    registro += "Monto: (Error de formato)";
-                }
-                if (abono.getText().matches("0*(\\.0+)?")) {
-                    registro += "Monto: (Se requiere un valor mayor a cero)";
-                }
-                EntityManagerFactory emf = Conexion.getConexion().getEmf();
-                Query q = emf.createEntityManager().createNamedQuery("Cliente.findByNit");
-                q.setParameter("nit", nit.getText());
-                if (!q.getResultList().isEmpty()) {
-                    registro += "NIT: (NIT no asignado)";
-                }
-                if (registro.compareTo("") == 0) {
-                    Cliente cliente1 = (Cliente) q.getSingleResult();
-                    double valor = Double.parseDouble(abono.getText());
-                    if (cliente1.getSaldo() > 0.00) {
-                        AbonoJpaController controladorAbonos = new AbonoJpaController(Conexion.getConexion().getEmf());
-                        Abono abono1;
-                        if (valor > cliente1.getSaldo()) {
-                            abono1 = new Abono(new Date(), cliente1.getSaldo(),
-                                    cliente1.getIdCliente());
-                        } else {
-                            abono1 = new Abono(new Date(), valor,
-                                    cliente1.getIdCliente());
-                        }
-                        controladorAbonos.create(abono1);
-                        opc = JOptionPane.showConfirmDialog(this, "¿Desea ver el comprobante?", "El abono se realizó con éxito.", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                        Conexion.getConexion().getEmf().getCache().evictAll();
-                        cargarVentas();
-                        if (opc == JOptionPane.OK_OPTION) {
-                            //mostrar reporte
-                        }
+        JTextField abono = new JTextField();
+        Object[] objetos = {
+            "Monto: ", abono
+        };
+        int opc = JOptionPane.showConfirmDialog(this, objetos, "Abono del Cliente " + encontradosC.get(clientesAlCredito.getSelectedIndex() - 1).getNombre(),
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+        if (opc == JOptionPane.OK_OPTION) {
+            String registro = "";
+            if (!abono.getText().matches("[0-9]*(\\.[0-9]+)?")) {
+                registro += "Monto: (Error de formato)";
+            }
+            if (abono.getText().matches("0*(\\.0+)?")) {
+                registro += "Monto: (Se requiere un valor mayor a cero)";
+            }
+            if (registro.compareTo("") == 0) {
+                double valor = Double.parseDouble(abono.getText());
+                if (encontradosC.get(clientesAlCredito.getSelectedIndex() - 1).getSaldo() > 0.00) {
+                    AbonoJpaController controladorAbonos = new AbonoJpaController(Conexion.getConexion().getEmf());
+                    Abono abono1;
+                    if (valor > encontradosC.get(clientesAlCredito.getSelectedIndex() - 1).getSaldo()) {
+                        abono1 = new Abono(new Date(), encontradosC.get(clientesAlCredito.getSelectedIndex() - 1).getSaldo(),
+                                encontradosC.get(clientesAlCredito.getSelectedIndex() - 1).getIdCliente());
                     } else {
-                        JOptionPane.showMessageDialog(this, "El cliente indicado tiene saldo = 0.00", "No se ha efectuado el Abono", JOptionPane.INFORMATION_MESSAGE);
+                        abono1 = new Abono(new Date(), valor,
+                                encontradosC.get(clientesAlCredito.getSelectedIndex() - 1).getIdCliente());
+                    }
+                    controladorAbonos.create(abono1);
+                    Conexion.getConexion().getEmf().getCache().evictAll();
+                    opc = JOptionPane.showConfirmDialog(this, "¿Desea ver el comprobante?", "El abono se realizó con éxito.", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                    buscarClientes(1);
+                    cargarVentas();
+                    if (opc == JOptionPane.OK_OPTION) {
+                        //mostrar reporte
                     }
                 } else {
-                    JOptionPane.showMessageDialog(this, "Registro de Error:\n\r" + registro, "Error", JOptionPane.ERROR_MESSAGE);
-                    efectuarAbono();
+                    JOptionPane.showMessageDialog(this, "El cliente indicado tiene saldo = 0.00", "No se ha efectuado el Abono", JOptionPane.INFORMATION_MESSAGE);
                 }
+            } else {
+                JOptionPane.showMessageDialog(this, "Registro de Error:\n\r" + registro, "Error", JOptionPane.ERROR_MESSAGE);
+                efectuarAbono();
             }
+        }
     }
 
     public void efectuarPago() {
-            JTextField nit = new JTextField();
-            JTextField pago = new JTextField();
-            Object[] objetos = {
-                "NIT: ", nit,
-                "Monto: ", pago
-            };
-            int opc = JOptionPane.showConfirmDialog(this, objetos, "Datos de pago",
-                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-            if (opc == JOptionPane.OK_OPTION) {
-                String registro = "";
-                if (!pago.getText().matches("[0-9]*(\\.[0-9]+)?")) {
-                    registro += "Monto: (Error de formato)";
-                }
-                if (pago.getText().matches("0*(\\.0+)?")) {
-                    registro += "Monto: (Se requiere un valor mayor a cero)";
-                }
-                EntityManagerFactory emf = Conexion.getConexion().getEmf();
-                Query q = emf.createEntityManager().createNamedQuery("Proveedor.findByNit");
-                q.setParameter("nit", nitProveedor.getText());
-                if (!q.getResultList().isEmpty()) {
-                    registro += "NIT: (NIT no asignado)";
-                }
-                if (registro.compareTo("") == 0) {
-                    double valor = Double.parseDouble(pago.getText());
-                    Proveedor proveedor1 = (Proveedor) q.getSingleResult();
-                    if (proveedor1.getSaldo() > 0.00) {
-                        PagoJpaController controladorPagos = new PagoJpaController(Conexion.getConexion().getEmf());
-                        Pago pago1;
-                        if (valor > prov.getSaldo()) {
-                            pago1 = new Pago(new Date(), prov.getSaldo(),
-                                    prov.getIdProveedor());
-                        } else {
-                            pago1 = new Pago(new Date(), valor,
-                                    prov.getIdProveedor());
-                        }
-                        controladorPagos.create(pago1);
-                        JOptionPane.showMessageDialog(this, "El pago se realizó con éxito.", "", JOptionPane.INFORMATION_MESSAGE);
-                        Conexion.getConexion().getEmf().getCache().evictAll();
-                        cargarCompras();
-                    } else {
-                        JOptionPane.showMessageDialog(this, "El proveedor indicado tiene saldo = 0.00", "No se ha efectuado el Pago", JOptionPane.INFORMATION_MESSAGE);
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(this, "Registro de Error:\n\r" + registro, "Error", JOptionPane.ERROR_MESSAGE);
-                    efectuarPago();
-                }
+        JTextField pago = new JTextField();
+        Object[] objetos = {
+            "Monto: ", pago
+        };
+        int opc = JOptionPane.showConfirmDialog(this, objetos, "Datos de pago",
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+        if (opc == JOptionPane.OK_OPTION) {
+            String registro = "";
+            if (!pago.getText().matches("[0-9]*(\\.[0-9]+)?")) {
+                registro += "Monto: (Error de formato)";
             }
+            if (pago.getText().matches("0*(\\.0+)?")) {
+                registro += "Monto: (Se requiere un valor mayor a cero)";
+            }
+            if (registro.compareTo("") == 0) {
+                double valor = Double.parseDouble(pago.getText());
+                if (encontradosP.get(proveedoresAlCredito.getSelectedIndex() - 1).getSaldo() > 0.00) {
+                    PagoJpaController controladorPagos = new PagoJpaController(Conexion.getConexion().getEmf());
+                    Pago pago1;
+                    if (valor > encontradosP.get(proveedoresAlCredito.getSelectedIndex() - 1).getSaldo()) {
+                        pago1 = new Pago(new Date(), encontradosP.get(proveedoresAlCredito.getSelectedIndex() - 1).getSaldo(),
+                                encontradosP.get(proveedoresAlCredito.getSelectedIndex() - 1).getIdProveedor());
+                    } else {
+                        pago1 = new Pago(new Date(), valor,
+                                encontradosP.get(proveedoresAlCredito.getSelectedIndex() - 1).getIdProveedor());
+                    }
+                    controladorPagos.create(pago1);
+                    Conexion.getConexion().getEmf().getCache().evictAll();
+                    JOptionPane.showMessageDialog(this, "El pago se realizó con éxito.", "", JOptionPane.INFORMATION_MESSAGE);
+                    buscarProveedores(1);
+                    cargarCompras();
+                } else {
+                    JOptionPane.showMessageDialog(this, "El proveedor indicado tiene saldo = 0.00", "No se ha efectuado el Pago", JOptionPane.INFORMATION_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Registro de Error:\n\r" + registro, "Error", JOptionPane.ERROR_MESSAGE);
+                efectuarPago();
+            }
+        }
     }
 
     public void encontrarAbonos() {
-        queCliente.setText(queCliente.getText() + client.getNombre());
+        queCliente.setText(queCliente.getText() + encontradosC.get(clientesAlCredito.getSelectedIndex() - 1).getNombre());
         EntityManagerFactory emf = Conexion.getConexion().getEmf();
         Query q = emf.createEntityManager().createNamedQuery("Abono.findByIdCliente");
-        q.setParameter("idCliente", client.getIdCliente());
+        q.setParameter("idCliente", encontradosC.get(clientesAlCredito.getSelectedIndex() - 1).getIdCliente());
         List<Abono> abonosEncontrados = q.getResultList();
         ArrayList<CPago> listaDeCPagos = new ArrayList<>();
         if (!abonosEncontrados.isEmpty()) {
@@ -320,10 +333,10 @@ public class controlPagos extends javax.swing.JInternalFrame {
     }
 
     public void encontrarPagos() {
-        queProveedor.setText(queProveedor.getText() + prov.getNombre());
+        queProveedor.setText(queProveedor.getText() + encontradosP.get(proveedoresAlCredito.getSelectedIndex() - 1).getNombre());
         EntityManagerFactory emf = Conexion.getConexion().getEmf();
         Query q = emf.createEntityManager().createNamedQuery("Pago.findByIdProveedor");
-        q.setParameter("idProveedor", prov.getIdProveedor());
+        q.setParameter("idProveedor", encontradosP.get(proveedoresAlCredito.getSelectedIndex() - 1).getIdProveedor());
         List<Pago> pagosEncontrados = q.getResultList();
         ArrayList<CPago> listaDeCPagos = new ArrayList<>();
         if (!pagosEncontrados.isEmpty()) {
@@ -364,7 +377,7 @@ public class controlPagos extends javax.swing.JInternalFrame {
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        nitCliente = new javax.swing.JTextField();
+        nombreCliente = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         saldo0 = new javax.swing.JCheckBox();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -374,9 +387,10 @@ public class controlPagos extends javax.swing.JInternalFrame {
         historialAbonos = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         saldoCliente = new javax.swing.JTextField();
+        clientesAlCredito = new javax.swing.JComboBox<>();
         jPanel3 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        nitProveedor = new javax.swing.JTextField();
+        nombreProveedor = new javax.swing.JTextField();
         jButton3 = new javax.swing.JButton();
         saldo1 = new javax.swing.JCheckBox();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -386,6 +400,7 @@ public class controlPagos extends javax.swing.JInternalFrame {
         historialPagos = new javax.swing.JButton();
         saldoProveedor = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
+        proveedoresAlCredito = new javax.swing.JComboBox<>();
 
         historialDeAbonos.setTitle("Historial de Abonos");
         historialDeAbonos.setResizable(false);
@@ -551,6 +566,12 @@ public class controlPagos extends javax.swing.JInternalFrame {
 
         jLabel1.setText("Nombre de Cliente con Crédito:");
 
+        nombreCliente.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                nombreClienteKeyReleased(evt);
+            }
+        });
+
         jButton1.setText("Cargar Ventas Al Crédito");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -559,6 +580,11 @@ public class controlPagos extends javax.swing.JInternalFrame {
         });
 
         saldo0.setText("Incluir ventas saldadas");
+        saldo0.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                saldo0MouseClicked(evt);
+            }
+        });
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -628,6 +654,8 @@ public class controlPagos extends javax.swing.JInternalFrame {
 
         saldoCliente.setEditable(false);
 
+        clientesAlCredito.setToolTipText("");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -647,36 +675,40 @@ public class controlPagos extends javax.swing.JInternalFrame {
                                 .addGap(18, 18, 18)
                                 .addComponent(saldoCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(saldo0)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel1)
-                                            .addComponent(nitCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                .addComponent(abonar))
-                                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                                .addGap(27, 27, 27)
-                                                .addComponent(jButton1)))))))))
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(abonar, javax.swing.GroupLayout.Alignment.TRAILING)))))
                 .addContainerGap(18, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel1)
+                    .addComponent(nombreCliente, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
+                    .addComponent(clientesAlCredito, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(saldo0)
+                    .addComponent(jButton1))
+                .addGap(29, 29, 29))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(abonar)
-                .addGap(32, 32, 32)
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(nitCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(saldo0)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(49, 49, 49)
+                        .addComponent(jButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(saldo0))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(13, 13, 13)
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(nombreCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(clientesAlCredito, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(9, 9, 9)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -686,12 +718,18 @@ public class controlPagos extends javax.swing.JInternalFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton7)
                     .addComponent(historialAbonos))
-                .addContainerGap(17, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Abonos de Clientes", jPanel1);
 
-        jLabel2.setText("Nit de Proveedor:");
+        jLabel2.setText("Nombre de Proveedor:");
+
+        nombreProveedor.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                nombreProveedorKeyReleased(evt);
+            }
+        });
 
         jButton3.setText("Cargar Compras al Crédito");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
@@ -701,9 +739,9 @@ public class controlPagos extends javax.swing.JInternalFrame {
         });
 
         saldo1.setText("Incluir compras saldadas");
-        saldo1.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                saldo1StateChanged(evt);
+        saldo1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                saldo1MouseClicked(evt);
             }
         });
 
@@ -786,45 +824,47 @@ public class controlPagos extends javax.swing.JInternalFrame {
                 .addComponent(jButton5))
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(saldo1)
-                        .addContainerGap())
+                        .addComponent(jLabel4)
+                        .addGap(18, 18, 18)
+                        .addComponent(saldoProveedor, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addGap(18, 18, 18)
-                                .addComponent(saldoProveedor, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(nitProveedor, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel2))
-                                .addGap(18, 18, 18)
-                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel3Layout.createSequentialGroup()
-                                        .addGap(0, 0, Short.MAX_VALUE)
-                                        .addComponent(pagar))
-                                    .addGroup(jPanel3Layout.createSequentialGroup()
-                                        .addComponent(jButton3)
-                                        .addGap(0, 0, Short.MAX_VALUE)))))
-                        .addGap(200, 200, 200))))
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(nombreProveedor, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
+                            .addComponent(jLabel2)
+                            .addComponent(proveedoresAlCredito, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(saldo1)
+                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(pagar, javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                                    .addComponent(jButton3)
+                                    .addGap(14, 14, 14))))))
+                .addGap(200, 200, 200))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(pagar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(nitProveedor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton3))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(saldo1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(saldo1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(12, 12, 12)
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(nombreProveedor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(proveedoresAlCredito, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)))
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -834,7 +874,7 @@ public class controlPagos extends javax.swing.JInternalFrame {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jButton5)
                     .addComponent(historialPagos, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(18, Short.MAX_VALUE))
+                .addContainerGap(14, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Pagos a Proveedores", jPanel3);
@@ -847,7 +887,7 @@ public class controlPagos extends javax.swing.JInternalFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 398, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -857,6 +897,7 @@ public class controlPagos extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         historialDeAbonos.setVisible(Boolean.FALSE);
         borrarAbono.setEnabled(Boolean.FALSE);
+        buscarClientes(1);
         cargarVentas();
     }//GEN-LAST:event_SalirActionPerformed
 
@@ -864,6 +905,7 @@ public class controlPagos extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         historialDePagos.setVisible(Boolean.FALSE);
         borrarPago.setEnabled(Boolean.FALSE);
+        buscarProveedores(1);
         cargarCompras();
     }//GEN-LAST:event_Salir1ActionPerformed
 
@@ -913,10 +955,15 @@ public class controlPagos extends javax.swing.JInternalFrame {
 
     private void historialPagosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_historialPagosActionPerformed
         // TODO add your handling code here:
-        historialDePagos.setAlwaysOnTop(Boolean.TRUE);
-        historialDePagos.setLocation(450, 350);
-        historialDePagos.setSize(420, 290);
-        historialDePagos.setVisible(Boolean.TRUE);
+        if (proveedoresAlCredito.getSelectedIndex() > 0) {
+            historialDePagos.setAlwaysOnTop(Boolean.TRUE);
+            historialDePagos.setLocation(450, 350);
+            historialDePagos.setSize(420, 290);
+            historialDePagos.setVisible(Boolean.TRUE);
+            encontrarPagos();
+        } else {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar un Proveedor.", "Ningun proveedor seleccionado.", JOptionPane.WARNING_MESSAGE);
+        }
     }//GEN-LAST:event_historialPagosActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
@@ -926,21 +973,33 @@ public class controlPagos extends javax.swing.JInternalFrame {
 
     private void pagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pagarActionPerformed
         // TODO add your handling code here:
-        efectuarPago();
+        if (proveedoresAlCredito.getSelectedIndex() > 0) {
+            efectuarPago();
+        } else {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar un Proveedor.", "Ningun Proveedor seleccionado.", JOptionPane.WARNING_MESSAGE);
+        }
     }//GEN-LAST:event_pagarActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
-        cargarCompras();
+        if (proveedoresAlCredito.getSelectedIndex() > 0) {
+            cargarCompras();
+        } else {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar un Proveedor.", "Ningun Proveedor seleccionado.", JOptionPane.WARNING_MESSAGE);
+        }
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void historialAbonosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_historialAbonosActionPerformed
         // TODO add your handling code here:
-        historialDeAbonos.setAlwaysOnTop(Boolean.TRUE);
-        historialDeAbonos.setLocation(450, 350);
-        historialDeAbonos.setSize(420, 290);
-        historialDeAbonos.setVisible(Boolean.TRUE);
-        encontrarAbonos();
+        if (clientesAlCredito.getSelectedIndex() > 0) {
+            historialDeAbonos.setAlwaysOnTop(Boolean.TRUE);
+            historialDeAbonos.setLocation(450, 350);
+            historialDeAbonos.setSize(420, 290);
+            historialDeAbonos.setVisible(Boolean.TRUE);
+            encontrarAbonos();
+        } else {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar un Cliente.", "Ningun cliente seleccionado.", JOptionPane.WARNING_MESSAGE);
+        }
     }//GEN-LAST:event_historialAbonosActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
@@ -950,17 +1009,45 @@ public class controlPagos extends javax.swing.JInternalFrame {
 
     private void abonarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_abonarActionPerformed
         // TODO add your handling code here:
-        efectuarAbono();
+        if (clientesAlCredito.getSelectedIndex() > 0) {
+            efectuarAbono();
+        } else {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar un Cliente.", "Ningun cliente seleccionado.", JOptionPane.WARNING_MESSAGE);
+        }
     }//GEN-LAST:event_abonarActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        cargarVentas();
+        if (clientesAlCredito.getSelectedIndex() > 0) {
+            cargarVentas();
+        } else {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar un Cliente.", "Ningun cliente seleccionado.", JOptionPane.WARNING_MESSAGE);
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void saldo1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_saldo1StateChanged
+    private void saldo0MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saldo0MouseClicked
         // TODO add your handling code here:
-    }//GEN-LAST:event_saldo1StateChanged
+        if (clientesAlCredito.getSelectedIndex() > 0) {
+            cargarVentas();
+        }
+    }//GEN-LAST:event_saldo0MouseClicked
+
+    private void saldo1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saldo1MouseClicked
+        // TODO add your handling code here:
+        if (proveedoresAlCredito.getSelectedIndex() > 0) {
+            cargarCompras();
+        }
+    }//GEN-LAST:event_saldo1MouseClicked
+
+    private void nombreProveedorKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_nombreProveedorKeyReleased
+        // TODO add your handling code here:
+        buscarProveedores(0);
+    }//GEN-LAST:event_nombreProveedorKeyReleased
+
+    private void nombreClienteKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_nombreClienteKeyReleased
+        // TODO add your handling code here:
+        buscarClientes(0);
+    }//GEN-LAST:event_nombreClienteKeyReleased
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -969,6 +1056,7 @@ public class controlPagos extends javax.swing.JInternalFrame {
     private javax.swing.JButton abonar;
     private javax.swing.JButton borrarAbono;
     private javax.swing.JButton borrarPago;
+    private javax.swing.JComboBox<String> clientesAlCredito;
     private javax.swing.JButton historialAbonos;
     private javax.swing.JDialog historialDeAbonos;
     private javax.swing.JDialog historialDePagos;
@@ -994,9 +1082,10 @@ public class controlPagos extends javax.swing.JInternalFrame {
     private javax.swing.JTable jTable2;
     private javax.swing.JTable jTable3;
     private javax.swing.JTable jTable4;
-    private javax.swing.JTextField nitCliente;
-    private javax.swing.JTextField nitProveedor;
+    private javax.swing.JTextField nombreCliente;
+    private javax.swing.JTextField nombreProveedor;
     private javax.swing.JButton pagar;
+    private javax.swing.JComboBox<String> proveedoresAlCredito;
     private javax.swing.JLabel queCliente;
     private javax.swing.JLabel queProveedor;
     private javax.swing.JCheckBox saldo0;
