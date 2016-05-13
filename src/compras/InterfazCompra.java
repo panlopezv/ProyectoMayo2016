@@ -59,7 +59,6 @@ public class InterfazCompra extends javax.swing.JInternalFrame {
         initComponents();
         this.setVisible(Boolean.TRUE);
         this.setSize(780, 635);
-        this.getContentPane().setBackground(Color.getHSBColor(0.142f,0.09f,1f));
         primerAdd = false;
         cantidad = 0;
         costo = 0.00;
@@ -566,12 +565,14 @@ public class InterfazCompra extends javax.swing.JInternalFrame {
                 .addContainerGap())
         );
 
+        setBackground(new java.awt.Color(181, 232, 205));
         setClosable(true);
         setMaximizable(true);
+        setTitle("Compra");
         setPreferredSize(new java.awt.Dimension(790, 635));
         setRequestFocusEnabled(false);
 
-        jPanel1.setBackground(new java.awt.Color(255, 252, 233));
+        jPanel1.setBackground(new java.awt.Color(181, 232, 205));
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Proveedor"));
 
         jLabel1.setText("Código");
@@ -651,7 +652,7 @@ public class InterfazCompra extends javax.swing.JInternalFrame {
 
         jLabel6.setText("Número de compra");
 
-        esAlCredito.setBackground(new java.awt.Color(255, 252, 233));
+        esAlCredito.setBackground(new java.awt.Color(181, 232, 205));
         esAlCredito.setText("Compra al crédito");
         esAlCredito.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -780,6 +781,7 @@ public class InterfazCompra extends javax.swing.JInternalFrame {
 
         efectivo.setHorizontalAlignment(javax.swing.JTextField.CENTER);
 
+        cancelar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/clear.png"))); // NOI18N
         cancelar.setText("Limpiar");
         cancelar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -787,6 +789,7 @@ public class InterfazCompra extends javax.swing.JInternalFrame {
             }
         });
 
+        commitCompra.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/addItem.png"))); // NOI18N
         commitCompra.setText("Registrar Compra");
         commitCompra.setEnabled(false);
         commitCompra.addActionListener(new java.awt.event.ActionListener() {
@@ -806,6 +809,7 @@ public class InterfazCompra extends javax.swing.JInternalFrame {
             }
         });
 
+        cancelar1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/cancelar.png"))); // NOI18N
         cancelar1.setText("Cancelar");
 
         nuevoProducto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/addItem.png"))); // NOI18N
@@ -836,7 +840,7 @@ public class InterfazCompra extends javax.swing.JInternalFrame {
                                 .addComponent(cancelar1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(cancelar)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 78, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
