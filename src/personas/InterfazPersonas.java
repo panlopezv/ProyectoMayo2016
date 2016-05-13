@@ -54,7 +54,7 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
             modeloC = new ModeloClientes(new ArrayList<>());
         }
         tablaClientes.setModel(modeloC);
-        //ajustarColumnas(tablaClientes);
+        ajustarColumnas(tablaClientes);
     }
     
     public void buscarCliente(String nombre){
@@ -77,7 +77,7 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
             modeloP = new ModeloProveedores(new ArrayList<>());
         }
         tablaProveedores.setModel(modeloP);
-        //ajustarColumnas(tablaProveedores);
+        ajustarColumnas(tablaProveedores);
     }
     
     public void buscarProveedor(String nombre){

@@ -78,7 +78,6 @@ public class InterfazInventario extends javax.swing.JInternalFrame implements Ob
     }
     
     public void cargarProductos(){
-        
         setVisible(Boolean.TRUE);
         Query q = Conexion.getConexion().getEmf().createEntityManager().createNamedQuery("Producto.findAll");
         try {
