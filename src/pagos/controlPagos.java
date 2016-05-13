@@ -180,7 +180,7 @@ public class controlPagos extends javax.swing.JInternalFrame {
                     encontradas.add(v);
                 }
                 mva = new modeloVentasAbono(encontradas);
-                jTable1.setModel(mca);
+                jTable1.setModel(mva);
                 ajustarColumnas(jTable1);
             } else {
                 limpiarTabla1();
