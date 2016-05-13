@@ -9,6 +9,7 @@ import conexion.Conexion;
 import entidades.Cliente;
 import entidades.Venta;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import javax.persistence.Query;
 import javax.swing.table.AbstractTableModel;
@@ -56,7 +57,7 @@ public class ModeloVentas extends AbstractTableModel{
         Venta v = this.ventas.get(rowIndex);
         switch(columnIndex){
             case 0:{
-                return v.getFecha();
+                return new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a").format(v.getFecha());
             }
             case 1:{
                 Query q = Conexion.getConexion().getEmf().createEntityManager().createNamedQuery("Cliente.findByIdCliente");

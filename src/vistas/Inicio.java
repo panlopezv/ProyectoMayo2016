@@ -17,8 +17,6 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
@@ -44,6 +42,7 @@ public class Inicio extends javax.swing.JFrame {
     public static Conexion conexion;
     public static final String USER = "root";
     public static final String PASS = "root";
+    public static final String SERVIDOR = "localhost";
     
     /**
      * Creates new form Principal
@@ -78,7 +77,7 @@ public class Inicio extends javax.swing.JFrame {
     public void mostrarReporteDeVentasPorFecha(String fecha){
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/ferreteria", Inicio.USER, Inicio.PASS);
+            Connection con = DriverManager.getConnection("jdbc:mysql://"+Inicio.SERVIDOR+":3306/ferreteria", Inicio.USER, Inicio.PASS);
             HashMap parametros = new HashMap();
             parametros.put("fechaFiltro", fecha);
             JasperPrint print = JasperFillManager.fillReport("src\\reportes\\VentasPorFecha.jasper", parametros, con);

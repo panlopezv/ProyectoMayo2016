@@ -343,7 +343,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
     public void mostrarComprobanteDeVenta(int ventaID){
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/ferreteria", Inicio.USER, Inicio.PASS);
+            Connection con = DriverManager.getConnection("jdbc:mysql://"+Inicio.SERVIDOR+":3306/ferreteria", Inicio.USER, Inicio.PASS);
             HashMap parametros = new HashMap();
             parametros.put("ventaid", ventaID);
             JasperPrint print = JasperFillManager.fillReport("src\\reportes\\Ventas.jasper", parametros, con);
