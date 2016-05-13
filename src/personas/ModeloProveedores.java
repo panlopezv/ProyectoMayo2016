@@ -6,6 +6,7 @@
 package personas;
 
 import entidades.Proveedor;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import javax.swing.table.AbstractTableModel;
 
@@ -58,7 +59,7 @@ public class ModeloProveedores extends AbstractTableModel{
                 return p.getNit();
             }
             case 2:{
-                return p.getSaldo();
+                return new DecimalFormat("Q#,##0.00").format(p.getSaldo());
             }
             default: return null;
         }

@@ -11,6 +11,7 @@ import controladores.ProveedorJpaController;
 import entidades.Cliente;
 import entidades.Proveedor;
 import java.awt.Component;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import javax.persistence.Query;
 import javax.swing.JOptionPane;
@@ -192,7 +193,7 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
         JTextField direccion = new JTextField(cl.getDireccion());
         JTextField nit = new JTextField(cl.getNit());
         JTextField telefono = new JTextField(cl.getTelefono());
-        JTextField saldo = new JTextField("Q "+cl.getSaldo());
+        JTextField saldo = new JTextField("Q "+new DecimalFormat("Q#,###.00").format(cl.getSaldo()));
         Object[] message = {
             "Nombre:", nombre,
             "Dirección:", direccion,
@@ -207,7 +208,7 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
         JTextField nombre = new JTextField(pr.getNombre());
         JTextField nit = new JTextField(pr.getNit());
         JTextField telefono = new JTextField(pr.getTelefono());
-        JTextField saldo = new JTextField("Q "+pr.getSaldo());
+        JTextField saldo = new JTextField("Q "+new DecimalFormat("Q#,###.00").format(pr.getSaldo()));
         Object[] message = {
             "Nombre:", nombre,
             "NIT:", nit,

@@ -11,7 +11,11 @@ import entidades.Cliente;
 import entidades.Producto;
 import java.awt.Color;
 import java.awt.Component;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
@@ -21,8 +25,13 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.view.JasperViewer;
 import pferreteria.CProducto;
 import pferreteria.CVenta;
+import vistas.Inicio;
 
 /**
  *
@@ -325,6 +334,22 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
             }
         }
         return false;
+    }
+    
+    /**
+     * Muestra el comprobante de venta.
+     * @param ventaID 
+     */
+    public void mostrarComprobanteDeVenta(int ventaID){
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/ferreteria", Inicio.USER, Inicio.PASS);
+            HashMap parametros = new HashMap();
+            parametros.put("ventaid", ventaID);
+            JasperPrint print = JasperFillManager.fillReport("src\\reportes\\Ventas.jasper", parametros, con);
+            JasperViewer.viewReport(print, Boolean.FALSE);
+        } catch (ClassNotFoundException | SQLException | JRException ex) {
+        }
     }
 
     /**
@@ -952,6 +977,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                                     "Venta efectuada con éxito.", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
                             if(opc == JOptionPane.OK_OPTION){
                                 //mostrar reporte
+                                mostrarComprobanteDeVenta(venta.getIdVenta());
                             }
                         } else{
                             JOptionPane.showMessageDialog(this, "Por favor revise las existencias.", "No se pudo finalizar la venta.", JOptionPane.ERROR_MESSAGE);
@@ -967,6 +993,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                                     "Venta efectuada con éxito.", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
                             if(opc == JOptionPane.OK_OPTION){
                                 //mostrar reporte
+                                mostrarComprobanteDeVenta(venta.getIdVenta());
                             }
                         } else{
                             JOptionPane.showMessageDialog(this, "Por favor revise las existencias.", "No se pudo finalizar la venta.", JOptionPane.ERROR_MESSAGE);
@@ -984,6 +1011,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                                     "Venta efectuada con éxito.", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
                             if(opc == JOptionPane.OK_OPTION){
                                 //mostrar reporte
+                                mostrarComprobanteDeVenta(venta.getIdVenta());
                             }
                         } else{
                             JOptionPane.showMessageDialog(this, "Por favor revise las existencias.", "No se pudo finalizar la venta.", JOptionPane.ERROR_MESSAGE);
@@ -1004,6 +1032,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                                     "Venta efectuada con éxito.", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
                             if(opc == JOptionPane.OK_OPTION){
                                 //mostrar reporte
+                                mostrarComprobanteDeVenta(venta.getIdVenta());
                             }
                         } else{
                             JOptionPane.showMessageDialog(this, "Por favor revise las existencias.", "No se pudo finalizar la venta.", JOptionPane.ERROR_MESSAGE);
@@ -1019,6 +1048,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                                     "Venta efectuada con éxito.", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
                             if(opc == JOptionPane.OK_OPTION){
                                 //mostrar reporte
+                                mostrarComprobanteDeVenta(venta.getIdVenta());
                             }
                         } else{
                             JOptionPane.showMessageDialog(this, "Por favor revise las existencias.", "No se pudo finalizar la venta.", JOptionPane.ERROR_MESSAGE);

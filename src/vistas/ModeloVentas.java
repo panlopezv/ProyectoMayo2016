@@ -8,6 +8,7 @@ package vistas;
 import conexion.Conexion;
 import entidades.Cliente;
 import entidades.Venta;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import javax.persistence.Query;
 import javax.swing.table.AbstractTableModel;
@@ -69,16 +70,16 @@ public class ModeloVentas extends AbstractTableModel{
                     return "Al contado";
             }
             case 3:{
-                return "Q " + v.getDescuento();
+                return new DecimalFormat("Q#,##0.00").format(v.getDescuento());
             }
             case 4:{
-                return "Q " + v.getSaldo();
+                return new DecimalFormat("Q#,##0.00").format(v.getSaldo());
             }
             case 5:{
                 return v.getAnulada();
             }
             case 6:{
-                return "Q " + v.getTotal();
+                return new DecimalFormat("Q#,##0.00").format(v.getTotal());
             }
             default: return null;
         }

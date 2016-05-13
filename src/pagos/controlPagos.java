@@ -16,8 +16,12 @@ import entidades.Pago;
 import entidades.Proveedor;
 import entidades.Venta;
 import java.awt.Component;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,7 +34,12 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.view.JasperViewer;
 import pferreteria.CPago;
+import vistas.Inicio;
 
 /**
  *
@@ -254,13 +263,14 @@ public class controlPagos extends javax.swing.JInternalFrame {
                                 encontradosC.get(clientesAlCredito.getSelectedIndex() - 1).getIdCliente());
                     }
                     controladorAbonos.create(abono1);
-                    Conexion.getConexion().getEmf().getCache().evictAll();
                     opc = JOptionPane.showConfirmDialog(this, "¿Desea ver el comprobante?", "El abono se realizó con éxito.", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                    buscarClientes(1);
-                    cargarVentas();
                     if (opc == JOptionPane.OK_OPTION) {
                         //mostrar reporte
+                        mostrarComprobanteAbono(abono1.getIdAbono());
                     }
+                    buscarClientes(1);
+                    cargarVentas();
+                    Conexion.getConexion().getEmf().getCache().evictAll();
                 } else {
                     JOptionPane.showMessageDialog(this, "El cliente indicado tiene saldo = 0.00", "No se ha efectuado el Abono", JOptionPane.INFORMATION_MESSAGE);
                 }
@@ -351,6 +361,21 @@ public class controlPagos extends javax.swing.JInternalFrame {
         jTable4.setModel(mcp);
     }
 
+    /**
+     * Muestra el comprobante del abono.
+     * @param abonoID 
+     */
+    public void mostrarComprobanteAbono(int abonoID){
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/ferreteria", Inicio.USER, Inicio.PASS);
+            HashMap parametros = new HashMap();
+            parametros.put("abonoID", abonoID);
+            JasperPrint print = JasperFillManager.fillReport("src\\reportes\\ComprobanteAbono.jasper", parametros, con);
+            JasperViewer.viewReport(print, Boolean.FALSE);
+        } catch (ClassNotFoundException | SQLException | JRException ex) {
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

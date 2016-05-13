@@ -9,6 +9,7 @@ import conexion.Conexion;
 import entidades.Cliente;
 import entidades.Detalleventa;
 import entidades.Producto;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import javax.persistence.Query;
 import javax.swing.table.AbstractTableModel;
@@ -64,10 +65,10 @@ public class ModeloDetalleVenta extends AbstractTableModel{
                 return dv.getCantidad();
             }
             case 2:{
-                return "Q " + dv.getPrecio();
+                return new DecimalFormat("Q#,##0.00").format(dv.getPrecio());
             }
             case 3:{
-                return "Q " + dv.getSubtotal();
+                return new DecimalFormat("Q#,##0.00").format(dv.getSubtotal());
             }
             default: return null;
         }

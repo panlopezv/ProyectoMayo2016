@@ -6,6 +6,7 @@
 package personas;
 
 import entidades.Cliente;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import javax.swing.table.AbstractTableModel;
 
@@ -58,7 +59,7 @@ public class ModeloClientes extends AbstractTableModel{
                 return c.getNit();
             }
             case 2:{
-                return "Q " + c.getSaldo();
+                return new DecimalFormat("Q#,##0.00").format(c.getSaldo());
             }
             default: return null;
         }

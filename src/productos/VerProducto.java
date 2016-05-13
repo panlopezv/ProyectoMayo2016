@@ -5,20 +5,8 @@
  */
 package productos;
 
-import conexion.Observador;
-import controladores.CategoriaJpaController;
-import controladores.ProductoJpaController;
-import entidades.Categoria;
 import entidades.Producto;
-import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
-import javax.persistence.Query;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-import vistas.Inicio;
-import static vistas.Inicio.conexion;
+import java.text.DecimalFormat;
 
 /**
  *
@@ -36,7 +24,7 @@ public class VerProducto extends javax.swing.JInternalFrame {
         setVisible(Boolean.TRUE);
         nombreProducto.setText(producto.getNombre());
         descripcionProducto.setText(producto.getDescripcion());
-        precioProducto.setText("Q"+producto.getPrecio());
+        precioProducto.setText(new DecimalFormat("Q#,##0.00").format(producto.getPrecio()));
         existenciasProducto.setText(producto.getExistencias()+"");
         categoriaProducto.setText(categoria);
     }

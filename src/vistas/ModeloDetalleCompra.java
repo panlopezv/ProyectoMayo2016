@@ -8,6 +8,7 @@ package vistas;
 import conexion.Conexion;
 import entidades.Detallecompra;
 import entidades.Producto;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import javax.persistence.Query;
 import javax.swing.table.AbstractTableModel;
@@ -63,10 +64,10 @@ public class ModeloDetalleCompra extends AbstractTableModel{
                 return dv.getCantidad();
             }
             case 2:{
-                return "Q " + dv.getCosto();
+                return new DecimalFormat("Q#,##0.00").format(dv.getCosto());
             }
             case 3:{
-                return "Q " + dv.getSubtotal();
+                return new DecimalFormat("Q#,##0.00").format(dv.getSubtotal());
             }
             default: return null;
         }

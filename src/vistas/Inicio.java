@@ -42,6 +42,9 @@ public class Inicio extends javax.swing.JFrame {
 
 
     public static Conexion conexion;
+    public static final String USER = "root";
+    public static final String PASS = "root";
+    
     /**
      * Creates new form Principal
      */
@@ -69,56 +72,21 @@ public class Inicio extends javax.swing.JFrame {
     }
     
     /**
-     * Muestra el comprobante de venta.
-     * @param ventaID 
-     */
-    public void mostrarComprobanteDeVenta(int ventaID){
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/ferreteria", "root", "root");
-            HashMap parametros = new HashMap();
-            parametros.put("ventaid", ventaID);
-            JasperPrint print = JasperFillManager.fillReport("src\\reportes\\Ventas.jasper", parametros, con);
-            JasperViewer.viewReport(print, Boolean.FALSE);
-        } catch (ClassNotFoundException | SQLException | JRException ex) {
-            Logger.getLogger(InternoB.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
-    /**
      * Muestra el total de ventas por fecha. La fecha debe ir entre apostrofes y de la siguiente manera 'AAAA-MM-DD'
      * @param fecha 
      */
     public void mostrarReporteDeVentasPorFecha(String fecha){
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/ferreteria", "root", "root");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/ferreteria", Inicio.USER, Inicio.PASS);
             HashMap parametros = new HashMap();
             parametros.put("fechaFiltro", fecha);
             JasperPrint print = JasperFillManager.fillReport("src\\reportes\\VentasPorFecha.jasper", parametros, con);
             JasperViewer.viewReport(print, Boolean.FALSE);
         } catch (ClassNotFoundException | SQLException | JRException ex) {
-            Logger.getLogger(InternoB.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    /**
-     * Muestra el comprobante de abono.
-     * @param abonoID 
-     */
-    public void mostrarComprobanteAbono(int abonoID){
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/ferreteria", "root", "root");
-            HashMap parametros = new HashMap();
-            parametros.put("abonoID", abonoID);
-            JasperPrint print = JasperFillManager.fillReport("src\\reportes\\ComprobanteAbono.jasper", parametros, con);
-            JasperViewer.viewReport(print, Boolean.FALSE);
-        } catch (ClassNotFoundException | SQLException | JRException ex) {
-            Logger.getLogger(InternoB.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
+        
     public void ajustar(JInternalFrame jif){
         if(jif.getWidth()>escritorio.getWidth() || jif.getHeight()>escritorio.getHeight()){
             if(this.getExtendedState()!=JFrame.MAXIMIZED_BOTH){
@@ -157,8 +125,6 @@ public class Inicio extends javax.swing.JFrame {
         menuCategorias = new javax.swing.JMenuItem();
         menuUsuarios = new javax.swing.JMenuItem();
         menuReportes = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
-        jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
         menuUsuario = new javax.swing.JMenu();
         menuPerfil = new javax.swing.JMenuItem();
@@ -315,22 +281,6 @@ public class Inicio extends javax.swing.JFrame {
         jMenuBar1.add(menuGestionar);
 
         menuReportes.setText("Reportes");
-
-        jMenuItem1.setText("Comprobante de abono");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
-            }
-        });
-        menuReportes.add(jMenuItem1);
-
-        jMenuItem2.setText("Comprobante de venta");
-        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem2ActionPerformed(evt);
-            }
-        });
-        menuReportes.add(jMenuItem2);
 
         jMenuItem3.setText("Reporte de ventas");
         jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
@@ -547,30 +497,6 @@ public class Inicio extends javax.swing.JFrame {
         ajustar(io);
     }//GEN-LAST:event_botonOperacionesActionPerformed
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        // TODO add your handling code here:
-        JTextField abonoID = new JTextField();
-        Object[] message = {
-            "ID abono:", abonoID
-        };
-        int opcion = JOptionPane.showConfirmDialog(this, message, "Comprobante de abono.", JOptionPane.OK_CANCEL_OPTION);
-        if (opcion == JOptionPane.OK_OPTION) {
-            mostrarComprobanteAbono(Integer.parseInt(abonoID.getText()));
-        }
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
-
-    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-        // TODO add your handling code here:
-        JTextField ventaID = new JTextField();
-        Object[] message = {
-            "ID venta:", ventaID
-        };
-        int opcion = JOptionPane.showConfirmDialog(this, message, "Comprobante de venta.", JOptionPane.OK_CANCEL_OPTION);
-        if (opcion == JOptionPane.OK_OPTION) {
-            mostrarComprobanteDeVenta(Integer.parseInt(ventaID.getText()));
-        }
-    }//GEN-LAST:event_jMenuItem2ActionPerformed
-
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
         // TODO add your handling code here:
         JDateChooser jdc = new JDateChooser();
@@ -631,8 +557,6 @@ public class Inicio extends javax.swing.JFrame {
     private javax.swing.JButton botonVentas;
     public javax.swing.JDesktopPane escritorio;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JMenuItem menuAcercade;
