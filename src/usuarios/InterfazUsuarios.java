@@ -47,7 +47,7 @@ public class InterfazUsuarios extends javax.swing.JInternalFrame {
             modelo = new ModeloUsuarios(new ArrayList<>());
         }
         tablaUsuarios.setModel(modelo);
-        ajustarColumnas(tablaUsuarios);
+        //ajustarColumnas(tablaUsuarios);
     }
     
     public void crearUsuario(){

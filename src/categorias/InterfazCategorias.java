@@ -9,12 +9,14 @@ import conexion.Conexion;
 import controladores.CategoriaJpaController;
 import controladores.exceptions.NonexistentEntityException;
 import entidades.Categoria;
+import java.awt.HeadlessException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.Query;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import org.eclipse.persistence.exceptions.DatabaseException;
 
 /**
  *
@@ -241,7 +243,7 @@ public class InterfazCategorias extends javax.swing.JInternalFrame {
                 JOptionPane.showMessageDialog(this, "Categoría eliminada exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
                 cargarCategorias();
             }
-            catch (NonexistentEntityException ex) {
+            catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Imposible eliminar la categoría seleccionada.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }

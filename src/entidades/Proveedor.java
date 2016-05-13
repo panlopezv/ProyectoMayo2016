@@ -25,10 +25,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "Proveedor", catalog = "ferreteria", schema = "")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Proveedor.findAll", query = "SELECT p FROM Proveedor p"),
+    @NamedQuery(name = "Proveedor.findAll", query = "SELECT p FROM Proveedor p ORDER BY p.nombre"),
     @NamedQuery(name = "Proveedor.findByIdProveedor", query = "SELECT p FROM Proveedor p WHERE p.idProveedor = :idProveedor"),
     @NamedQuery(name = "Proveedor.findByNombre", query = "SELECT p FROM Proveedor p WHERE p.nombre = :nombre"),
-    @NamedQuery(name = "Proveedor.findLikeNombre", query = "SELECT p FROM Proveedor p WHERE p.nombre Like :nombre"),
+    @NamedQuery(name = "Proveedor.findLikeNombre", query = "SELECT p FROM Proveedor p WHERE p.nombre Like :nombre ORDER BY p.nombre"),
     @NamedQuery(name = "Proveedor.findByNit", query = "SELECT p FROM Proveedor p WHERE p.nit = :nit"),
     @NamedQuery(name = "Proveedor.findByTelefono", query = "SELECT p FROM Proveedor p WHERE p.telefono = :telefono"),
     @NamedQuery(name = "Proveedor.findMaxID", query = "SELECT max(p.idProveedor) FROM Proveedor p"),
