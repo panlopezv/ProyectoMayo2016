@@ -8,11 +8,17 @@ package vistas;
 import conexion.Conexion;
 import controladores.CompraJpaController;
 import controladores.VentaJpaController;
+import entidades.Cliente;
+import entidades.Compra;
+import entidades.Proveedor;
+import entidades.Venta;
 import java.awt.Component;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import javax.persistence.Query;
 import javax.swing.JOptionPane;
@@ -34,6 +40,7 @@ public class InterfazOperaciones extends javax.swing.JInternalFrame {
     CompraJpaController controladorC;
     ModeloVentas modeloV;
     ModeloCompras modeloC;
+
     /**
      * Creates new form InterfazOperaciones
      */
@@ -42,48 +49,133 @@ public class InterfazOperaciones extends javax.swing.JInternalFrame {
         setVisible(Boolean.TRUE);
         controladorV = new VentaJpaController(Conexion.getConexion().getEmf());
         controladorC = new CompraJpaController(Conexion.getConexion().getEmf());
+        jDateChooser1.setDate(new java.util.Date());
+        jDateChooser2.setDate(new java.util.Date());
         cargarVentas();
         cargarCompras();
     }
 
-    public void cargarVentas(){
-        Query q = Conexion.getConexion().getEmf().createEntityManager().createNamedQuery("Venta.findAll");
-        try {
-            modeloV = new ModeloVentas(new ArrayList<>(q.getResultList()));
-        } catch (Exception ex) {
-            modeloV = new ModeloVentas(new ArrayList<>());
+    public void cargarVentas() {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        if (sdf.format(jDateChooser1.getDate()).compareTo(sdf.format(new Date()))==0) {
+            ArrayList<Venta> encontradas = new ArrayList<>();
+            Query q = Conexion.getConexion().getEmf().createEntityManager().createNamedQuery("Cliente.findLikeNombre");
+            q.setParameter("nombre", jTextField1.getText()+"%");
+            if(!q.getResultList().isEmpty()){
+                ArrayList<Cliente> encontrados = new ArrayList<>(q.getResultList());
+                for(Cliente c: encontrados){
+                    q = Conexion.getConexion().getEmf().createEntityManager().createNamedQuery("Venta.findByIdCliente");
+                    q.setParameter("idCliente", c.getIdCliente());
+                    if(!q.getResultList().isEmpty()){
+                        for(Object o : q.getResultList()){
+                            encontradas.add((Venta)o);
+                        }
+                    }
+                }
+            }
+            try {
+                modeloV = new ModeloVentas(new ArrayList<>(encontradas));
+            } catch (Exception ex) {
+                modeloV = new ModeloVentas(new ArrayList<>());
+            }
+            tablaVentas.setModel(modeloV);
+            ajustarColumnas(tablaVentas);
+        } else if (jDateChooser1.getDate().before(new Date())){
+            ArrayList<Venta> encontradas = new ArrayList<>();
+            Query q = Conexion.getConexion().getEmf().createEntityManager().createNamedQuery("Cliente.findLikeNombre");
+            q.setParameter("nombre", jTextField1.getText()+"%");
+            if(!q.getResultList().isEmpty()){
+                ArrayList<Cliente> encontrados = new ArrayList<>(q.getResultList());
+                for(Cliente c : encontrados){
+                    q = Conexion.getConexion().getEmf().createEntityManager().createNamedQuery("Venta.findByIntervaloAndIdCliente");
+                    q.setParameter("idCliente", c.getIdCliente());
+                    q.setParameter("fecha1", jDateChooser1.getDate());
+                    q.setParameter("fecha2", new Date());
+                    if(!q.getResultList().isEmpty()){
+                        for(Object o:q.getResultList()){
+                            encontradas.add((Venta)o);
+                        }
+                    }
+                }
+            } 
+            try {
+                modeloV = new ModeloVentas(new ArrayList<>(encontradas));
+            } catch (Exception ex) {
+                modeloV = new ModeloVentas(new ArrayList<>());
+            }
+            tablaVentas.setModel(modeloV);
+        }  else{
+            JOptionPane.showMessageDialog(this, "La fecha seleccionada debe ser anterior.", "Fecha Incorrecta.", JOptionPane.ERROR_MESSAGE);
         }
-        tablaVentas.setModel(modeloV);
-        ajustarColumnas(tablaVentas);
     }
 
-    public void cargarCompras(){
-        Query q = Conexion.getConexion().getEmf().createEntityManager().createNamedQuery("Compra.findAll");
-        try {
-            modeloC = new ModeloCompras(new ArrayList<>(q.getResultList()));
-        } catch (Exception ex) {
-            modeloC = new ModeloCompras(new ArrayList<>());
+    public void cargarCompras() {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        if (sdf.format(jDateChooser2.getDate()).compareTo(sdf.format(new Date()))==0) {
+            ArrayList<Compra> encontradas = new ArrayList<>();
+            Query q = Conexion.getConexion().getEmf().createEntityManager().createNamedQuery("Proveedor.findLikeNombre");
+            q.setParameter("nombre", jTextField2.getText()+"%");
+            if(!q.getResultList().isEmpty()){
+                ArrayList<Proveedor> encontrados = new ArrayList<>(q.getResultList());
+                for(Proveedor p: encontrados){
+                    q = Conexion.getConexion().getEmf().createEntityManager().createNamedQuery("Compra.findByIdProveedor");
+                    q.setParameter("idProveedor", p.getIdProveedor());
+                    if(!q.getResultList().isEmpty()){
+                        for(Object o : q.getResultList()){
+                            encontradas.add((Compra)o);
+                        }
+                    }
+                }
+            }
+            try {
+                modeloC = new ModeloCompras(new ArrayList<>(encontradas));
+            } catch (Exception ex) {
+                modeloC = new ModeloCompras(new ArrayList<>());
+            }
+            tablaCompras.setModel(modeloC);
+            ajustarColumnas(tablaCompras);
+        } else if(jDateChooser2.getDate().before(new Date())){
+            ArrayList<Compra> encontradas = new ArrayList<>();
+            Query q = Conexion.getConexion().getEmf().createEntityManager().createNamedQuery("Proveedor.findLikeNombre");
+            q.setParameter("nombre", jTextField2.getText()+"%");
+            if(!q.getResultList().isEmpty()){
+                ArrayList<Proveedor> encontrados = new ArrayList<>(q.getResultList());
+                for(Proveedor p : encontrados){
+                    q = Conexion.getConexion().getEmf().createEntityManager().createNamedQuery("Compra.findByIntervaloAndIdProveedor");
+                    q.setParameter("idProveedor", p.getIdProveedor());
+                    q.setParameter("fecha1", jDateChooser2.getDate());
+                    q.setParameter("fecha2", new Date());
+                    if(!q.getResultList().isEmpty()){
+                        for(Object o:q.getResultList()){
+                            encontradas.add((Compra)o);
+                        }
+                    }
+                }
+            }
+            try {
+                modeloC = new ModeloCompras(new ArrayList<>(encontradas));
+            } catch (Exception ex) {
+                modeloC = new ModeloCompras(new ArrayList<>());
+            }
+            tablaVentas.setModel(modeloC);            
+        } else{
+            JOptionPane.showMessageDialog(this, "La fecha seleccionada debe ser anterior.", "Fecha Incorrecta.", JOptionPane.ERROR_MESSAGE);
         }
-        tablaCompras.setModel(modeloC);
-        ajustarColumnas(tablaCompras);
     }
-    
-    public void ajustarColumnas(JTable tabla){
+
+    public void ajustarColumnas(JTable tabla) {
         tabla.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        
-        for (int column = 0; column < tabla.getColumnCount(); column++)
-        {
+
+        for (int column = 0; column < tabla.getColumnCount(); column++) {
             TableColumn tableColumn = tabla.getColumnModel().getColumn(column);
             int preferredWidth = tableColumn.getMinWidth();
             int maxWidth = tableColumn.getMaxWidth();
-            for (int row = 0; row < tabla.getRowCount(); row++)
-            {
+            for (int row = 0; row < tabla.getRowCount(); row++) {
                 TableCellRenderer cellRenderer = tabla.getCellRenderer(row, column);
                 Component c = tabla.prepareRenderer(cellRenderer, row, column);
                 int width = c.getPreferredSize().width + tabla.getIntercellSpacing().width;
                 preferredWidth = Math.max(preferredWidth, width);
-                if (preferredWidth >= maxWidth)
-                {
+                if (preferredWidth >= maxWidth) {
                     preferredWidth = maxWidth;
                     break;
                 }
@@ -97,14 +189,10 @@ public class InterfazOperaciones extends javax.swing.JInternalFrame {
             Component headerComp
                     = headerRenderer.getTableCellRendererComponent(tabla, headerValue, false, false, 0, column);
             preferredWidth = Math.max(preferredWidth, headerComp.getPreferredSize().width);
-            tableColumn.setPreferredWidth( preferredWidth );
+            tableColumn.setPreferredWidth(preferredWidth);
         }
     }
     
-    /**
-     * Muestra el comprobante de venta.
-     * @param ventaID 
-     */
     public void mostrarComprobanteDeVenta(int ventaID){
         try {
             Class.forName("com.mysql.jdbc.Driver");
@@ -116,6 +204,7 @@ public class InterfazOperaciones extends javax.swing.JInternalFrame {
         } catch (ClassNotFoundException | SQLException | JRException ex) {
         }
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -138,7 +227,7 @@ public class InterfazOperaciones extends javax.swing.JInternalFrame {
         salirVenta = new javax.swing.JButton();
         buscarVenta = new javax.swing.JButton();
         limpiarBusquedaV = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        mostrarComprobante = new javax.swing.JButton();
         compras = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaCompras = new javax.swing.JTable();
@@ -155,7 +244,7 @@ public class InterfazOperaciones extends javax.swing.JInternalFrame {
         setBackground(new java.awt.Color(181, 232, 205));
         setClosable(true);
         setMaximizable(true);
-        setTitle("Operaciones.");
+        setTitle("Operaciones");
 
         tablaVentas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -169,6 +258,12 @@ public class InterfazOperaciones extends javax.swing.JInternalFrame {
             }
         ));
         jScrollPane2.setViewportView(tablaVentas);
+
+        jTextField1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTextField1KeyReleased(evt);
+            }
+        });
 
         jLabel2.setText("Cliente:");
 
@@ -200,15 +295,25 @@ public class InterfazOperaciones extends javax.swing.JInternalFrame {
 
         buscarVenta.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/buscar.png"))); // NOI18N
         buscarVenta.setText("Buscar");
+        buscarVenta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buscarVentaActionPerformed(evt);
+            }
+        });
 
         limpiarBusquedaV.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/clear.png"))); // NOI18N
         limpiarBusquedaV.setText("Limpiar");
-
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/reporte.png"))); // NOI18N
-        jButton1.setText("Comprobante");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        limpiarBusquedaV.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                limpiarBusquedaVActionPerformed(evt);
+            }
+        });
+
+        mostrarComprobante.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/reporte.png"))); // NOI18N
+        mostrarComprobante.setText("Comprobante");
+        mostrarComprobante.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mostrarComprobanteActionPerformed(evt);
             }
         });
 
@@ -219,6 +324,14 @@ public class InterfazOperaciones extends javax.swing.JInternalFrame {
             .addGroup(ventasLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(ventasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(ventasLayout.createSequentialGroup()
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 589, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(ventasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(anularVenta, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(mostrarComprobante, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(verDetalleVenta, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(salirVenta, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(ventasLayout.createSequentialGroup()
                         .addGroup(ventasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
@@ -232,14 +345,7 @@ public class InterfazOperaciones extends javax.swing.JInternalFrame {
                                 .addComponent(buscarVenta)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(limpiarBusquedaV)))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(ventasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(salirVenta, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(anularVenta, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(verDetalleVenta, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         ventasLayout.setVerticalGroup(
@@ -265,9 +371,9 @@ public class InterfazOperaciones extends javax.swing.JInternalFrame {
                         .addComponent(verDetalleVenta)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(anularVenta)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 114, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
+                        .addComponent(mostrarComprobante)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 160, Short.MAX_VALUE)
                         .addComponent(salirVenta))
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
@@ -292,8 +398,19 @@ public class InterfazOperaciones extends javax.swing.JInternalFrame {
 
         jLabel6.setText("Desde:");
 
+        jTextField2.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTextField2KeyReleased(evt);
+            }
+        });
+
         buscarCompra.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/buscar.png"))); // NOI18N
         buscarCompra.setText("Buscar");
+        buscarCompra.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buscarCompraActionPerformed(evt);
+            }
+        });
 
         verDetalleCompra.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/ver.png"))); // NOI18N
         verDetalleCompra.setText("Ver detalle");
@@ -321,6 +438,11 @@ public class InterfazOperaciones extends javax.swing.JInternalFrame {
 
         limpiarBusquedaP.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/clear.png"))); // NOI18N
         limpiarBusquedaP.setText("Limpiar");
+        limpiarBusquedaP.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                limpiarBusquedaPActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout comprasLayout = new javax.swing.GroupLayout(compras);
         compras.setLayout(comprasLayout);
@@ -329,6 +451,13 @@ public class InterfazOperaciones extends javax.swing.JInternalFrame {
             .addGroup(comprasLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(comprasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(comprasLayout.createSequentialGroup()
+                        .addComponent(jScrollPane1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(comprasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(verDetalleCompra, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(anularCompra, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(salirCompra, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(comprasLayout.createSequentialGroup()
                         .addGroup(comprasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel5)
@@ -342,13 +471,7 @@ public class InterfazOperaciones extends javax.swing.JInternalFrame {
                                 .addComponent(buscarCompra)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(limpiarBusquedaP)))
-                        .addGap(0, 22, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(comprasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(verDetalleCompra, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(anularCompra, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(salirCompra, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(0, 150, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         comprasLayout.setVerticalGroup(
@@ -374,9 +497,9 @@ public class InterfazOperaciones extends javax.swing.JInternalFrame {
                         .addComponent(verDetalleCompra)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(anularCompra)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 159, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(salirCompra))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -414,133 +537,157 @@ public class InterfazOperaciones extends javax.swing.JInternalFrame {
 
     private void verDetalleVentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verDetalleVentaActionPerformed
         // TODO add your handling code here:
-        int fila=tablaVentas.getSelectedRow();
-        if(fila>=0){
-            if(((ModeloVentas)tablaVentas.getModel()).getVenta(fila).getAnulada()==null ||
-                    !((ModeloVentas)tablaVentas.getModel()).getVenta(fila).getAnulada()){
+        int fila = tablaVentas.getSelectedRow();
+        if (fila >= 0) {
+            if (((ModeloVentas) tablaVentas.getModel()).getVenta(fila).getAnulada() == null
+                    || !((ModeloVentas) tablaVentas.getModel()).getVenta(fila).getAnulada()) {
                 Object[] message = {
-                    new DetalleVenta(((ModeloVentas)tablaVentas.getModel()).getVenta(fila).getIdVenta())
+                    "Ventas:", new DetalleVenta(((ModeloVentas) tablaVentas.getModel()).getVenta(fila).getIdVenta())
                 };
-                JOptionPane.showMessageDialog(this,message,"Detalle venta.", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, message, "Detalle venta.", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, "Detalles de venta no disponibles.\n\r\tDebe seleccionar una venta que no este anulada.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-            else{
-                JOptionPane.showMessageDialog(null,"Detalles de venta no disponibles.\n\r\tDebe seleccionar una venta que no este anulada.","Error",JOptionPane.ERROR_MESSAGE);
-            }
-        } else{
-            JOptionPane.showMessageDialog(null,"Debe seleccionar una venta.","Error",JOptionPane.ERROR_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Debe seleccionar una venta.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_verDetalleVentaActionPerformed
 
     private void anularVentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_anularVentaActionPerformed
         // TODO add your handling code here:
-        int fila=tablaVentas.getSelectedRow();
-        if(fila>=0){
-            if(((ModeloVentas)tablaVentas.getModel()).getVenta(fila).getAnulada()==null || 
-                    !((ModeloVentas)tablaVentas.getModel()).getVenta(fila).getAnulada()){
-                if(!((ModeloVentas)tablaVentas.getModel()).getVenta(fila).getCredito()){
-                    try{
+        int fila = tablaVentas.getSelectedRow();
+        if (fila >= 0) {
+            if (((ModeloVentas) tablaVentas.getModel()).getVenta(fila).getAnulada() == null
+                    || !((ModeloVentas) tablaVentas.getModel()).getVenta(fila).getAnulada()) {
+                if (!((ModeloVentas) tablaVentas.getModel()).getVenta(fila).getCredito()) {
+                    try {
                         //No es al credito, se puede anular.
-                        (((ModeloVentas)tablaVentas.getModel()).getVenta(fila)).setAnulada(Boolean.TRUE);
-                        controladorV.edit(((ModeloVentas)tablaVentas.getModel()).getVenta(fila));
+                        (((ModeloVentas) tablaVentas.getModel()).getVenta(fila)).setAnulada(Boolean.TRUE);
+                        controladorV.edit(((ModeloVentas) tablaVentas.getModel()).getVenta(fila));
                         JOptionPane.showMessageDialog(this, "Venta anulada exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
                         Conexion.getConexion().getEmf().getCache().evictAll();
                         cargarVentas();
                     } catch (Exception ex) {
-                        JOptionPane.showMessageDialog(null,"A ocurrido un error inesperado.\n\r\tVuelva a abrir el formulario e intentelo de nuevo.","Error",JOptionPane.ERROR_MESSAGE);                
+                        JOptionPane.showMessageDialog(null, "A ocurrido un error inesperado.\n\r\tVuelva a abrir el formulario e intentelo de nuevo.", "Error", JOptionPane.ERROR_MESSAGE);
                     }
+                } else if (((ModeloVentas) tablaVentas.getModel()).getVenta(fila).getSaldo() >= ((ModeloVentas) tablaVentas.getModel()).getVenta(fila).getTotal()) {
+                    try {
+                        // No se ha realizado ningun abono, se puede anular.
+                        (((ModeloVentas) tablaVentas.getModel()).getVenta(fila)).setAnulada(Boolean.TRUE);
+                        controladorV.edit(((ModeloVentas) tablaVentas.getModel()).getVenta(fila));
+                        JOptionPane.showMessageDialog(this, "Venta anulada exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
+                        Conexion.getConexion().getEmf().getCache().evictAll();
+                        cargarVentas();
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, "A ocurrido un error inesperado.\n\r\tVuelva a abrir el formulario e intentelo de nuevo.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "No es posible anular esta venta al crédito.\n\r\tDebido a que ya se han efectuado abonos.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
-                else{
-                    if(((ModeloVentas)tablaVentas.getModel()).getVenta(fila).getSaldo()>=((ModeloVentas)tablaVentas.getModel()).getVenta(fila).getTotal()){
-                        try {
-                            // No se ha realizado ningun abono, se puede anular.
-                            (((ModeloVentas)tablaVentas.getModel()).getVenta(fila)).setAnulada(Boolean.TRUE);
-                            controladorV.edit(((ModeloVentas)tablaVentas.getModel()).getVenta(fila));
-                            JOptionPane.showMessageDialog(this, "Venta anulada exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
-                            Conexion.getConexion().getEmf().getCache().evictAll();
-                            cargarVentas();
-                        } catch (Exception ex) {
-                            JOptionPane.showMessageDialog(null,"A ocurrido un error inesperado.\n\r\tVuelva a abrir el formulario e intentelo de nuevo.","Error",JOptionPane.ERROR_MESSAGE);                
-                        }
-                    }
-                    else{
-                        JOptionPane.showMessageDialog(null,"No es posible anular esta venta al crédito.\n\r\tDebido a que ya se han efectuado abonos.","Error",JOptionPane.ERROR_MESSAGE);
-                    }
-                }
+            } else {
+                JOptionPane.showMessageDialog(null, "La venta ya esta anulada.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-            else{
-                JOptionPane.showMessageDialog(null,"La venta ya esta anulada.","Error",JOptionPane.ERROR_MESSAGE);                
-            }
-        }
-        else{
-            JOptionPane.showMessageDialog(null,"Debe seleccionar una venta.","Error",JOptionPane.ERROR_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Debe seleccionar una venta.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_anularVentaActionPerformed
 
     private void verDetalleCompraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verDetalleCompraActionPerformed
         // TODO add your handling code here:
-        int fila=tablaCompras.getSelectedRow();
-        if(fila>=0){
-            if(((ModeloCompras)tablaCompras.getModel()).getCompra(fila).getAnulada()==null ||
-                    !((ModeloCompras)tablaCompras.getModel()).getCompra(fila).getAnulada()){
+        int fila = tablaCompras.getSelectedRow();
+        if (fila >= 0) {
+            if (((ModeloCompras) tablaCompras.getModel()).getCompra(fila).getAnulada() == null
+                    || !((ModeloCompras) tablaCompras.getModel()).getCompra(fila).getAnulada()) {
                 Object[] message = {
-                    new DetalleCompra(((ModeloCompras)tablaCompras.getModel()).getCompra(fila).getIdCompra())
+                    "Compras:", new DetalleCompra(((ModeloCompras) tablaCompras.getModel()).getCompra(fila).getIdCompra())
                 };
-                JOptionPane.showMessageDialog(this,message,"Detalle compra.", JOptionPane.INFORMATION_MESSAGE);
-            } else{
-                JOptionPane.showMessageDialog(null,"Detalles de compra no disponibles.\n\r\tDebe seleccionar una compra que no este anulada.","Error",JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, message, "Detalle compra.", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, "Detalles de compra no disponibles.\n\r\tDebe seleccionar una compra que no este anulada.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        }
-        else{
-            JOptionPane.showMessageDialog(null,"Debe seleccionar una compra.","Error",JOptionPane.ERROR_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Debe seleccionar una compra.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_verDetalleCompraActionPerformed
 
     private void anularCompraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_anularCompraActionPerformed
         // TODO add your handling code here:
-        int fila=tablaCompras.getSelectedRow();
-        if(fila>=0){
-            if(((ModeloCompras)tablaCompras.getModel()).getCompra(fila).getAnulada()==null || 
-                    !((ModeloCompras)tablaCompras.getModel()).getCompra(fila).getAnulada()){
-                if(!((ModeloCompras)tablaCompras.getModel()).getCompra(fila).getCredito()){
+        int fila = tablaCompras.getSelectedRow();
+        if (fila >= 0) {
+            if (((ModeloCompras) tablaCompras.getModel()).getCompra(fila).getAnulada() == null
+                    || !((ModeloCompras) tablaCompras.getModel()).getCompra(fila).getAnulada()) {
+                if (!((ModeloCompras) tablaCompras.getModel()).getCompra(fila).getCredito()) {
                     try {
                         //No es al credito, se puede anular.
-                        ((ModeloCompras)tablaCompras.getModel()).getCompra(fila).setAnulada(Boolean.TRUE);
-                        controladorC.edit(((ModeloCompras)tablaCompras.getModel()).getCompra(fila));
+                        ((ModeloCompras) tablaCompras.getModel()).getCompra(fila).setAnulada(Boolean.TRUE);
+                        controladorC.edit(((ModeloCompras) tablaCompras.getModel()).getCompra(fila));
                         JOptionPane.showMessageDialog(this, "Compra anulada exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
                         Conexion.getConexion().getEmf().getCache().evictAll();
                         cargarCompras();
                     } catch (Exception ex) {
-                        JOptionPane.showMessageDialog(null,"A ocurrido un error inesperado.\n\r\tVuelva a abrir el formulario e intentelo de nuevo.","Error",JOptionPane.ERROR_MESSAGE);                
+                        JOptionPane.showMessageDialog(null, "A ocurrido un error inesperado.\n\r\tVuelva a abrir el formulario e intentelo de nuevo.", "Error", JOptionPane.ERROR_MESSAGE);
                     }
+                } else if (((ModeloCompras) tablaCompras.getModel()).getCompra(fila).getSaldo() >= ((ModeloCompras) tablaCompras.getModel()).getCompra(fila).getTotal()) {
+                    try {
+                        // No se ha realizado ningun pago, se puede anular.
+                        ((ModeloCompras) tablaCompras.getModel()).getCompra(fila).setAnulada(Boolean.TRUE);
+                        controladorC.edit(((ModeloCompras) tablaCompras.getModel()).getCompra(fila));
+                        JOptionPane.showMessageDialog(this, "Compra anulada exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
+                        Conexion.getConexion().getEmf().getCache().evictAll();
+                        cargarCompras();
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, "A ocurrido un error inesperado.\n\r\tVuelva a abrir el formulario e intentelo de nuevo.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "No es posible anular esta compra al crédito.\n\r\tDebido a que ya se han efectuado pagos.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
-                else{
-                    if(((ModeloCompras)tablaCompras.getModel()).getCompra(fila).getSaldo()>=((ModeloCompras)tablaCompras.getModel()).getCompra(fila).getTotal()){
-                        try {
-                            // No se ha realizado ningun pago, se puede anular.
-                            ((ModeloCompras)tablaCompras.getModel()).getCompra(fila).setAnulada(Boolean.TRUE);
-                            controladorC.edit(((ModeloCompras)tablaCompras.getModel()).getCompra(fila));
-                            JOptionPane.showMessageDialog(this, "Compra anulada exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
-                            Conexion.getConexion().getEmf().getCache().evictAll();
-                            cargarCompras();
-                        } catch (Exception ex) {
-                            JOptionPane.showMessageDialog(null,"A ocurrido un error inesperado.\n\r\tVuelva a abrir el formulario e intentelo de nuevo.","Error",JOptionPane.ERROR_MESSAGE);                
-                        }
-                    }
-                    else{
-                        JOptionPane.showMessageDialog(null,"No es posible anular esta compra al crédito.\n\r\tDebido a que ya se han efectuado pagos.","Error",JOptionPane.ERROR_MESSAGE);
-                    }
-                }
+            } else {
+                JOptionPane.showMessageDialog(null, "La compra ya esta anulada.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-            else{
-                JOptionPane.showMessageDialog(null,"La compra ya esta anulada.","Error",JOptionPane.ERROR_MESSAGE);                
-            }
-        }
-        else{
-            JOptionPane.showMessageDialog(null,"Debe seleccionar una compra.","Error",JOptionPane.ERROR_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Debe seleccionar una compra.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_anularCompraActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void jTextField1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField1KeyReleased
+        // TODO add your handling code here:
+        if (evt.getKeyChar() == (char) 10) {
+            cargarVentas();
+        }
+    }//GEN-LAST:event_jTextField1KeyReleased
+
+    private void buscarVentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buscarVentaActionPerformed
+        // TODO add your handling code here:
+        cargarVentas();
+    }//GEN-LAST:event_buscarVentaActionPerformed
+
+    private void jTextField2KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField2KeyReleased
+        // TODO add your handling code here:
+        if(evt.getKeyChar() == (char)10){
+            cargarCompras();
+        }
+    }//GEN-LAST:event_jTextField2KeyReleased
+
+    private void buscarCompraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buscarCompraActionPerformed
+        // TODO add your handling code here:
+        cargarCompras();
+    }//GEN-LAST:event_buscarCompraActionPerformed
+
+    private void limpiarBusquedaVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_limpiarBusquedaVActionPerformed
+        // TODO add your handling code here:
+        jDateChooser1.setDate(new java.util.Date());
+        jTextField1.setText("");
+        cargarVentas();
+    }//GEN-LAST:event_limpiarBusquedaVActionPerformed
+
+    private void limpiarBusquedaPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_limpiarBusquedaPActionPerformed
+        // TODO add your handling code here:
+        jDateChooser2.setDate(new java.util.Date());
+        jTextField2.setText("");
+        cargarCompras();
+    }//GEN-LAST:event_limpiarBusquedaPActionPerformed
+
+    private void mostrarComprobanteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mostrarComprobanteActionPerformed
         // TODO add your handling code here:
         int fila=tablaVentas.getSelectedRow();
         if(fila>=0){
@@ -554,7 +701,7 @@ public class InterfazOperaciones extends javax.swing.JInternalFrame {
         } else{
             JOptionPane.showMessageDialog(null,"Debe seleccionar una venta.","Error",JOptionPane.ERROR_MESSAGE);
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_mostrarComprobanteActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -563,7 +710,6 @@ public class InterfazOperaciones extends javax.swing.JInternalFrame {
     private javax.swing.JButton buscarCompra;
     private javax.swing.JButton buscarVenta;
     private javax.swing.JPanel compras;
-    private javax.swing.JButton jButton1;
     private com.toedter.calendar.JDateChooser jDateChooser1;
     private com.toedter.calendar.JDateChooser jDateChooser2;
     private javax.swing.JLabel jLabel2;
@@ -577,6 +723,7 @@ public class InterfazOperaciones extends javax.swing.JInternalFrame {
     private javax.swing.JTextField jTextField2;
     private javax.swing.JButton limpiarBusquedaP;
     private javax.swing.JButton limpiarBusquedaV;
+    private javax.swing.JButton mostrarComprobante;
     private javax.swing.JButton salirCompra;
     private javax.swing.JButton salirVenta;
     private javax.swing.JTable tablaCompras;

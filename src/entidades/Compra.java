@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Compra.findAll", query = "SELECT c FROM Compra c"),
     @NamedQuery(name = "Compra.findByIdCompra", query = "SELECT c FROM Compra c WHERE c.idCompra = :idCompra"),
     @NamedQuery(name = "Compra.findByFecha", query = "SELECT c FROM Compra c WHERE c.fecha = :fecha"),
+    @NamedQuery(name = "Compra.findByIntervaloAndIdProveedor", query = "SELECT c FROM Compra c WHERE c.idProveedor = :idProveedor AND c.fecha BETWEEN :fecha1 AND :fecha2"),
     @NamedQuery(name = "Compra.findByTotal", query = "SELECT c FROM Compra c WHERE c.total = :total"),
     @NamedQuery(name = "Compra.findByCredito", query = "SELECT c FROM Compra c WHERE c.credito = :credito"),
     @NamedQuery(name = "Compra.findByAnulada", query = "SELECT c FROM Compra c WHERE c.anulada = :anulada"),

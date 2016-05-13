@@ -8,7 +8,6 @@ package pagos;
 import conexion.Conexion;
 import controladores.AbonoJpaController;
 import controladores.PagoJpaController;
-import controladores.exceptions.NonexistentEntityException;
 import entidades.Abono;
 import entidades.Cliente;
 import entidades.Compra;
@@ -24,8 +23,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.swing.DefaultComboBoxModel;
@@ -39,7 +36,6 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.view.JasperViewer;
-import pferreteria.CPago;
 import vistas.Inicio;
 
 /**
@@ -52,7 +48,6 @@ public class controlPagos extends javax.swing.JInternalFrame {
     List<Proveedor> encontradosP;
     modeloComprasAbono mca;
     modeloVentasAbono mva;
-    modeloPagos mcp;
 
     /**
      * Creates new form controlPagos
@@ -60,8 +55,6 @@ public class controlPagos extends javax.swing.JInternalFrame {
     public controlPagos() {
         initComponents();
         this.setVisible(Boolean.TRUE);
-        borrarAbono.setEnabled(Boolean.FALSE);
-        borrarPago.setEnabled(Boolean.FALSE);
         jTabbedPane1.setEnabledAt(1, Conexion.getConexion().getEsAdministrador());
     }
 
@@ -324,44 +317,6 @@ public class controlPagos extends javax.swing.JInternalFrame {
         }
     }
 
-    public void encontrarAbonos() {
-        queCliente.setText(queCliente.getText() + encontradosC.get(clientesAlCredito.getSelectedIndex() - 1).getNombre());
-        EntityManagerFactory emf = Conexion.getConexion().getEmf();
-        Query q = emf.createEntityManager().createNamedQuery("Abono.findByIdCliente");
-        q.setParameter("idCliente", encontradosC.get(clientesAlCredito.getSelectedIndex() - 1).getIdCliente());
-        List<Abono> abonosEncontrados = q.getResultList();
-        ArrayList<CPago> listaDeCPagos = new ArrayList<>();
-        if (!abonosEncontrados.isEmpty()) {
-            info.setText("");
-            for (Abono a : abonosEncontrados) {
-                listaDeCPagos.add(new CPago(a.getIdAbono(), a.getFecha(), a.getTotal()));
-            }
-        } else {
-            info.setText("Este Cliente no ha efectuado ningun Abono.");
-        }
-        mcp = new modeloPagos(listaDeCPagos, 0);
-        jTable3.setModel(mcp);
-    }
-
-    public void encontrarPagos() {
-        queProveedor.setText(queProveedor.getText() + encontradosP.get(proveedoresAlCredito.getSelectedIndex() - 1).getNombre());
-        EntityManagerFactory emf = Conexion.getConexion().getEmf();
-        Query q = emf.createEntityManager().createNamedQuery("Pago.findByIdProveedor");
-        q.setParameter("idProveedor", encontradosP.get(proveedoresAlCredito.getSelectedIndex() - 1).getIdProveedor());
-        List<Pago> pagosEncontrados = q.getResultList();
-        ArrayList<CPago> listaDeCPagos = new ArrayList<>();
-        if (!pagosEncontrados.isEmpty()) {
-            info1.setText("");
-            for (Pago p : pagosEncontrados) {
-                listaDeCPagos.add(new CPago(p.getIdPago(), p.getFecha(), p.getTotal()));
-            }
-        } else {
-            info1.setText("No se ha efectuado ningún pago a este Proveedor.");
-        }
-        mcp = new modeloPagos(listaDeCPagos, 1);
-        jTable4.setModel(mcp);
-    }
-
     /**
      * Muestra el comprobante del abono.
      * @param abonoID 
@@ -369,7 +324,7 @@ public class controlPagos extends javax.swing.JInternalFrame {
     public void mostrarComprobanteAbono(int abonoID){
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/ferreteria", Inicio.USER, Inicio.PASS);
+            Connection con = DriverManager.getConnection("jdbc:mysql://"+Inicio.SERVIDOR+":3306/ferreteria", Inicio.USER, Inicio.PASS);
             HashMap parametros = new HashMap();
             parametros.put("abonoID", abonoID);
             JasperPrint print = JasperFillManager.fillReport("src\\reportes\\ComprobanteAbono.jasper", parametros, con);
@@ -386,20 +341,6 @@ public class controlPagos extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        historialDeAbonos = new javax.swing.JDialog();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        jTable3 = new javax.swing.JTable();
-        borrarAbono = new javax.swing.JButton();
-        Salir = new javax.swing.JButton();
-        queCliente = new javax.swing.JLabel();
-        info = new javax.swing.JLabel();
-        historialDePagos = new javax.swing.JDialog();
-        borrarPago = new javax.swing.JButton();
-        Salir1 = new javax.swing.JButton();
-        queProveedor = new javax.swing.JLabel();
-        info1 = new javax.swing.JLabel();
-        jScrollPane4 = new javax.swing.JScrollPane();
-        jTable4 = new javax.swing.JTable();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -428,166 +369,10 @@ public class controlPagos extends javax.swing.JInternalFrame {
         jLabel4 = new javax.swing.JLabel();
         proveedoresAlCredito = new javax.swing.JComboBox<>();
 
-        historialDeAbonos.setTitle("Historial de Abonos");
-        historialDeAbonos.setResizable(false);
-
-        jTable3.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "idAbono", "Monto", "Fecha"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jTable3.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseReleased(java.awt.event.MouseEvent evt) {
-                jTable3MouseReleased(evt);
-            }
-        });
-        jScrollPane3.setViewportView(jTable3);
-
-        borrarAbono.setText("Eliminar");
-        borrarAbono.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                borrarAbonoActionPerformed(evt);
-            }
-        });
-
-        Salir.setText("Salir");
-        Salir.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                SalirActionPerformed(evt);
-            }
-        });
-
-        queCliente.setText("Abonos Efectuados por: ");
-
-        info.setText("jLabel6");
-
-        javax.swing.GroupLayout historialDeAbonosLayout = new javax.swing.GroupLayout(historialDeAbonos.getContentPane());
-        historialDeAbonos.getContentPane().setLayout(historialDeAbonosLayout);
-        historialDeAbonosLayout.setHorizontalGroup(
-            historialDeAbonosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(historialDeAbonosLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(historialDeAbonosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(historialDeAbonosLayout.createSequentialGroup()
-                        .addGroup(historialDeAbonosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(info)
-                            .addComponent(queCliente))
-                        .addGap(176, 176, 176)
-                        .addComponent(borrarAbono))
-                    .addComponent(Salir))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        historialDeAbonosLayout.setVerticalGroup(
-            historialDeAbonosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, historialDeAbonosLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(queCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(historialDeAbonosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(borrarAbono)
-                    .addComponent(info))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(Salir)
-                .addGap(7, 7, 7))
-        );
-
-        historialDePagos.setTitle("Historial de Pagos");
-        historialDePagos.setResizable(false);
-
-        borrarPago.setText("Eliminar");
-        borrarPago.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                borrarPagoActionPerformed(evt);
-            }
-        });
-
-        Salir1.setText("Salir");
-        Salir1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                Salir1ActionPerformed(evt);
-            }
-        });
-
-        queProveedor.setText("Pagos Efectuados a: ");
-
-        info1.setText("jLabel6");
-
-        jTable4.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "idPago", "Monto", "Fecha"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jTable4.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseReleased(java.awt.event.MouseEvent evt) {
-                jTable4MouseReleased(evt);
-            }
-        });
-        jScrollPane4.setViewportView(jTable4);
-
-        javax.swing.GroupLayout historialDePagosLayout = new javax.swing.GroupLayout(historialDePagos.getContentPane());
-        historialDePagos.getContentPane().setLayout(historialDePagosLayout);
-        historialDePagosLayout.setHorizontalGroup(
-            historialDePagosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(historialDePagosLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(historialDePagosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addGroup(historialDePagosLayout.createSequentialGroup()
-                        .addComponent(queProveedor)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, historialDePagosLayout.createSequentialGroup()
-                        .addGap(0, 52, Short.MAX_VALUE)
-                        .addGroup(historialDePagosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, historialDePagosLayout.createSequentialGroup()
-                                .addComponent(info1)
-                                .addGap(194, 194, 194)
-                                .addComponent(borrarPago))
-                            .addComponent(Salir1, javax.swing.GroupLayout.Alignment.TRAILING))))
-                .addContainerGap())
-        );
-        historialDePagosLayout.setVerticalGroup(
-            historialDePagosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, historialDePagosLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(queProveedor, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(historialDePagosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(borrarPago)
-                    .addComponent(info1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(7, 7, 7)
-                .addComponent(Salir1)
-                .addContainerGap())
-        );
-
+        setBackground(new java.awt.Color(181, 232, 205));
         setClosable(true);
         setMaximizable(true);
+        setTitle("Control de Pagos");
 
         jLabel1.setText("Nombre del Cliente:");
 
@@ -661,6 +446,7 @@ public class controlPagos extends javax.swing.JInternalFrame {
             }
         });
 
+        jButton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/exit.png"))); // NOI18N
         jButton7.setText("Salir");
         jButton7.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -668,6 +454,7 @@ public class controlPagos extends javax.swing.JInternalFrame {
             }
         });
 
+        historialAbonos.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/ver.png"))); // NOI18N
         historialAbonos.setText("Ver Historial de Abonos");
         historialAbonos.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -688,7 +475,7 @@ public class controlPagos extends javax.swing.JInternalFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 519, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 529, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jLabel1)
@@ -696,9 +483,9 @@ public class controlPagos extends javax.swing.JInternalFrame {
                             .addComponent(clientesAlCredito, 0, 250, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(saldo0, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(abonar, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING)))
+                            .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(saldo0, javax.swing.GroupLayout.Alignment.TRAILING)))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
@@ -729,7 +516,7 @@ public class controlPagos extends javax.swing.JInternalFrame {
                     .addComponent(clientesAlCredito, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(saldo0))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 135, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 142, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(saldoCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -815,6 +602,7 @@ public class controlPagos extends javax.swing.JInternalFrame {
             }
         });
 
+        jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/exit.png"))); // NOI18N
         jButton5.setText("Salir");
         jButton5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -822,6 +610,7 @@ public class controlPagos extends javax.swing.JInternalFrame {
             }
         });
 
+        historialPagos.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/ver.png"))); // NOI18N
         historialPagos.setText("Ver Historial de Pagos");
         historialPagos.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -840,28 +629,28 @@ public class controlPagos extends javax.swing.JInternalFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 519, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 529, Short.MAX_VALUE)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(nombreProveedor)
                             .addComponent(proveedoresAlCredito, 0, 220, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(saldo1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jButton3)
+                            .addComponent(saldo1)))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(pagar))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(historialPagos)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(saldoProveedor, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                        .addComponent(historialPagos)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(saldoProveedor, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -880,15 +669,16 @@ public class controlPagos extends javax.swing.JInternalFrame {
                     .addComponent(proveedoresAlCredito, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(saldo1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 142, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 135, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(saldoProveedor, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(saldoProveedor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton5)
-                    .addComponent(historialPagos, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(historialPagos, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton5))
+                .addContainerGap())
         );
 
         jTabbedPane1.addTab("Pagos a Proveedores", jPanel3);
@@ -899,7 +689,7 @@ public class controlPagos extends javax.swing.JInternalFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE)
+                .addComponent(jTabbedPane1)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -913,74 +703,12 @@ public class controlPagos extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void SalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SalirActionPerformed
-        // TODO add your handling code here:
-        historialDeAbonos.setVisible(Boolean.FALSE);
-        borrarAbono.setEnabled(Boolean.FALSE);
-        buscarClientes(1);
-        cargarVentas();
-    }//GEN-LAST:event_SalirActionPerformed
-
-    private void Salir1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Salir1ActionPerformed
-        // TODO add your handling code here:
-        historialDePagos.setVisible(Boolean.FALSE);
-        borrarPago.setEnabled(Boolean.FALSE);
-        buscarProveedores(1);
-        cargarCompras();
-    }//GEN-LAST:event_Salir1ActionPerformed
-
-    private void jTable4MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable4MouseReleased
-        // TODO add your handling code here:
-        borrarPago.setEnabled(Boolean.TRUE);
-    }//GEN-LAST:event_jTable4MouseReleased
-
-    private void jTable3MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable3MouseReleased
-        // TODO add your handling code here:
-        borrarAbono.setEnabled(Boolean.TRUE);
-    }//GEN-LAST:event_jTable3MouseReleased
-
-    private void borrarAbonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_borrarAbonoActionPerformed
-        // TODO add your handling code here:
-        AbonoJpaController eliminador = new AbonoJpaController(Conexion.getConexion().getEmf());
-        int opc = JOptionPane.showConfirmDialog(historialDeAbonos, "¿Realmente desea Eliminar éste abono?",
-                "Confirmación de Eliminación.", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-        if (opc == JOptionPane.OK_OPTION) {
-            try {
-                eliminador.destroy(mcp.obtenerPagos().get(jTable3.getSelectedRow()).getId());
-            } catch (NonexistentEntityException ex) {
-                JOptionPane.showMessageDialog(historialDeAbonos, "Algo salió mal, por favor intentelo de nuevo.", "Error al eliminar.", opc);
-            }
-        }
-        Conexion.getConexion().getEmf().getCache().evictAll();
-        encontrarAbonos();
-        borrarAbono.setEnabled(Boolean.FALSE);
-    }//GEN-LAST:event_borrarAbonoActionPerformed
-
-    private void borrarPagoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_borrarPagoActionPerformed
-        // TODO add your handling code here:
-        PagoJpaController eliminador = new PagoJpaController(Conexion.getConexion().getEmf());
-        int opc = JOptionPane.showConfirmDialog(historialDePagos, "¿Realmente desea Eliminar éste pago?",
-                "Confirmación de Eliminación.", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-        if (opc == JOptionPane.OK_OPTION) {
-            try {
-                eliminador.destroy(mcp.obtenerPagos().get(jTable4.getSelectedRow()).getId());
-            } catch (NonexistentEntityException ex) {
-                JOptionPane.showMessageDialog(historialDePagos, "Algo salió mal, por favor intentelo de nuevo.", "Error al eliminar.", opc);
-            }
-        }
-        Conexion.getConexion().getEmf().getCache().evictAll();
-        encontrarPagos();
-        borrarPago.setEnabled(Boolean.FALSE);
-    }//GEN-LAST:event_borrarPagoActionPerformed
-
     private void historialPagosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_historialPagosActionPerformed
         // TODO add your handling code here:
         if (proveedoresAlCredito.getSelectedIndex() > 0) {
-            historialDePagos.setAlwaysOnTop(Boolean.TRUE);
-            historialDePagos.setLocation(450, 350);
-            historialDePagos.setSize(420, 290);
-            historialDePagos.setVisible(Boolean.TRUE);
-            encontrarPagos();
+            historialDePagos hp = new historialDePagos(encontradosP.get(proveedoresAlCredito.getSelectedIndex()-1));
+            JOptionPane.showMessageDialog(this, hp, "Historial de Pagos", JOptionPane.INFORMATION_MESSAGE);
+            cargarCompras();
         } else {
             JOptionPane.showMessageDialog(this, "Debe seleccionar un Proveedor.", "Ningun proveedor seleccionado.", JOptionPane.WARNING_MESSAGE);
         }
@@ -1012,11 +740,9 @@ public class controlPagos extends javax.swing.JInternalFrame {
     private void historialAbonosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_historialAbonosActionPerformed
         // TODO add your handling code here:
         if (clientesAlCredito.getSelectedIndex() > 0) {
-            historialDeAbonos.setAlwaysOnTop(Boolean.TRUE);
-            historialDeAbonos.setLocation(450, 350);
-            historialDeAbonos.setSize(420, 290);
-            historialDeAbonos.setVisible(Boolean.TRUE);
-            encontrarAbonos();
+            historialDeAbonos ha = new historialDeAbonos(encontradosC.get(clientesAlCredito.getSelectedIndex()-1));
+            JOptionPane.showMessageDialog(this, ha, "Historial de Abonos", JOptionPane.INFORMATION_MESSAGE);
+            cargarVentas();
         } else {
             JOptionPane.showMessageDialog(this, "Debe seleccionar un Cliente.", "Ningun cliente seleccionado.", JOptionPane.WARNING_MESSAGE);
         }
@@ -1071,18 +797,10 @@ public class controlPagos extends javax.swing.JInternalFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton Salir;
-    private javax.swing.JButton Salir1;
     private javax.swing.JButton abonar;
-    private javax.swing.JButton borrarAbono;
-    private javax.swing.JButton borrarPago;
     private javax.swing.JComboBox<String> clientesAlCredito;
     private javax.swing.JButton historialAbonos;
-    private javax.swing.JDialog historialDeAbonos;
-    private javax.swing.JDialog historialDePagos;
     private javax.swing.JButton historialPagos;
-    private javax.swing.JLabel info;
-    private javax.swing.JLabel info1;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton5;
@@ -1095,19 +813,13 @@ public class controlPagos extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
-    private javax.swing.JTable jTable3;
-    private javax.swing.JTable jTable4;
     private javax.swing.JTextField nombreCliente;
     private javax.swing.JTextField nombreProveedor;
     private javax.swing.JButton pagar;
     private javax.swing.JComboBox<String> proveedoresAlCredito;
-    private javax.swing.JLabel queCliente;
-    private javax.swing.JLabel queProveedor;
     private javax.swing.JCheckBox saldo0;
     private javax.swing.JCheckBox saldo1;
     private javax.swing.JTextField saldoCliente;
