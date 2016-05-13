@@ -21,7 +21,7 @@ import javax.swing.table.AbstractTableModel;
  */
 public class modeloVentasAbono extends AbstractTableModel{
     private final ArrayList<Venta> ventas;
-    private final String columnas[] = {"No. Compra", "Total", "Saldo" , "Proveedor", "Fecha"};
+    private final String columnas[] = {"No. Venta", "Total", "Saldo" , "Cliente", "Fecha"};
     private final Class[] tipos= new Class [] {java.lang.Integer.class, java.text.DecimalFormat.class, java.text.DecimalFormat.class,
         java.lang.String.class, java.lang.String.class};
 
@@ -60,8 +60,8 @@ public class modeloVentasAbono extends AbstractTableModel{
                     case 2: return (new DecimalFormat("Q#,##0.00")).format(v.getSaldo());
                     case 3: 
                         EntityManagerFactory emf = Conexion.getConexion().getEmf();
-                        Query q = emf.createEntityManager().createNamedQuery("Proveedor.findByIdProveedor");
-                        q.setParameter("idProveedor", v.getIdCliente());
+                        Query q = emf.createEntityManager().createNamedQuery("Cliente.findByIdCliente");
+                        q.setParameter("idCliente", v.getIdCliente());
                         if(q.getResultList().isEmpty()){
                             return "";
                         }else{
