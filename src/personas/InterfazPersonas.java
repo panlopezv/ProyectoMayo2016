@@ -10,7 +10,6 @@ import controladores.ClienteJpaController;
 import controladores.ProveedorJpaController;
 import entidades.Cliente;
 import entidades.Proveedor;
-import java.awt.Color;
 import java.awt.Component;
 import java.util.ArrayList;
 import javax.persistence.Query;
@@ -370,6 +369,7 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
         }catch(NumberFormatException ex){}
         return valido;
     }
+    
     public void ajustarColumnas(JTable tabla){
         tabla.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         

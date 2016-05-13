@@ -84,6 +84,7 @@ public class Compra implements Serializable {
         else{
             this.saldo = 0.0;
         }
+        this.anulada = Boolean.FALSE;
     }
     
     public Integer getIdCompra() {

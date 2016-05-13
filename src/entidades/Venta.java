@@ -89,6 +89,7 @@ public class Venta implements Serializable {
         this.credito = credito;
         this.idCliente = idCliente;
         this.idUsuario = idUsuario;
+        this.anulada=Boolean.FALSE;
     }
 
     public Integer getIdVenta() {

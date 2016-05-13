@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "Detallecompra.findAll", query = "SELECT d FROM Detallecompra d"),
     @NamedQuery(name = "Detallecompra.findByIdDetalleCompra", query = "SELECT d FROM Detallecompra d WHERE d.idDetalleCompra = :idDetalleCompra"),
-    @NamedQuery(name = "Detallecompra.findByCompraidCompra", query = "SELECT d FROM Detallecompra d WHERE d.idCompra = :idCompra"),
+    @NamedQuery(name = "Detallecompra.findByIdCompra", query = "SELECT d FROM Detallecompra d WHERE d.idCompra = :idCompra"),
     @NamedQuery(name = "Detallecompra.findByProductoidProducto", query = "SELECT d FROM Detallecompra d WHERE d.idProducto = :idProducto"),
     @NamedQuery(name = "Detallecompra.findByCantidad", query = "SELECT d FROM Detallecompra d WHERE d.cantidad = :cantidad"),
     @NamedQuery(name = "Detallecompra.findByCosto", query = "SELECT d FROM Detallecompra d WHERE d.costo = :costo"),
@@ -64,8 +64,8 @@ public class Detallecompra implements Serializable {
         this.idDetalleCompra = idDetalleCompra;
     }
 
-    public Detallecompra(int compraidCompra, int productoidProducto, Integer cantidad, Double costo, Double subtotal) {
-        this.idCompra = compraidCompra;
+    public Detallecompra(int idCompra, int productoidProducto, Integer cantidad, Double costo, Double subtotal) {
+        this.idCompra = idCompra;
         this.idProducto = productoidProducto;
         this.cantidad = cantidad;
         this.costo = costo;

@@ -5,20 +5,94 @@
  */
 package vistas;
 
+import conexion.Conexion;
+import controladores.CompraJpaController;
+import controladores.VentaJpaController;
+import java.awt.Component;
+import java.util.ArrayList;
+import javax.persistence.Query;
+import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+
 /**
  *
  * @author Pablo Lopez <panlopezv@gmail.com>
  */
 public class InterfazOperaciones extends javax.swing.JInternalFrame {
 
+    VentaJpaController controladorV;
+    CompraJpaController controladorC;
+    ModeloVentas modeloV;
+    ModeloCompras modeloC;
     /**
      * Creates new form InterfazOperaciones
      */
     public InterfazOperaciones() {
         initComponents();
         setVisible(Boolean.TRUE);
+        controladorV = new VentaJpaController(Conexion.getConexion().getEmf());
+        controladorC = new CompraJpaController(Conexion.getConexion().getEmf());
+        cargarVentas();
+        cargarCompras();
     }
 
+    public void cargarVentas(){
+        Query q = Conexion.getConexion().getEmf().createEntityManager().createNamedQuery("Venta.findAll");
+        try {
+            modeloV = new ModeloVentas(new ArrayList<>(q.getResultList()));
+        } catch (Exception ex) {
+            modeloV = new ModeloVentas(new ArrayList<>());
+        }
+        tablaVentas.setModel(modeloV);
+        ajustarColumnas(tablaVentas);
+    }
+
+    public void cargarCompras(){
+        Query q = Conexion.getConexion().getEmf().createEntityManager().createNamedQuery("Compra.findAll");
+        try {
+            modeloC = new ModeloCompras(new ArrayList<>(q.getResultList()));
+        } catch (Exception ex) {
+            modeloC = new ModeloCompras(new ArrayList<>());
+        }
+        tablaCompras.setModel(modeloC);
+        ajustarColumnas(tablaCompras);
+    }
+    
+    public void ajustarColumnas(JTable tabla){
+        tabla.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        
+        for (int column = 0; column < tabla.getColumnCount(); column++)
+        {
+            TableColumn tableColumn = tabla.getColumnModel().getColumn(column);
+            int preferredWidth = tableColumn.getMinWidth();
+            int maxWidth = tableColumn.getMaxWidth();
+            for (int row = 0; row < tabla.getRowCount(); row++)
+            {
+                TableCellRenderer cellRenderer = tabla.getCellRenderer(row, column);
+                Component c = tabla.prepareRenderer(cellRenderer, row, column);
+                int width = c.getPreferredSize().width + tabla.getIntercellSpacing().width;
+                preferredWidth = Math.max(preferredWidth, width);
+                if (preferredWidth >= maxWidth)
+                {
+                    preferredWidth = maxWidth;
+                    break;
+                }
+            }
+            TableColumn columna = tabla.getColumnModel().getColumn(column);
+            TableCellRenderer headerRenderer = columna.getHeaderRenderer();
+            if (headerRenderer == null) {
+                headerRenderer = tabla.getTableHeader().getDefaultRenderer();
+            }
+            Object headerValue = columna.getHeaderValue();
+            Component headerComp
+                    = headerRenderer.getTableCellRendererComponent(tabla, headerValue, false, false, 0, column);
+            preferredWidth = Math.max(preferredWidth, headerComp.getPreferredSize().width);
+            tableColumn.setPreferredWidth( preferredWidth );
+        }
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -31,7 +105,7 @@ public class InterfazOperaciones extends javax.swing.JInternalFrame {
         jTabbedOperaciones = new javax.swing.JTabbedPane();
         ventas = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        tablaVentas = new javax.swing.JTable();
         jTextField1 = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jDateChooser1 = new com.toedter.calendar.JDateChooser();
@@ -43,7 +117,7 @@ public class InterfazOperaciones extends javax.swing.JInternalFrame {
         limpiarBusquedaV = new javax.swing.JButton();
         compras = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tablaCompras = new javax.swing.JTable();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jTextField2 = new javax.swing.JTextField();
@@ -58,7 +132,7 @@ public class InterfazOperaciones extends javax.swing.JInternalFrame {
         setClosable(true);
         setMaximizable(true);
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        tablaVentas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -69,17 +143,32 @@ public class InterfazOperaciones extends javax.swing.JInternalFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane2.setViewportView(jTable2);
+        jScrollPane2.setViewportView(tablaVentas);
 
         jLabel2.setText("Cliente:");
 
         jLabel3.setText("Desde:");
 
         verDetalleVenta.setText("Ver detalle");
+        verDetalleVenta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                verDetalleVentaActionPerformed(evt);
+            }
+        });
 
         anularVenta.setText("Anular");
+        anularVenta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                anularVentaActionPerformed(evt);
+            }
+        });
 
         salirVenta.setText("Salir");
+        salirVenta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                salirVentaActionPerformed(evt);
+            }
+        });
 
         buscarVenta.setText("Buscar");
 
@@ -146,7 +235,7 @@ public class InterfazOperaciones extends javax.swing.JInternalFrame {
 
         jTabbedOperaciones.addTab("Ventas", ventas);
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tablaCompras.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -157,7 +246,7 @@ public class InterfazOperaciones extends javax.swing.JInternalFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tablaCompras);
 
         jLabel5.setText("Proveedor:");
 
@@ -166,10 +255,25 @@ public class InterfazOperaciones extends javax.swing.JInternalFrame {
         buscarCompra.setText("Buscar");
 
         verDetalleCompra.setText("Ver detalle");
+        verDetalleCompra.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                verDetalleCompraActionPerformed(evt);
+            }
+        });
 
         anularCompra.setText("Anular");
+        anularCompra.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                anularCompraActionPerformed(evt);
+            }
+        });
 
         salirCompra.setText("Salir");
+        salirCompra.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                salirCompraActionPerformed(evt);
+            }
+        });
 
         limpiarBusquedaP.setText("Limpiar");
 
@@ -254,6 +358,144 @@ public class InterfazOperaciones extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void salirVentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_salirVentaActionPerformed
+        // TODO add your handling code here:
+        this.dispose();
+    }//GEN-LAST:event_salirVentaActionPerformed
+
+    private void salirCompraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_salirCompraActionPerformed
+        // TODO add your handling code here:
+        this.dispose();
+    }//GEN-LAST:event_salirCompraActionPerformed
+
+    private void verDetalleVentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verDetalleVentaActionPerformed
+        // TODO add your handling code here:
+        int fila=tablaVentas.getSelectedRow();
+        if(fila>=0){
+            if(((ModeloVentas)tablaVentas.getModel()).getVenta(fila).getAnulada()==null ||
+                    !((ModeloVentas)tablaVentas.getModel()).getVenta(fila).getAnulada()){
+                Object[] message = {
+                    "Ventas:", new DetalleVenta(((ModeloVentas)tablaVentas.getModel()).getVenta(fila).getIdVenta())
+                };
+                JOptionPane.showMessageDialog(this,message,"Detalle venta.", JOptionPane.INFORMATION_MESSAGE);
+            }
+            else{
+                JOptionPane.showMessageDialog(null,"Detalles de venta no disponibles.\n\r\tDebe seleccionar una venta que no este anulada.","Error",JOptionPane.ERROR_MESSAGE);
+            }
+        } else{
+            JOptionPane.showMessageDialog(null,"Debe seleccionar una venta.","Error",JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_verDetalleVentaActionPerformed
+
+    private void anularVentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_anularVentaActionPerformed
+        // TODO add your handling code here:
+        int fila=tablaVentas.getSelectedRow();
+        if(fila>=0){
+            if(((ModeloVentas)tablaVentas.getModel()).getVenta(fila).getAnulada()==null || 
+                    !((ModeloVentas)tablaVentas.getModel()).getVenta(fila).getAnulada()){
+                if(!((ModeloVentas)tablaVentas.getModel()).getVenta(fila).getCredito()){
+                    try{
+                        //No es al credito, se puede anular.
+                        (((ModeloVentas)tablaVentas.getModel()).getVenta(fila)).setAnulada(Boolean.TRUE);
+                        controladorV.edit(((ModeloVentas)tablaVentas.getModel()).getVenta(fila));
+                        JOptionPane.showMessageDialog(this, "Venta anulada exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
+                        Conexion.getConexion().getEmf().getCache().evictAll();
+                        cargarVentas();
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null,"A ocurrido un error inesperado.\n\r\tVuelva a abrir el formulario e intentelo de nuevo.","Error",JOptionPane.ERROR_MESSAGE);                
+                    }
+                }
+                else{
+                    if(((ModeloVentas)tablaVentas.getModel()).getVenta(fila).getSaldo()>=((ModeloVentas)tablaVentas.getModel()).getVenta(fila).getTotal()){
+                        try {
+                            // No se ha realizado ningun abono, se puede anular.
+                            (((ModeloVentas)tablaVentas.getModel()).getVenta(fila)).setAnulada(Boolean.TRUE);
+                            controladorV.edit(((ModeloVentas)tablaVentas.getModel()).getVenta(fila));
+                            JOptionPane.showMessageDialog(this, "Venta anulada exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
+                            Conexion.getConexion().getEmf().getCache().evictAll();
+                            cargarVentas();
+                        } catch (Exception ex) {
+                            JOptionPane.showMessageDialog(null,"A ocurrido un error inesperado.\n\r\tVuelva a abrir el formulario e intentelo de nuevo.","Error",JOptionPane.ERROR_MESSAGE);                
+                        }
+                    }
+                    else{
+                        JOptionPane.showMessageDialog(null,"No es posible anular esta venta al crédito.\n\r\tDebido a que ya se han efectuado abonos.","Error",JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
+            else{
+                JOptionPane.showMessageDialog(null,"La venta ya esta anulada.","Error",JOptionPane.ERROR_MESSAGE);                
+            }
+        }
+        else{
+            JOptionPane.showMessageDialog(null,"Debe seleccionar una venta.","Error",JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_anularVentaActionPerformed
+
+    private void verDetalleCompraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verDetalleCompraActionPerformed
+        // TODO add your handling code here:
+        int fila=tablaCompras.getSelectedRow();
+        if(fila>=0){
+            if(((ModeloCompras)tablaCompras.getModel()).getCompra(fila).getAnulada()==null ||
+                    !((ModeloCompras)tablaCompras.getModel()).getCompra(fila).getAnulada()){
+                Object[] message = {
+                    "Compras:", new DetalleCompra(((ModeloCompras)tablaCompras.getModel()).getCompra(fila).getIdCompra())
+                };
+                JOptionPane.showMessageDialog(this,message,"Detalle compra.", JOptionPane.INFORMATION_MESSAGE);
+            } else{
+                JOptionPane.showMessageDialog(null,"Detalles de compra no disponibles.\n\r\tDebe seleccionar una compra que no este anulada.","Error",JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        else{
+            JOptionPane.showMessageDialog(null,"Debe seleccionar una compra.","Error",JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_verDetalleCompraActionPerformed
+
+    private void anularCompraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_anularCompraActionPerformed
+        // TODO add your handling code here:
+        int fila=tablaCompras.getSelectedRow();
+        if(fila>=0){
+            if(((ModeloCompras)tablaCompras.getModel()).getCompra(fila).getAnulada()==null || 
+                    !((ModeloCompras)tablaCompras.getModel()).getCompra(fila).getAnulada()){
+                if(!((ModeloCompras)tablaCompras.getModel()).getCompra(fila).getCredito()){
+                    try {
+                        //No es al credito, se puede anular.
+                        ((ModeloCompras)tablaCompras.getModel()).getCompra(fila).setAnulada(Boolean.TRUE);
+                        controladorC.edit(((ModeloCompras)tablaCompras.getModel()).getCompra(fila));
+                        JOptionPane.showMessageDialog(this, "Compra anulada exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
+                        Conexion.getConexion().getEmf().getCache().evictAll();
+                        cargarCompras();
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null,"A ocurrido un error inesperado.\n\r\tVuelva a abrir el formulario e intentelo de nuevo.","Error",JOptionPane.ERROR_MESSAGE);                
+                    }
+                }
+                else{
+                    if(((ModeloCompras)tablaCompras.getModel()).getCompra(fila).getSaldo()>=((ModeloCompras)tablaCompras.getModel()).getCompra(fila).getTotal()){
+                        try {
+                            // No se ha realizado ningun pago, se puede anular.
+                            ((ModeloCompras)tablaCompras.getModel()).getCompra(fila).setAnulada(Boolean.TRUE);
+                            controladorC.edit(((ModeloCompras)tablaCompras.getModel()).getCompra(fila));
+                            JOptionPane.showMessageDialog(this, "Compra anulada exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
+                            Conexion.getConexion().getEmf().getCache().evictAll();
+                            cargarCompras();
+                        } catch (Exception ex) {
+                            JOptionPane.showMessageDialog(null,"A ocurrido un error inesperado.\n\r\tVuelva a abrir el formulario e intentelo de nuevo.","Error",JOptionPane.ERROR_MESSAGE);                
+                        }
+                    }
+                    else{
+                        JOptionPane.showMessageDialog(null,"No es posible anular esta compra al crédito.\n\r\tDebido a que ya se han efectuado pagos.","Error",JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
+            else{
+                JOptionPane.showMessageDialog(null,"La compra ya esta anulada.","Error",JOptionPane.ERROR_MESSAGE);                
+            }
+        }
+        else{
+            JOptionPane.showMessageDialog(null,"Debe seleccionar una compra.","Error",JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_anularCompraActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton anularCompra;
@@ -270,14 +512,14 @@ public class InterfazOperaciones extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane jTabbedOperaciones;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTable jTable2;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JButton limpiarBusquedaP;
     private javax.swing.JButton limpiarBusquedaV;
     private javax.swing.JButton salirCompra;
     private javax.swing.JButton salirVenta;
+    private javax.swing.JTable tablaCompras;
+    private javax.swing.JTable tablaVentas;
     private javax.swing.JPanel ventas;
     private javax.swing.JButton verDetalleCompra;
     private javax.swing.JButton verDetalleVenta;
