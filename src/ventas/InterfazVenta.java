@@ -20,6 +20,7 @@ import java.util.List;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
@@ -317,7 +318,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
 
     public boolean autenticacionDeAdministrador() {
         JTextField usuario = new JTextField();
-        JTextField contraseña = new JTextField();
+        JTextField contraseña = new JPasswordField();
         Object[] objeto = {"Usuario Administrador:", usuario, "Contraseña:", contraseña};
         int opcion = JOptionPane.showConfirmDialog(this, objeto, "Permisos de administrador requeridos!", JOptionPane.OK_CANCEL_OPTION);
         if (opcion == JOptionPane.OK_OPTION) {
