@@ -41,7 +41,7 @@ public class Inicio extends javax.swing.JFrame {
 
     public static Conexion conexion;
     public static final String USER = "root";
-    public static final String PASS = "Kk4/1";
+    public static final String PASS = "root";
     public static final String SERVIDOR = "localhost";
     
     /**
@@ -356,11 +356,11 @@ public class Inicio extends javax.swing.JFrame {
                     menuCerrarSesion.setVisible(Boolean.TRUE);
                     menuUsuario.setVisible(Boolean.TRUE);
                     menuAyuda.setVisible(Boolean.TRUE);
-                    menuReportes.setVisible(Boolean.TRUE);
                     if(Conexion.getConexion().getEsAdministrador()){
                         menuGestionar.setVisible(Boolean.TRUE);
                         botonCompras.setVisible(Boolean.TRUE);
                         botonOperaciones.setVisible(Boolean.TRUE);
+                        menuReportes.setVisible(Boolean.TRUE);
                     }
                 } else{
                     JOptionPane.showMessageDialog(this, "Usuario y/o contraseña inválidos.", "", JOptionPane.ERROR_MESSAGE);

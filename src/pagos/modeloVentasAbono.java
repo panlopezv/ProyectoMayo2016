@@ -6,7 +6,7 @@
 package pagos;
 
 import conexion.Conexion;
-import entidades.Proveedor;
+import entidades.Cliente;
 import entidades.Venta;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -65,7 +65,7 @@ public class modeloVentasAbono extends AbstractTableModel{
                         if(q.getResultList().isEmpty()){
                             return "";
                         }else{
-                            return ((Proveedor)q.getSingleResult()).getNombre();                            
+                            return ((Cliente)q.getSingleResult()).getNombre();                            
                         }
                     case 4: return (new SimpleDateFormat("dd/MM/yyyy").format(v.getFecha()));
                     default: return null;
