@@ -16,6 +16,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
@@ -74,13 +75,14 @@ public class Inicio extends javax.swing.JFrame {
      * Muestra el total de ventas por fecha. La fecha debe ir entre apostrofes y de la siguiente manera 'AAAA-MM-DD'
      * @param fecha 
      */
-    public void mostrarReporteDeVentasPorFecha(String fecha){
+    public void mostrarReporteDeVentasPorFecha(Date fecha){
         try {
             Class.forName("com.mysql.jdbc.Driver");
             Connection con = DriverManager.getConnection("jdbc:mysql://"+Inicio.SERVER+":3306/ferreteria", Inicio.USER, Inicio.PASS);
             HashMap parametros = new HashMap();
-            parametros.put("fechaFiltro", fecha);
-            JasperPrint print = JasperFillManager.fillReport(Inicio.DIRECTORY+"VentasPorFecha.jasper", parametros, con);
+            parametros.put("fechaFiltro", "'"+new SimpleDateFormat("yyyy-MM-dd").format(fecha)+"'");
+            parametros.put("fechaMostrar", fecha);
+            JasperPrint print = JasperFillManager.fillReport(Inicio.DIRECTORY+"Ventas.jasper", parametros, con);
             JasperViewer.viewReport(print, Boolean.FALSE);
         } catch (ClassNotFoundException | SQLException | JRException ex) {
             System.out.println(ex.getMessage());
@@ -506,8 +508,7 @@ public class Inicio extends javax.swing.JFrame {
         };
         int opcion = JOptionPane.showConfirmDialog(this, message, "Reporte de ventas", JOptionPane.OK_CANCEL_OPTION);
         if (opcion == JOptionPane.OK_OPTION) {
-            DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
-            mostrarReporteDeVentasPorFecha("'"+fmt.format(jdc.getDate())+"'");
+            mostrarReporteDeVentasPorFecha(jdc.getDate());
         }
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
