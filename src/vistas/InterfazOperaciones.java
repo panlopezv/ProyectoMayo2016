@@ -199,9 +199,10 @@ public class InterfazOperaciones extends javax.swing.JInternalFrame {
             Connection con = DriverManager.getConnection("jdbc:mysql://"+Inicio.SERVIDOR+":3306/ferreteria", Inicio.USER, Inicio.PASS);
             HashMap parametros = new HashMap();
             parametros.put("ventaid", ventaID);
-            JasperPrint print = JasperFillManager.fillReport("src\\reportes\\Ventas.jasper", parametros, con);
+            JasperPrint print = JasperFillManager.fillReport(Inicio.DIRECTORIO+"Ventas.jasper", parametros, con);
             JasperViewer.viewReport(print, Boolean.FALSE);
         } catch (ClassNotFoundException | SQLException | JRException ex) {
+            System.out.println(ex.getMessage());
         }
     }
 

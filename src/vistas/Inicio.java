@@ -41,8 +41,9 @@ public class Inicio extends javax.swing.JFrame {
 
     public static Conexion conexion;
     public static final String USER = "root";
-    public static final String PASS = "Kk4/1";
+    public static final String PASS = "root";
     public static final String SERVIDOR = "localhost";
+    public static final String DIRECTORIO = "src\\reportes\\";
     
     /**
      * Creates new form Principal
@@ -80,9 +81,10 @@ public class Inicio extends javax.swing.JFrame {
             Connection con = DriverManager.getConnection("jdbc:mysql://"+Inicio.SERVIDOR+":3306/ferreteria", Inicio.USER, Inicio.PASS);
             HashMap parametros = new HashMap();
             parametros.put("fechaFiltro", fecha);
-            JasperPrint print = JasperFillManager.fillReport("src\\reportes\\VentasPorFecha.jasper", parametros, con);
+            JasperPrint print = JasperFillManager.fillReport(Inicio.DIRECTORIO+"VentasPorFecha.jasper", parametros, con);
             JasperViewer.viewReport(print, Boolean.FALSE);
         } catch (ClassNotFoundException | SQLException | JRException ex) {
+            System.out.println(ex.getMessage());
         }
     }
         
@@ -506,7 +508,6 @@ public class Inicio extends javax.swing.JFrame {
         int opcion = JOptionPane.showConfirmDialog(this, message, "Reporte de ventas", JOptionPane.OK_CANCEL_OPTION);
         if (opcion == JOptionPane.OK_OPTION) {
             DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
-            System.out.println(fmt.format(jdc.getDate()));
             mostrarReporteDeVentasPorFecha("'"+fmt.format(jdc.getDate())+"'");
         }
     }//GEN-LAST:event_jMenuItem3ActionPerformed
