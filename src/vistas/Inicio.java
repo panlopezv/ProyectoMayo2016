@@ -42,8 +42,8 @@ public class Inicio extends javax.swing.JFrame {
     public static Conexion conexion;
     public static final String USER = "root";
     public static final String PASS = "root";
-    public static final String SERVIDOR = "localhost";
-    public static final String DIRECTORIO = "src\\reportes\\";
+    public static final String SERVER = "localhost";
+    public static final String DIRECTORY = "reportes\\";   //"src\\reportes\\" cuando se ejecuta desde netbeans
     
     /**
      * Creates new form Principal
@@ -51,7 +51,6 @@ public class Inicio extends javax.swing.JFrame {
     public Inicio() {
         initComponents();
         this.setLocationRelativeTo(null);
-        //this.getContentPane().setBackground(Color.getHSBColor(0.525f,0.33f,0.91f));
         this.getContentPane().setBackground(Color.getHSBColor(0.144f,0.09f,1f));
         tablero.setVisible(Boolean.FALSE);
         escritorio.setVisible(Boolean.FALSE);
@@ -78,10 +77,10 @@ public class Inicio extends javax.swing.JFrame {
     public void mostrarReporteDeVentasPorFecha(String fecha){
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://"+Inicio.SERVIDOR+":3306/ferreteria", Inicio.USER, Inicio.PASS);
+            Connection con = DriverManager.getConnection("jdbc:mysql://"+Inicio.SERVER+":3306/ferreteria", Inicio.USER, Inicio.PASS);
             HashMap parametros = new HashMap();
             parametros.put("fechaFiltro", fecha);
-            JasperPrint print = JasperFillManager.fillReport(Inicio.DIRECTORIO+"VentasPorFecha.jasper", parametros, con);
+            JasperPrint print = JasperFillManager.fillReport(Inicio.DIRECTORY+"VentasPorFecha.jasper", parametros, con);
             JasperViewer.viewReport(print, Boolean.FALSE);
         } catch (ClassNotFoundException | SQLException | JRException ex) {
             System.out.println(ex.getMessage());

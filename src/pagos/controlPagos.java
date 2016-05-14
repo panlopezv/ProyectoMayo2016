@@ -324,10 +324,10 @@ public class controlPagos extends javax.swing.JInternalFrame {
     public void mostrarComprobanteAbono(int abonoID){
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://"+Inicio.SERVIDOR+":3306/ferreteria", Inicio.USER, Inicio.PASS);
+            Connection con = DriverManager.getConnection("jdbc:mysql://"+Inicio.SERVER+":3306/ferreteria", Inicio.USER, Inicio.PASS);
             HashMap parametros = new HashMap();
             parametros.put("abonoID", abonoID);
-            JasperPrint print = JasperFillManager.fillReport(Inicio.DIRECTORIO+"ComprobanteAbono.jasper", parametros, con);
+            JasperPrint print = JasperFillManager.fillReport(Inicio.DIRECTORY+"ComprobanteAbono.jasper", parametros, con);
             JasperViewer.viewReport(print, Boolean.FALSE);
         } catch (ClassNotFoundException | SQLException | JRException ex) {
             System.out.println(ex.getMessage());
