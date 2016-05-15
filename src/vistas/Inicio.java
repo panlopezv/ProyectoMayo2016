@@ -88,6 +88,21 @@ public class Inicio extends javax.swing.JFrame {
             System.out.println(ex.getMessage());
         }
     }
+    
+    /**
+     * Muestra el total de ventas por fecha. La fecha debe ir entre apostrofes y de la siguiente manera 'AAAA-MM-DD'
+     * @param fecha 
+     */
+    public void mostrarReporteDeInventario(){
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection con = DriverManager.getConnection("jdbc:mysql://"+Inicio.SERVER+":3306/ferreteria", Inicio.USER, Inicio.PASS);
+            JasperPrint print = JasperFillManager.fillReport(Inicio.DIRECTORY+"Inventario.jasper", null, con);
+            JasperViewer.viewReport(print, Boolean.FALSE);
+        } catch (ClassNotFoundException | SQLException | JRException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
         
     public void ajustar(JInternalFrame jif){
         if(jif.getWidth()>escritorio.getWidth() || jif.getHeight()>escritorio.getHeight()){
@@ -127,6 +142,7 @@ public class Inicio extends javax.swing.JFrame {
         menuCategorias = new javax.swing.JMenuItem();
         menuUsuarios = new javax.swing.JMenuItem();
         menuReportes = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
         menuUsuario = new javax.swing.JMenu();
         menuPerfil = new javax.swing.JMenuItem();
@@ -283,6 +299,14 @@ public class Inicio extends javax.swing.JFrame {
         jMenuBar1.add(menuGestionar);
 
         menuReportes.setText("Reportes");
+
+        jMenuItem1.setText("Reporte de inventario");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        menuReportes.add(jMenuItem1);
 
         jMenuItem3.setText("Reporte de ventas");
         jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
@@ -512,6 +536,11 @@ public class Inicio extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        // TODO add your handling code here:
+        mostrarReporteDeInventario();
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -557,6 +586,7 @@ public class Inicio extends javax.swing.JFrame {
     private javax.swing.JButton botonVentas;
     public javax.swing.JDesktopPane escritorio;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JMenuItem menuAcercade;
