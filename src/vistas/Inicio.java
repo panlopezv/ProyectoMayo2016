@@ -90,8 +90,7 @@ public class Inicio extends javax.swing.JFrame {
     }
     
     /**
-     * Muestra el total de ventas por fecha. La fecha debe ir entre apostrofes y de la siguiente manera 'AAAA-MM-DD'
-     * @param fecha 
+     * Muestra el reporte de inventario.
      */
     public void mostrarReporteDeInventario(){
         try {
