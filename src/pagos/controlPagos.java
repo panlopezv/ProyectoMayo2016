@@ -257,6 +257,7 @@ public class controlPagos extends javax.swing.JInternalFrame {
                                 encontradosC.get(clientesAlCredito.getSelectedIndex() - 1).getIdCliente());
                     }
                     controladorAbonos.create(abono1);
+                    Conexion.getConexion().getEmf().getCache().evictAll();
                     opc = JOptionPane.showConfirmDialog(this, "¿Desea ver el comprobante?", "El abono se realizó con éxito.", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                     if (opc == JOptionPane.OK_OPTION) {
                         //mostrar reporte
@@ -264,7 +265,6 @@ public class controlPagos extends javax.swing.JInternalFrame {
                     }
                     buscarClientes(1);
                     cargarVentas();
-                    Conexion.getConexion().getEmf().getCache().evictAll();
                 } else {
                     JOptionPane.showMessageDialog(this, "El cliente indicado tiene saldo = 0.00", "No se ha efectuado el Abono", JOptionPane.INFORMATION_MESSAGE);
                 }
