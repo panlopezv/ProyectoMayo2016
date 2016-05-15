@@ -374,9 +374,7 @@ public class Inicio extends javax.swing.JFrame {
             int opcion = JOptionPane.showConfirmDialog(this, message, "Inicio de sesión.", JOptionPane.OK_CANCEL_OPTION);
             if (opcion == JOptionPane.OK_OPTION) {
                 conexion=Conexion.getConexion(user.getText(), pass.getText());
-                if(conexion!=null){
-                    JOptionPane.showMessageDialog(this, "Inicio de sesión exitoso.", "", JOptionPane.INFORMATION_MESSAGE);
-                    
+                if(conexion.getEmf()!=null && conexion.getIdUsuario()!=0){
                     tablero.setVisible(Boolean.TRUE);
                     escritorio.setVisible(Boolean.TRUE);
                     menuCerrarSesion.setVisible(Boolean.TRUE);
@@ -388,8 +386,10 @@ public class Inicio extends javax.swing.JFrame {
                         botonOperaciones.setVisible(Boolean.TRUE);
                         menuReportes.setVisible(Boolean.TRUE);
                     }
-                } else{
-                    JOptionPane.showMessageDialog(this, "Usuario y/o contraseña inválidos.", "", JOptionPane.ERROR_MESSAGE);
+                }
+                else {
+                    conexion.cerrarConexion();
+                    conexion = null;
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "Inicio de sesión cancelado.", "", JOptionPane.ERROR_MESSAGE);
