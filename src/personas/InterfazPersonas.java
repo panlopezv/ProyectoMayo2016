@@ -100,7 +100,7 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
         JTextField telefono = new JTextField();
         Object[] message = {
             "Nombre:", nombre,
-            "Dirección:", direccion,
+            "Dirección: (opcional)", direccion,
             "NIT:", nit,
             "Teléfono: (opcional)", telefono,
         };
@@ -110,18 +110,12 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
             if(nombre.getText()==null || nombre.getText().compareTo("")==0){
                 registro+="Nombre.\n\r";
             }
-            if(direccion.getText()==null || direccion.getText().compareTo("")==0){
-                registro+="Dirección.\n\r";
-            }
             if(nit.getText()==null || nit.getText().compareTo("")==0){
                 registro+="NIT.\n\r";
             }
-            else if(!validarNIT(nit.getText())){
-                    registro+="El NIT no es válido.\n\r";
-            }
             if(telefono.getText()!=null && telefono.getText().compareTo("")!=0){
                 if(!validarTelefono(telefono.getText()))
-                    registro+="El teléfono debe poseer solo 8 dígitos.\n\r";
+                    registro+="El teléfono debe poseer 8 dígitos.\n\r";
             }
             if(registro.compareTo("")!=0){
                 JOptionPane.showMessageDialog(this, "Debe rellenar los siguientes campos:\n\r"+registro, "Error", JOptionPane.ERROR_MESSAGE);
@@ -133,6 +127,7 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
                 if(!nit.getText().matches("CF|cf|C/F|c/f|c.f.|C.F.")||q.getResultList().isEmpty()){
                     controladorC.create(new Cliente(nombre.getText(), direccion.getText(), nit.getText(), telefono.getText()));
                     JOptionPane.showMessageDialog(this, "Cliente creado exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
+                    busquedaCliente.setText("");
                     cargarClientes();
                 }
                 else{
@@ -161,12 +156,9 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
             if(nit.getText()==null || nit.getText().compareTo("")==0){
                 registro+="NIT.\n\r";
             }
-            else if(!validarNIT(nit.getText())){
-                    registro+="El NIT no es válido.\n\r";
-            }
             if(telefono.getText()!=null && telefono.getText().compareTo("")!=0){
                 if(!validarTelefono(telefono.getText()))
-                    registro+="El teléfono debe poseer solo 8 dígitos.\n\r";
+                    registro+="El teléfono debe poseer 8 dígitos.\n\r";
             }
             if(registro.compareTo("")!=0){
                 JOptionPane.showMessageDialog(this, "Debe rellenar los siguientes campos:\n\r"+registro, "Error", JOptionPane.ERROR_MESSAGE);
@@ -178,6 +170,7 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
                 if(nit.getText().matches("CF|cf|C/F|c/f|c.f.|C.F.")||q.getResultList().isEmpty()){
                     controladorP.create(new Proveedor(nombre.getText(),nit.getText(),telefono.getText()));
                     JOptionPane.showMessageDialog(this, "Proveedor creado exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
+                    busquedaProveedor.setText("");
                     cargarProveedores();
                 }
                 else{
@@ -189,11 +182,11 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
     }
     
     public void verCliente(Cliente cl){
-        JTextField nombre = new JTextField(cl.getNombre());
-        JTextField direccion = new JTextField(cl.getDireccion());
-        JTextField nit = new JTextField(cl.getNit());
-        JTextField telefono = new JTextField(cl.getTelefono());
-        JTextField saldo = new JTextField("Q "+new DecimalFormat("Q#,###.00").format(cl.getSaldo()));
+        JTextField nombre = new JTextField(cl.getNombre()); nombre.setEditable(Boolean.FALSE);
+        JTextField direccion = new JTextField(cl.getDireccion()); direccion.setEditable(Boolean.FALSE);
+        JTextField nit = new JTextField(cl.getNit()); nit.setEditable(Boolean.FALSE);
+        JTextField telefono = new JTextField(cl.getTelefono()); telefono.setEditable(Boolean.FALSE);
+        JTextField saldo = new JTextField("Q "+new DecimalFormat("Q#,###.00").format(cl.getSaldo())); saldo.setEditable(Boolean.FALSE);
         Object[] message = {
             "Nombre:", nombre,
             "Dirección:", direccion,
@@ -205,10 +198,10 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
     }
     
     public void verProveedor(Proveedor pr){
-        JTextField nombre = new JTextField(pr.getNombre());
-        JTextField nit = new JTextField(pr.getNit());
-        JTextField telefono = new JTextField(pr.getTelefono());
-        JTextField saldo = new JTextField("Q "+new DecimalFormat("Q#,###.00").format(pr.getSaldo()));
+        JTextField nombre = new JTextField(pr.getNombre()); nombre.setEditable(Boolean.FALSE);
+        JTextField nit = new JTextField(pr.getNit()); nit.setEditable(Boolean.FALSE);
+        JTextField telefono = new JTextField(pr.getTelefono()); telefono.setEditable(Boolean.FALSE);
+        JTextField saldo = new JTextField("Q "+new DecimalFormat("Q#,###.00").format(pr.getSaldo())); saldo.setEditable(Boolean.FALSE);
         Object[] message = {
             "Nombre:", nombre,
             "NIT:", nit,
@@ -225,7 +218,7 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
         JTextField telefono = new JTextField(c.getTelefono());
         Object[] message = {
             "Nombre:", nombre,
-            "Dirección:", direccion,
+            "Dirección: (opcional)", direccion,
             "NIT:", nit,
             "Teléfono: (opcional)", telefono,
         };
@@ -235,18 +228,12 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
             if(nombre.getText()==null || nombre.getText().compareTo("")==0){
                 registro+="Nombre.\n\r";
             }
-            if(direccion.getText()==null || direccion.getText().compareTo("")==0){
-                registro+="Dirección.\n\r";
-            }
             if(nit.getText()==null || nit.getText().compareTo("")==0){
                 registro+="NIT.\n\r";
             }
-            else if(!validarNIT(nit.getText())){
-                    registro+="El NIT no es válido.\n\r";
-            }
             if(telefono.getText()!=null && telefono.getText().compareTo("")!=0){
                 if(!validarTelefono(telefono.getText()))
-                    registro+="El teléfono debe poseer solo 8 dígitos.\n\r";
+                    registro+="El teléfono debe poseer 8 dígitos.\n\r";
             }
             if(registro.compareTo("")!=0){
                 JOptionPane.showMessageDialog(this, "Debe rellenar los siguientes campos:\n\r"+registro, "Error", JOptionPane.ERROR_MESSAGE);
@@ -263,6 +250,7 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
                         c.setTelefono(telefono.getText());
                         controladorC.edit(c);
                         JOptionPane.showMessageDialog(this, "Cliente modificado exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
+                        busquedaCliente.setText("");
                         cargarClientes();
                     } catch (Exception ex) {
                         JOptionPane.showMessageDialog(this, "Algo no ha salido bien, intentelo de nuevo.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -294,12 +282,9 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
             if(nit.getText()==null || nit.getText().compareTo("")==0){
                 registro+="NIT.\n\r";
             }
-            else if(!validarNIT(nit.getText())){
-                    registro+="El NIT no es válido.\n\r";
-            }
             if(telefono.getText()!=null && telefono.getText().compareTo("")!=0){
                 if(!validarTelefono(telefono.getText()))
-                    registro+="El teléfono debe poseer solo 8 dígitos.\n\r";
+                    registro+="El teléfono debe poseer 8 dígitos.\n\r";
             }
             if(registro.compareTo("")!=0){
                 JOptionPane.showMessageDialog(this, "Debe rellenar los siguientes campos:\n\r"+registro, "Error", JOptionPane.ERROR_MESSAGE);
@@ -315,6 +300,7 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
                         p.setTelefono(telefono.getText());
                         controladorP.edit(p);
                         JOptionPane.showMessageDialog(this, "Proveedor modificado exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
+                        busquedaProveedor.setText("");
                         cargarProveedores();
                     } catch (Exception ex) {
                         JOptionPane.showMessageDialog(this, "Algo no ha salido bien, intentelo de nuevo.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -328,32 +314,6 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
         }
     }
      
-    /**
-     * Metodo para validar el NIT.
-     * Acepta el NIT si el resto de la sumatoria de los digitos del nit * su posicion -1 MOD 11 = ultimo digito.
-     * Se aceptan como validos los NIT para consumidor final.
-     * @param numero
-     * @return 
-     */
-    public Boolean validarNIT(String numero){
-        Boolean valido = Boolean.FALSE;
-        if(numero.matches("[0-9]+-[0-9]")){
-//            String correlativo = numero.split("-")[0];
-//            String verificador = numero.split("-")[1];
-//            int sumatoria = 0;
-//            for(int i = 0; i<correlativo.length();i++){
-//                sumatoria += Integer.parseInt(correlativo.charAt(i)+"")*(numero.length()-1-i);
-//            }
-//            if((sumatoria%11)==Integer.parseInt(verificador)){
-                valido = Boolean.TRUE;
-//            }
-        }
-        else if(numero.matches("([0-9]+-(|K|k))")){
-            valido = Boolean.TRUE;
-        }
-        return valido;
-    }
-    
     /**
      * Metodo para validar un numero telefonico.
      * Debe cumplir con la condicion de no tener caracteres y tener longitud 8.
@@ -487,7 +447,7 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(panelClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelClientesLayout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 379, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(panelClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(botonModificarCliente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -498,7 +458,7 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
                         .addGroup(panelClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
                             .addComponent(busquedaCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 219, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panelClientesLayout.setVerticalGroup(
@@ -506,7 +466,7 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelClientesLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(busquedaCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(panelClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -516,7 +476,7 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
                         .addComponent(botonCrearCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(botonModificarCliente)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 84, Short.MAX_VALUE)
                         .addComponent(botonSalirCliente))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
@@ -574,7 +534,7 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(panelProveedoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelProveedoresLayout.createSequentialGroup()
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 379, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(panelProveedoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(botonModificarProveedor, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -585,7 +545,7 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
                         .addGroup(panelProveedoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
                             .addComponent(busquedaProveedor, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 219, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panelProveedoresLayout.setVerticalGroup(
@@ -593,7 +553,7 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelProveedoresLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(busquedaProveedor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(panelProveedoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -603,7 +563,7 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
                         .addComponent(botonCrearProveedor, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(botonModificarProveedor)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 84, Short.MAX_VALUE)
                         .addComponent(botonSalirProveedor))
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
@@ -617,14 +577,14 @@ public class InterfazPersonas extends javax.swing.JInternalFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jTabbedPersonas)
+                .addComponent(jTabbedPersonas, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jTabbedPersonas)
+                .addComponent(jTabbedPersonas, javax.swing.GroupLayout.DEFAULT_SIZE, 377, Short.MAX_VALUE)
                 .addContainerGap())
         );
 

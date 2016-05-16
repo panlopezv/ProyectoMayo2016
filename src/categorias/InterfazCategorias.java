@@ -7,16 +7,11 @@ package categorias;
 
 import conexion.Conexion;
 import controladores.CategoriaJpaController;
-import controladores.exceptions.NonexistentEntityException;
 import entidades.Categoria;
-import java.awt.HeadlessException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.Query;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-import org.eclipse.persistence.exceptions.DatabaseException;
 
 /**
  *
@@ -51,13 +46,14 @@ public class InterfazCategorias extends javax.swing.JInternalFrame {
         modificarCategoria = new javax.swing.JButton();
         salir = new javax.swing.JButton();
         eliminarCategoria = new javax.swing.JButton();
+        busquedaCategoria = new javax.swing.JTextField();
 
         setBackground(new java.awt.Color(181, 232, 205));
         setClosable(true);
         setMaximizable(true);
         setTitle("Categorías");
 
-        jLabel1.setText("Categorías:");
+        jLabel1.setText("Buscar:");
 
         jScrollPane1.setViewportView(tablaCategorias);
 
@@ -93,6 +89,12 @@ public class InterfazCategorias extends javax.swing.JInternalFrame {
             }
         });
 
+        busquedaCategoria.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                busquedaCategoriaKeyReleased(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -101,7 +103,11 @@ public class InterfazCategorias extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 295, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 295, Short.MAX_VALUE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(busquedaCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(modificarCategoria, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -118,7 +124,9 @@ public class InterfazCategorias extends javax.swing.JInternalFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(busquedaCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(crearCategoria)
@@ -126,9 +134,9 @@ public class InterfazCategorias extends javax.swing.JInternalFrame {
                         .addComponent(modificarCategoria)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(eliminarCategoria)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 116, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 100, Short.MAX_VALUE)
                         .addComponent(salir))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 264, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -166,6 +174,16 @@ public class InterfazCategorias extends javax.swing.JInternalFrame {
             JOptionPane.showMessageDialog(null,"Debe seleccionar una categoría.","Error",JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_eliminarCategoriaActionPerformed
+
+    private void busquedaCategoriaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_busquedaCategoriaKeyReleased
+        // TODO add your handling code here:
+        if (busquedaCategoria.getText().compareTo("") != 0) {
+            buscarCategoria(busquedaCategoria.getText());
+        }
+        else{
+            cargarCategorias();
+        }
+    }//GEN-LAST:event_busquedaCategoriaKeyReleased
     
     public void crearCategoria(){
         JTextField nombre = new JTextField();
@@ -185,6 +203,7 @@ public class InterfazCategorias extends javax.swing.JInternalFrame {
                     Categoria nueva = new Categoria(nombre.getText());
                     controladorC.create(nueva);
                     JOptionPane.showMessageDialog(this, "Categoría creada exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
+                    busquedaCategoria.setText("");
                     cargarCategorias();
                 }
                 else{
@@ -217,6 +236,7 @@ public class InterfazCategorias extends javax.swing.JInternalFrame {
                             aModificar.setNombre(nombre.getText());
                             controladorC.edit(aModificar);
                             JOptionPane.showMessageDialog(this, "Categoría modificada exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
+                            busquedaCategoria.setText("");
                             cargarCategorias();
                         } catch (Exception ex) {
                             JOptionPane.showMessageDialog(this, "Algo no ha salido bien, intentelo de nuevo.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -229,6 +249,7 @@ public class InterfazCategorias extends javax.swing.JInternalFrame {
                 }
                 else{
                     JOptionPane.showMessageDialog(this, "Categoría modificada exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
+                    busquedaCategoria.setText("");
                     cargarCategorias();
                 }
             }
@@ -241,6 +262,7 @@ public class InterfazCategorias extends javax.swing.JInternalFrame {
             try { 
                 controladorC.destroy(idCategoria);
                 JOptionPane.showMessageDialog(this, "Categoría eliminada exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
+                busquedaCategoria.setText("");
                 cargarCategorias();
             }
             catch (Exception ex) {
@@ -259,8 +281,20 @@ public class InterfazCategorias extends javax.swing.JInternalFrame {
         }
         tablaCategorias.setModel(modeloC);
     }
+    
+    public void buscarCategoria(String nombre){
+        Query q = Conexion.getConexion().getEmf().createEntityManager().createNamedQuery("Categoria.findLikeNombre");
+        q.setParameter("nombre", nombre + "%");
+        try {
+            modeloC = new ModeloCategorias(new ArrayList<>(q.getResultList()));
+        } catch (Exception ex) {
+            modeloC = new ModeloCategorias(new ArrayList<>());
+        }
+        tablaCategorias.setModel(modeloC);
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField busquedaCategoria;
     private javax.swing.JButton crearCategoria;
     private javax.swing.JButton eliminarCategoria;
     private javax.swing.JLabel jLabel1;
