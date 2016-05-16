@@ -14,6 +14,7 @@ import java.awt.Component;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,7 +57,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
         primerAdd = false;
         cantidad = 0;
         venta = new CVenta(Conexion.getConexion().getEmf(), Conexion.getConexion().getIdUsuario());
-        numeroVenta.setText(String.valueOf(venta.obtenerIdVenta()+1));
+        numeroVenta.setText(String.valueOf(venta.obtenerIdVenta() + 1));
         jDateChooser1.setDate(new java.util.Date());
     }
 
@@ -111,7 +112,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                 }
             }
         }
-        mp = new modeloProductos(productosB,0);
+        mp = new modeloProductos(productosB, 0);
         jTable1.setModel(mp);
         ajustarColumnas(jTable1);
         agregarAlCarrito.setEnabled(false);
@@ -122,18 +123,18 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
         jTable1.setModel(new DefaultTableModel(new Object[]{"Código", "Producto", "Categoría", "Precio", "Existencias"}, 0));
         ajustarColumnas(jTable1);
     }
-    
-    public void limpiarTabla2(){
+
+    public void limpiarTabla2() {
         venta.borrarProductos();
-        jTable2.setModel(new DefaultTableModel(new Object[]{"Código","Producto","Cantidad","Precio","Subtotal"}, 0));
+        jTable2.setModel(new DefaultTableModel(new Object[]{"Código", "Producto", "Cantidad", "Precio", "Subtotal"}, 0));
         ajustarColumnas(jTable2);
     }
-    
-    public void limpiarFormulario(){
+
+    public void limpiarFormulario() {
         primerAdd = false;
         cantidad = 0;
         venta = new CVenta(Conexion.getConexion().getEmf(), Conexion.getConexion().getIdUsuario());
-        numeroVenta.setText(String.valueOf(venta.obtenerIdVenta()+1));
+        numeroVenta.setText(String.valueOf(venta.obtenerIdVenta() + 1));
         jDateChooser1.setDate(new java.util.Date());
         productoBusqueda.setText("");
         limpiarTabla1();
@@ -262,7 +263,10 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                 //Verifica si se está agregando un producto ya agregado anteriormente y suma las cantidades
                 cp.setCantidad(cp.getCantidad() + cantidad);
                 venta.getProductos().set(venta.getProductos().indexOf(cp), cp);
-                totalVenta.setText("Q. " + venta.getTotal());
+                totalVenta.setText(new DecimalFormat("Q #,##0.00").format(venta.getTotal()));
+                if (!efectivo.getText().matches("[ ]*")) {
+                    vuelto.setText(new DecimalFormat("Q #,##0.00").format((double)((int)((obtenerMonto() - venta.getTotal() + obtenerDescuento())*100)/100.0)));
+                }
                 yaEstaAgregado = true;
                 break;
             }
@@ -273,9 +277,12 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
             if (venta.getProductos().size() == 1) {
                 commitVenta.setEnabled(true);
             }
-            totalVenta.setText("Q. " + venta.getTotal());
+            totalVenta.setText(new DecimalFormat("Q #,##0.00").format(venta.getTotal()));
+            if (!efectivo.getText().matches("[ ]*")) {
+                vuelto.setText(new DecimalFormat("Q #,##0.00").format((double)((int)((obtenerMonto() - venta.getTotal() + obtenerDescuento())*100)/100.0)));
+            }
         }
-        mpv = new modeloProductosVenta(venta.getProductos(),0);
+        mpv = new modeloProductosVenta(venta.getProductos(), 0);
         jTable2.setModel(mpv);
         ajustarColumnas(jTable2);
         productoBusqueda.requestFocus();
@@ -284,7 +291,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
 
     public Double obtenerDescuento() {
         try {
-            if (!descuento.getText().matches("[0-9]*(\\.[0-9])*")) {
+            if (!descuento.getText().matches("[0-9]*(\\.[0-9]+)?")) {
                 throw new NumberFormatException();
             }
             return Double.parseDouble(descuento.getText());
@@ -296,12 +303,12 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                 }
             }
         }
-        return 0.0;
+        return 0.00;
     }
 
     public Double obtenerMonto() {
         try {
-            if (!efectivo.getText().matches("[0-9]*(\\.[0-9])*")) {
+            if (!efectivo.getText().matches("[0-9]*(\\.[0-9]+)?")) {
                 throw new NumberFormatException();
             }
             return Double.parseDouble(efectivo.getText());
@@ -313,7 +320,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                 }
             }
         }
-        return 0.0;
+        return 0.00;
     }
 
     public boolean autenticacionDeAdministrador() {
@@ -335,18 +342,19 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
         }
         return false;
     }
-    
+
     /**
      * Muestra el comprobante de venta.
-     * @param ventaID 
+     *
+     * @param ventaID
      */
-    public void mostrarComprobanteDeVenta(int ventaID){
+    public void mostrarComprobanteDeVenta(int ventaID) {
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://"+Inicio.SERVER+":3306/ferreteria", Inicio.USER, Inicio.PASS);
+            Connection con = DriverManager.getConnection("jdbc:mysql://" + Inicio.SERVER + ":3306/ferreteria", Inicio.USER, Inicio.PASS);
             HashMap parametros = new HashMap();
             parametros.put("ventaid", ventaID);
-            JasperPrint print = JasperFillManager.fillReport(Inicio.DIRECTORY+"ComprobanteVenta.jasper", parametros, con);
+            JasperPrint print = JasperFillManager.fillReport(Inicio.DIRECTORY + "ComprobanteVenta.jasper", parametros, con);
             JasperViewer.viewReport(print, Boolean.FALSE);
         } catch (ClassNotFoundException | SQLException | JRException ex) {
             System.out.println(ex.getMessage());
@@ -801,7 +809,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                             .addComponent(jLabel8)
                             .addComponent(productoBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 365, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel9))
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addGap(0, 392, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPane1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -890,10 +898,10 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
             if (opcion == JOptionPane.OK_OPTION) {
                 EntityManagerFactory emf = Conexion.getConexion().getEmf();
                 Query q = emf.createEntityManager().createNamedQuery("Cliente.findByNit");
-                if(cliente.getText().matches("CF|cf|C/F|c/f|c.f.|C.F.")){
+                if (cliente.getText().matches("CF|cf|C/F|c/f|c.f.|C.F.")) {
                     q.setParameter("nit", "C/F");
-                }else{
-                    q.setParameter("nit", cliente.getText());                    
+                } else {
+                    q.setParameter("nit", cliente.getText());
                 }
                 List<Cliente> clienteBusqueda = q.getResultList();
                 if (clienteBusqueda.isEmpty()) {
@@ -932,11 +940,14 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
 //        int opc = JOptionPane.showConfirmDialog(this, "Realmente quiere quitar el producto de esta venta?", "Confirmación de borrado", JOptionPane.OK_CANCEL_OPTION);
         if (opc == 0) {// para verificar si eligió editar la cantidad a vender o eliminar el producto del carrito
             venta.quitarProducto(jTable2.getSelectedRow());
-            totalVenta.setText("Q. " + venta.getTotal());
+            totalVenta.setText(new DecimalFormat("Q #,##0.00").format(venta.getTotal()));
+            if (!efectivo.getText().matches("[ ]*")) {
+                vuelto.setText(new DecimalFormat("Q #,##0.00").format((double)((int)((obtenerMonto() - venta.getTotal() + obtenerDescuento())*100)/100.0)));
+            }
             if (venta.getProductos().isEmpty()) {
                 commitVenta.setEnabled(false);
             }
-            mpv = new modeloProductosVenta(venta.getProductos(),0);
+            mpv = new modeloProductosVenta(venta.getProductos(), 0);
             jTable2.setModel(mpv);
             ajustarColumnas(jTable2);
             productoBusqueda.requestFocus();
@@ -948,8 +959,11 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
             int cant = ingresoCantidad(((Producto) q.getSingleResult()).getExistencias());
             if (cant != 0) {
                 venta.getProductos().get(jTable2.getSelectedRow()).setCantidad(cant);
-                totalVenta.setText("Q. " + venta.getTotal());
-                mpv = new modeloProductosVenta(venta.getProductos(),0);
+                totalVenta.setText(new DecimalFormat("Q #,##0.00").format(venta.getTotal()));
+                if (!efectivo.getText().matches("[ ]*")) {
+                    vuelto.setText(new DecimalFormat("Q #,##0.00").format((double)((int)((obtenerMonto() - venta.getTotal() + obtenerDescuento())*100)/100.0)));
+                }
+                mpv = new modeloProductosVenta(venta.getProductos(), 0);
                 jTable2.setModel(mpv);
                 ajustarColumnas(jTable2);
                 productoBusqueda.requestFocus();
@@ -976,110 +990,110 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
 
     private void commitVentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_commitVentaActionPerformed
         // TODO add your handling code here:
-        double total = venta.getTotal() - obtenerDescuento();
+        double total = (double)((int)((venta.getTotal() - obtenerDescuento())*100)/100.0);
         boolean mayor = obtenerMonto() >= total;
-            if (mayor) {
-                if (obtenerDescuento() > 0.0) {
-                    if (Conexion.getConexion().getEsAdministrador()) {
-                        venta.setFecha(jDateChooser1.getDate());
-                        venta.setDescuento(obtenerDescuento());
-                        venta.setPagoInicial(obtenerMonto());
-                        if(venta.finalizarVenta()){
-                            commitVenta.setEnabled(false);
-                            int opc = JOptionPane.showConfirmDialog(this, "¿Desea ver el comprobante de esta venta?", 
-                                    "Venta efectuada con éxito.", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
-                            if(opc == JOptionPane.OK_OPTION){
-                                //mostrar reporte
-                                mostrarComprobanteDeVenta(venta.getIdVenta());
-                            }
-                            limpiarFormulario();
-                        } else{
-                            JOptionPane.showMessageDialog(this, "Por favor revise las existencias.", "No se pudo finalizar la venta.", JOptionPane.ERROR_MESSAGE);
-                            limpiarTabla2();
+        if (mayor) {
+            if (obtenerDescuento() > 0.0) {
+                if (Conexion.getConexion().getEsAdministrador()) {
+                    venta.setFecha(jDateChooser1.getDate());
+                    venta.setDescuento(obtenerDescuento());
+                    venta.setPagoInicial(obtenerMonto());
+                    if (venta.finalizarVenta()) {
+                        commitVenta.setEnabled(false);
+                        int opc = JOptionPane.showConfirmDialog(this, "¿Desea ver el comprobante de esta venta?",
+                                "Venta efectuada con éxito.", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                        if (opc == JOptionPane.OK_OPTION) {
+                            //mostrar reporte
+                            mostrarComprobanteDeVenta(venta.getIdVenta());
                         }
-                    } else if (autenticacionDeAdministrador()) {
-                        venta.setFecha(jDateChooser1.getDate());
-                        venta.setDescuento(obtenerDescuento());
-                        venta.setPagoInicial(obtenerMonto());
-                        if(venta.finalizarVenta()){
-                            commitVenta.setEnabled(false);
-                            int opc = JOptionPane.showConfirmDialog(this, "¿Desea ver el comprobante de esta venta?", 
-                                    "Venta efectuada con éxito.", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
-                            if(opc == JOptionPane.OK_OPTION){
-                                //mostrar reporte
-                                mostrarComprobanteDeVenta(venta.getIdVenta());
-                            }
-                            limpiarFormulario();
-                        } else{
-                            JOptionPane.showMessageDialog(this, "Por favor revise las existencias.", "No se pudo finalizar la venta.", JOptionPane.ERROR_MESSAGE);
-                            limpiarTabla2();
-                        }
+                        limpiarFormulario();
                     } else {
-                        JOptionPane.showMessageDialog(this, "No es posible aplicar el descuento!", "Permisos insuficientes!", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "Por favor revise las existencias.", "No se pudo finalizar la venta.", JOptionPane.ERROR_MESSAGE);
+                        limpiarTabla2();
+                    }
+                } else if (autenticacionDeAdministrador()) {
+                    venta.setFecha(jDateChooser1.getDate());
+                    venta.setDescuento(obtenerDescuento());
+                    venta.setPagoInicial(obtenerMonto());
+                    if (venta.finalizarVenta()) {
+                        commitVenta.setEnabled(false);
+                        int opc = JOptionPane.showConfirmDialog(this, "¿Desea ver el comprobante de esta venta?",
+                                "Venta efectuada con éxito.", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                        if (opc == JOptionPane.OK_OPTION) {
+                            //mostrar reporte
+                            mostrarComprobanteDeVenta(venta.getIdVenta());
+                        }
+                        limpiarFormulario();
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Por favor revise las existencias.", "No se pudo finalizar la venta.", JOptionPane.ERROR_MESSAGE);
+                        limpiarTabla2();
                     }
                 } else {
-                    venta.setFecha(jDateChooser1.getDate());
-                    venta.setPagoInicial(obtenerMonto());
-                        if(venta.finalizarVenta()){
-                            commitVenta.setEnabled(false);
-                            int opc = JOptionPane.showConfirmDialog(this, "¿Desea ver el comprobante de esta venta?", 
-                                    "Venta efectuada con éxito.", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
-                            if(opc == JOptionPane.OK_OPTION){
-                                //mostrar reporte
-                                mostrarComprobanteDeVenta(venta.getIdVenta());
-                            }
-                            limpiarFormulario();
-                        } else{
-                            JOptionPane.showMessageDialog(this, "Por favor revise las existencias.", "No se pudo finalizar la venta.", JOptionPane.ERROR_MESSAGE);
-                            limpiarTabla2();
-                        }
+                    JOptionPane.showMessageDialog(this, "No es posible aplicar el descuento!", "Permisos insuficientes!", JOptionPane.ERROR_MESSAGE);
                 }
-            } else if (venta.getCredito()) {
+            } else {
+                venta.setFecha(jDateChooser1.getDate());
+                venta.setPagoInicial(obtenerMonto());
+                if (venta.finalizarVenta()) {
+                    commitVenta.setEnabled(false);
+                    int opc = JOptionPane.showConfirmDialog(this, "¿Desea ver el comprobante de esta venta?",
+                            "Venta efectuada con éxito.", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                    if (opc == JOptionPane.OK_OPTION) {
+                        //mostrar reporte
+                        mostrarComprobanteDeVenta(venta.getIdVenta());
+                    }
+                    limpiarFormulario();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Por favor revise las existencias.", "No se pudo finalizar la venta.", JOptionPane.ERROR_MESSAGE);
+                    limpiarTabla2();
+                }
+            }
+        } else if (venta.getCredito()) {
 //          int opc = JOptionPane.showConfirmDialog(this, "¿Asignar como pago inicial?", "El pago indicado es insuficiente!",
 //                 JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 //          if (opc == JOptionPane.YES_OPTION) {
-                if (Conexion.getConexion().getEsAdministrador()) {
-                    venta.setPagoInicial(obtenerMonto());
-                    venta.setFecha(jDateChooser1.getDate());
-                    venta.setDescuento(obtenerDescuento());
-                        if(venta.finalizarVenta()){
-                            commitVenta.setEnabled(false);
-                            int opc = JOptionPane.showConfirmDialog(this, "¿Desea ver el comprobante de esta venta?", 
-                                    "Venta efectuada con éxito.", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
-                            if(opc == JOptionPane.OK_OPTION){
-                                //mostrar reporte
-                                mostrarComprobanteDeVenta(venta.getIdVenta());
-                            }
-                            limpiarFormulario();
-                        } else{
-                            JOptionPane.showMessageDialog(this, "Por favor revise las existencias.", "No se pudo finalizar la venta.", JOptionPane.ERROR_MESSAGE);
-                            limpiarTabla2();
-                        }
-                } else if (autenticacionDeAdministrador()) {
-                    venta.setPagoInicial(obtenerMonto());
-                    venta.setFecha(jDateChooser1.getDate());
-                    venta.setDescuento(obtenerDescuento());
-                        if(venta.finalizarVenta()){
-                            commitVenta.setEnabled(false);
-                            int opc = JOptionPane.showConfirmDialog(this, "¿Desea ver el comprobante de esta venta?", 
-                                    "Venta efectuada con éxito.", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
-                            if(opc == JOptionPane.OK_OPTION){
-                                //mostrar reporte
-                                mostrarComprobanteDeVenta(venta.getIdVenta());
-                            }
-                            limpiarFormulario();
-                        } else{
-                            JOptionPane.showMessageDialog(this, "Por favor revise las existencias.", "No se pudo finalizar la venta.", JOptionPane.ERROR_MESSAGE);
-                            limpiarTabla2();
-                        }
+            if (Conexion.getConexion().getEsAdministrador()) {
+                venta.setPagoInicial(obtenerMonto());
+                venta.setFecha(jDateChooser1.getDate());
+                venta.setDescuento(obtenerDescuento());
+                if (venta.finalizarVenta()) {
+                    commitVenta.setEnabled(false);
+                    int opc = JOptionPane.showConfirmDialog(this, "¿Desea ver el comprobante de esta venta?",
+                            "Venta efectuada con éxito.", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                    if (opc == JOptionPane.OK_OPTION) {
+                        //mostrar reporte
+                        mostrarComprobanteDeVenta(venta.getIdVenta());
+                    }
+                    limpiarFormulario();
                 } else {
-                    JOptionPane.showMessageDialog(this, "No es posible vender al crédito.", "Permisos insuficientes.", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Por favor revise las existencias.", "No se pudo finalizar la venta.", JOptionPane.ERROR_MESSAGE);
+                    limpiarTabla2();
                 }
-//      }
+            } else if (autenticacionDeAdministrador()) {
+                venta.setPagoInicial(obtenerMonto());
+                venta.setFecha(jDateChooser1.getDate());
+                venta.setDescuento(obtenerDescuento());
+                if (venta.finalizarVenta()) {
+                    commitVenta.setEnabled(false);
+                    int opc = JOptionPane.showConfirmDialog(this, "¿Desea ver el comprobante de esta venta?",
+                            "Venta efectuada con éxito.", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                    if (opc == JOptionPane.OK_OPTION) {
+                        //mostrar reporte
+                        mostrarComprobanteDeVenta(venta.getIdVenta());
+                    }
+                    limpiarFormulario();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Por favor revise las existencias.", "No se pudo finalizar la venta.", JOptionPane.ERROR_MESSAGE);
+                    limpiarTabla2();
+                }
             } else {
-                JOptionPane.showMessageDialog(this, "Intente las siguientes opciones:\n\r\t- Vender al crédito.\n\r\t- Agregar un descuento.",
-                        "El monto de efectivo es insuficiente!", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "No es posible vender al crédito.", "Permisos insuficientes.", JOptionPane.ERROR_MESSAGE);
             }
+//      }
+        } else {
+            JOptionPane.showMessageDialog(this, "Intente las siguientes opciones:\n\r\t- Vender al crédito.\n\r\t- Agregar un descuento.",
+                    "El monto de efectivo es insuficiente!", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_commitVentaActionPerformed
 
     private void esAlCreditoStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_esAlCreditoStateChanged
@@ -1090,7 +1104,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
     private void efectivoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_efectivoKeyReleased
         // TODO add your handling code here:
         if (!efectivo.getText().matches("\\.|[0-9]+\\.")) {
-            vuelto.setText("Q. " + String.valueOf(obtenerMonto() - venta.getTotal() + obtenerDescuento()));
+            vuelto.setText(new DecimalFormat("Q #,##0.00").format((double)((int)((obtenerMonto() - venta.getTotal() + obtenerDescuento())*100)/100.0)));
         }
     }//GEN-LAST:event_efectivoKeyReleased
 
@@ -1099,7 +1113,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
         if (!descuento.getText().matches("\\.|[0-9]+\\.")) {
             obtenerDescuento();
             if (efectivo.getText().length() > 0) {
-                vuelto.setText("Q. " + String.valueOf(obtenerMonto() - venta.getTotal() + obtenerDescuento()));
+                vuelto.setText(new DecimalFormat("Q #,##0.00").format((double)((int)((obtenerMonto() - venta.getTotal() + obtenerDescuento())*100)/100.0)));
             }
         }
     }//GEN-LAST:event_descuentoKeyReleased

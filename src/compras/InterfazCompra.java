@@ -14,6 +14,7 @@ import entidades.Producto;
 import entidades.Proveedor;
 import java.awt.Color;
 import java.awt.Component;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -132,7 +133,8 @@ public class InterfazCompra extends javax.swing.JInternalFrame {
 
     public void limpiarTabla1() {
         mp.borrarProductos();
-        jTable1.setModel(new DefaultTableModel(new Object[]{"Código", "Producto", "Categoría", "Precio", "Existencias"}, 0));
+        //jTable1.setModel(new DefaultTableModel(new Object[]{"Código", "Producto", "Categoría", "Precio", "Existencias"}, 0));
+        jTable1.setModel(mp);
         ajustarColumnas(jTable1);
     }
 
@@ -370,7 +372,7 @@ public class InterfazCompra extends javax.swing.JInternalFrame {
                 //Verifica si se está agregando un producto ya agregado anteriormente y suma las cantidades
                 cp.setCantidad(cp.getCantidad() + cantidad);
                 compra.getProductos().set(compra.getProductos().indexOf(cp), cp);
-                totalCompra.setText("Q. " + compra.getTotal());
+                totalCompra.setText(new DecimalFormat("Q #,##0.00").format(compra.getTotal()));
                 yaEstaAgregado = true;
                 break;
             }
@@ -381,7 +383,7 @@ public class InterfazCompra extends javax.swing.JInternalFrame {
             if (compra.getProductos().size() == 1) {
                 commitCompra.setEnabled(true);
             }
-            totalCompra.setText("Q. " + compra.getTotal());
+            totalCompra.setText(new DecimalFormat("Q #,##0.00").format(compra.getTotal()));
         }
         mpv = new modeloProductosVenta(compra.getProductos(),1);
         jTable2.setModel(mpv);
@@ -392,7 +394,7 @@ public class InterfazCompra extends javax.swing.JInternalFrame {
 
     public Double obtenerMonto() {
         try {
-            if (!efectivo.getText().matches("[0-9]*(\\.[0-9])*")) {
+            if (!efectivo.getText().matches("[0-9]*(\\.[0-9]+)?") || efectivo.getText().matches("[ ]*")) {
                 throw new NumberFormatException();
             }
             return Double.parseDouble(efectivo.getText());
@@ -974,7 +976,7 @@ public class InterfazCompra extends javax.swing.JInternalFrame {
 //        int opc = JOptionPane.showConfirmDialog(this, "Realmente quiere quitar el producto de esta compra?", "Confirmación de borrado", JOptionPane.OK_CANCEL_OPTION);
         if (opc == 0) {// para verificar si eligió editar la cant a vender o eliminar el producto del carrito
             compra.quitarProducto(jTable2.getSelectedRow());
-            totalCompra.setText("Q. " + compra.getTotal());
+            totalCompra.setText(new DecimalFormat("Q #,##0.00").format(compra.getTotal()));
             if (compra.getProductos().isEmpty()) {
                 commitCompra.setEnabled(false);
             }
@@ -991,7 +993,7 @@ public class InterfazCompra extends javax.swing.JInternalFrame {
             if (cantidad != 0) {
                 compra.getProductos().get(jTable2.getSelectedRow()).setCantidad(cantidad);
                 compra.getProductos().get(jTable2.getSelectedRow()).setPrecio(costo);
-                totalCompra.setText("Q. " + compra.getTotal());
+                totalCompra.setText(new DecimalFormat("Q #,##0.00").format(compra.getTotal()));
                 mpv = new modeloProductosVenta(compra.getProductos(),1);
                 jTable2.setModel(mpv);
                 ajustarColumnas(jTable2);
@@ -1009,7 +1011,7 @@ public class InterfazCompra extends javax.swing.JInternalFrame {
 
     private void commitCompraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_commitCompraActionPerformed
         // TODO add your handling code here:
-        double total = compra.getTotal();
+        double total = (double)((int)(compra.getTotal()*100)/100);
         boolean mayor = obtenerMonto() >= total;
         if (mayor) {
             compra.setPagoInicial(obtenerMonto());

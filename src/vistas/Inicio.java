@@ -39,20 +39,19 @@ import ventas.InterfazVenta;
  */
 public class Inicio extends javax.swing.JFrame {
 
-
     public static Conexion conexion;
     public static final String USER = "root";
-    public static final String PASS = "root";
+    public static final String PASS = "Kk4/1";
     public static final String SERVER = "localhost";
-    public static final String DIRECTORY = "reportes\\";   //"src\\reportes\\" cuando se ejecuta desde netbeans
-    
+    public static final String DIRECTORY = "src\\reportes\\";   // "reportes\\" cuando se ejecuta desde netbeans
+
     /**
      * Creates new form Principal
      */
     public Inicio() {
         initComponents();
         this.setLocationRelativeTo(null);
-        this.getContentPane().setBackground(Color.getHSBColor(0.144f,0.09f,1f));
+        this.getContentPane().setBackground(Color.getHSBColor(0.144f, 0.09f, 1f));
         tablero.setVisible(Boolean.FALSE);
         escritorio.setVisible(Boolean.FALSE);
         menuGestionar.setVisible(Boolean.FALSE);
@@ -60,60 +59,62 @@ public class Inicio extends javax.swing.JFrame {
         menuUsuario.setVisible(Boolean.FALSE);
         menuAyuda.setVisible(Boolean.FALSE);
         botonCompras.setVisible(Boolean.FALSE);
-        botonOperaciones.setVisible(Boolean.FALSE);
         menuReportes.setVisible(Boolean.FALSE);
+        botonOperaciones.setVisible(Boolean.TRUE);
     }
-    
-    public void limpiarEscritorio(){
-        for(int i=0;i<escritorio.getComponentCount();i++){
+
+    public void limpiarEscritorio() {
+        for (int i = 0; i < escritorio.getComponentCount(); i++) {
             escritorio.getComponent(i).setVisible(Boolean.FALSE);
         }
         escritorio.removeAll();
     }
-    
+
     /**
-     * Muestra el total de ventas por fecha. La fecha debe ir entre apostrofes y de la siguiente manera 'AAAA-MM-DD'
-     * @param fecha 
+     * Muestra el total de ventas por fecha. La fecha debe ir entre apostrofes y
+     * de la siguiente manera 'AAAA-MM-DD'
+     *
+     * @param fecha
      */
-    public void mostrarReporteDeVentasPorFecha(Date fecha){
+    public void mostrarReporteDeVentasPorFecha(Date fecha) {
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://"+Inicio.SERVER+":3306/ferreteria", Inicio.USER, Inicio.PASS);
+            Connection con = DriverManager.getConnection("jdbc:mysql://" + Inicio.SERVER + ":3306/ferreteria", Inicio.USER, Inicio.PASS);
             HashMap parametros = new HashMap();
-            parametros.put("fechaFiltro", "'"+new SimpleDateFormat("yyyy-MM-dd").format(fecha)+"'");
+            parametros.put("fechaFiltro", "'" + new SimpleDateFormat("yyyy-MM-dd").format(fecha) + "'");
             parametros.put("fechaMostrar", fecha);
-            JasperPrint print = JasperFillManager.fillReport(Inicio.DIRECTORY+"Ventas.jasper", parametros, con);
+            JasperPrint print = JasperFillManager.fillReport(Inicio.DIRECTORY + "Ventas.jasper", parametros, con);
             JasperViewer.viewReport(print, Boolean.FALSE);
         } catch (ClassNotFoundException | SQLException | JRException ex) {
             System.out.println(ex.getMessage());
         }
     }
-    
+
     /**
      * Muestra el reporte de inventario.
      */
-    public void mostrarReporteDeInventario(){
+    public void mostrarReporteDeInventario() {
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://"+Inicio.SERVER+":3306/ferreteria", Inicio.USER, Inicio.PASS);
-            JasperPrint print = JasperFillManager.fillReport(Inicio.DIRECTORY+"Inventario.jasper", null, con);
+            Connection con = DriverManager.getConnection("jdbc:mysql://" + Inicio.SERVER + ":3306/ferreteria", Inicio.USER, Inicio.PASS);
+            JasperPrint print = JasperFillManager.fillReport(Inicio.DIRECTORY + "Inventario.jasper", null, con);
             JasperViewer.viewReport(print, Boolean.FALSE);
         } catch (ClassNotFoundException | SQLException | JRException ex) {
             System.out.println(ex.getMessage());
         }
     }
-        
-    public void ajustar(JInternalFrame jif){
-        if(jif.getWidth()>escritorio.getWidth() || jif.getHeight()>escritorio.getHeight()){
-            if(this.getExtendedState()!=JFrame.MAXIMIZED_BOTH){
-                escritorio.setSize(jif.getWidth()+25, jif.getHeight()+25);
-                this.setSize(escritorio.getWidth()+260, jif.getHeight()+125);
+
+    public void ajustar(JInternalFrame jif) {
+        if (jif.getWidth() > escritorio.getWidth() || jif.getHeight() > escritorio.getHeight()) {
+            if (this.getExtendedState() != JFrame.MAXIMIZED_BOTH) {
+                escritorio.setSize(jif.getWidth() + 25, jif.getHeight() + 25);
+                this.setSize(escritorio.getWidth() + 260, jif.getHeight() + 125);
                 this.setLocationRelativeTo(null);
             }
         }
-        jif.setLocation((escritorio.getWidth() - jif.getWidth())/2, (escritorio.getHeight() - jif.getHeight())/2);
+        jif.setLocation((escritorio.getWidth() - jif.getWidth()) / 2, (escritorio.getHeight() - jif.getHeight()) / 2);
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -364,7 +365,7 @@ public class Inicio extends javax.swing.JFrame {
 
     private void menuIniciarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuIniciarSesionActionPerformed
         // TODO add your handling code here:
-        if(conexion == null){
+        if (conexion == null) {
             JTextField user = new JTextField();
             JTextField pass = new JPasswordField();
             Object[] message = {
@@ -373,31 +374,30 @@ public class Inicio extends javax.swing.JFrame {
             };
             int opcion = JOptionPane.showConfirmDialog(this, message, "Inicio de sesión.", JOptionPane.OK_CANCEL_OPTION);
             if (opcion == JOptionPane.OK_OPTION) {
-                conexion=Conexion.getConexion(user.getText(), pass.getText());
-                if(conexion.getEmf()!=null && conexion.getIdUsuario()!=0){
+                conexion = Conexion.getConexion(user.getText(), pass.getText());
+                if (conexion.getEmf() != null && conexion.getIdUsuario() != 0) {
                     tablero.setVisible(Boolean.TRUE);
                     escritorio.setVisible(Boolean.TRUE);
                     menuCerrarSesion.setVisible(Boolean.TRUE);
                     menuUsuario.setVisible(Boolean.TRUE);
                     menuAyuda.setVisible(Boolean.TRUE);
-                    if(Conexion.getConexion().getEsAdministrador()){
+                    if (Conexion.getConexion().getEsAdministrador()) {
                         menuGestionar.setVisible(Boolean.TRUE);
                         botonCompras.setVisible(Boolean.TRUE);
-                        botonOperaciones.setVisible(Boolean.TRUE);
                         menuReportes.setVisible(Boolean.TRUE);
+                    } else {
+                        botonOperaciones.setText("Ventas del Día");
                     }
-                }
-                else {
+                } else {
                     conexion.cerrarConexion();
                     conexion = null;
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "Inicio de sesión cancelado.", "", JOptionPane.ERROR_MESSAGE);
             }
-        }
-        else{
+        } else {
             JOptionPane.showMessageDialog(this, "Ya existe una sesion abierta.\n\r"
-                + "Si desea ingresar como otro usuario, cierre esta sesion e ingrese de nuevo.", "", JOptionPane.INFORMATION_MESSAGE);
+                    + "Si desea ingresar como otro usuario, cierre esta sesion e ingrese de nuevo.", "", JOptionPane.INFORMATION_MESSAGE);
         }
     }//GEN-LAST:event_menuIniciarSesionActionPerformed
 
@@ -405,9 +405,9 @@ public class Inicio extends javax.swing.JFrame {
         // TODO add your handling code here:
         int opcion = JOptionPane.showConfirmDialog(this, "¿Realmente desea cerrar sesión?", "", JOptionPane.OK_CANCEL_OPTION);
         if (opcion == JOptionPane.OK_OPTION) {
-            if(conexion!=null){
+            if (conexion != null) {
                 conexion.cerrarConexion();
-                conexion=null;
+                conexion = null;
             }
             limpiarEscritorio();
             tablero.setVisible(Boolean.FALSE);
@@ -417,7 +417,6 @@ public class Inicio extends javax.swing.JFrame {
             menuUsuario.setVisible(Boolean.FALSE);
             menuAyuda.setVisible(Boolean.FALSE);
             botonCompras.setVisible(Boolean.FALSE);
-            botonOperaciones.setVisible(Boolean.FALSE);
             menuReportes.setVisible(Boolean.FALSE);
         }
     }//GEN-LAST:event_menuCerrarSesionActionPerformed
@@ -426,9 +425,9 @@ public class Inicio extends javax.swing.JFrame {
         // TODO add your handling code here:
         int opcion = JOptionPane.showConfirmDialog(this, "¿Realmente desea salir?", "", JOptionPane.OK_CANCEL_OPTION);
         if (opcion == JOptionPane.OK_OPTION) {
-            if(conexion!=null){
+            if (conexion != null) {
                 conexion.cerrarConexion();
-                conexion=null;
+                conexion = null;
             }
             System.exit(0);
         }
@@ -482,9 +481,9 @@ public class Inicio extends javax.swing.JFrame {
         // TODO add your handling code here:
         int opcion = JOptionPane.showConfirmDialog(this, "¿Realmente desea salir?", "", JOptionPane.OK_CANCEL_OPTION);
         if (opcion == JOptionPane.OK_OPTION) {
-            if(conexion!=null){
+            if (conexion != null) {
                 conexion.cerrarConexion();
-                conexion=null;
+                conexion = null;
             }
             System.exit(0);
         }
@@ -516,10 +515,17 @@ public class Inicio extends javax.swing.JFrame {
 
     private void botonOperacionesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonOperacionesActionPerformed
         // TODO add your handling code here:
-        InterfazOperaciones io = new InterfazOperaciones();
-        limpiarEscritorio();
-        escritorio.add(io);
-        ajustar(io);
+        if (conexion.getEsAdministrador()) {
+            InterfazOperaciones io = new InterfazOperaciones();
+            limpiarEscritorio();
+            escritorio.add(io);
+            ajustar(io);
+        } else {
+            InterfazVentasDelDia ivd = new InterfazVentasDelDia();
+            limpiarEscritorio();
+            escritorio.add(ivd);
+            ajustar(ivd);
+        }
     }//GEN-LAST:event_botonOperacionesActionPerformed
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed

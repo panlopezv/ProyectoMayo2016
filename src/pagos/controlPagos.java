@@ -26,6 +26,7 @@ import java.util.List;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -707,10 +708,13 @@ public class controlPagos extends javax.swing.JInternalFrame {
     private void historialPagosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_historialPagosActionPerformed
         // TODO add your handling code here:
         if (proveedoresAlCredito.getSelectedIndex() > 0) {
-            historialDePagos hp = new historialDePagos(encontradosP.get(proveedoresAlCredito.getSelectedIndex()-1));
-            JOptionPane.showMessageDialog(this, hp, "Historial de Pagos", JOptionPane.INFORMATION_MESSAGE);
-            buscarProveedores(1);
-            cargarCompras();
+            historialDePagos hdp = new historialDePagos(encontradosP.get(proveedoresAlCredito.getSelectedIndex()-1));
+            hdp.setCp(this);
+            this.getParent().add(hdp);
+            hdp.setLocation(this.getLocation().x + (this.getWidth()/2-hdp.getWidth()/2), this.getLocation().y + (this.getHeight()/2-hdp.getHeight()/2));
+            hdp.toFront();
+            hdp.getLayeredPane().setLayer(hdp, JLayeredPane.POPUP_LAYER);
+            hdp.setVisible(true);
         } else {
             JOptionPane.showMessageDialog(this, "Debe seleccionar un Proveedor.", "Ningun proveedor seleccionado.", JOptionPane.WARNING_MESSAGE);
         }
@@ -741,11 +745,14 @@ public class controlPagos extends javax.swing.JInternalFrame {
 
     private void historialAbonosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_historialAbonosActionPerformed
         // TODO add your handling code here:
-        if (clientesAlCredito.getSelectedIndex() > 0) {
-            historialDeAbonos ha = new historialDeAbonos(encontradosC.get(clientesAlCredito.getSelectedIndex()-1));
-            JOptionPane.showMessageDialog(this, ha, "Historial de Abonos", JOptionPane.INFORMATION_MESSAGE);
-            buscarClientes(1);
-            cargarVentas();
+        if (clientesAlCredito.getSelectedIndex() > 0) {            
+            historialDeAbonos hda = new historialDeAbonos(encontradosC.get(clientesAlCredito.getSelectedIndex()-1));
+            hda.setCp(this);
+            this.getParent().add(hda);
+            hda.setLocation(this.getLocation().x + (this.getWidth()/2-hda.getWidth()/2), this.getLocation().y + (this.getHeight()/2-hda.getHeight()/2));
+            hda.toFront();
+            hda.getLayeredPane().setLayer(hda, JLayeredPane.POPUP_LAYER);
+            hda.setVisible(true);
         } else {
             JOptionPane.showMessageDialog(this, "Debe seleccionar un Cliente.", "Ningun cliente seleccionado.", JOptionPane.WARNING_MESSAGE);
         }
