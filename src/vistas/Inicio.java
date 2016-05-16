@@ -40,10 +40,10 @@ import ventas.InterfazVenta;
 public class Inicio extends javax.swing.JFrame {
 
     public static Conexion conexion;
-    public static final String USER = "root";
-    public static final String PASS = "Kk4/1";
-    public static final String SERVER = "localhost";
-    public static final String DIRECTORY = "src\\reportes\\";   // "reportes\\" cuando se ejecuta desde netbeans
+    public static final String USER = "flordelcafe";
+    public static final String PASS = "hernor";
+    public static final String SERVER = "192.168.1.8";
+    public static final String DIRECTORY = "reportes\\";   // "reportes\\" cuando se ejecuta desde netbeans
 
     /**
      * Creates new form Principal
@@ -241,9 +241,9 @@ public class Inicio extends javax.swing.JFrame {
                 .addComponent(botonVentas, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(botonCompras, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(botonOperaciones, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(114, Short.MAX_VALUE))
+                .addContainerGap(116, Short.MAX_VALUE))
         );
 
         menuArchivo.setText("Archivo");
@@ -385,6 +385,7 @@ public class Inicio extends javax.swing.JFrame {
                         menuGestionar.setVisible(Boolean.TRUE);
                         botonCompras.setVisible(Boolean.TRUE);
                         menuReportes.setVisible(Boolean.TRUE);
+                        botonOperaciones.setText("Operaciones");
                     } else {
                         botonOperaciones.setText("Ventas del Día");
                     }
