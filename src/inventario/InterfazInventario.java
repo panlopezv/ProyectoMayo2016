@@ -129,7 +129,7 @@ public class InterfazInventario extends javax.swing.JInternalFrame implements Ob
         for(int i=0;i<modelo.getProductos().size();i++){
             ci+=encontrarCostoActual(modelo.getProducto(i));
         }
-        capitalInvertido.setText(new DecimalFormat("Q#,##0.00").format(ci));
+        capitalInvertido.setText(new DecimalFormat("Q#,###,##0.00").format(ci));
     }
     public double encontrarCostoActual(Producto p) {
         Query q = Conexion.getConexion().getEmf().createEntityManager().createNamedQuery("Detallecompra.findLastId");
