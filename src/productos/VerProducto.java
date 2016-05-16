@@ -56,6 +56,7 @@ public class VerProducto extends javax.swing.JInternalFrame {
 
         jLabel1.setText("Nombre:");
 
+        nombreProducto.setEditable(false);
         nombreProducto.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 nombreProductoKeyReleased(evt);
@@ -64,11 +65,14 @@ public class VerProducto extends javax.swing.JInternalFrame {
 
         jLabel2.setText("Descripción:");
 
+        descripcionProducto.setEditable(false);
         descripcionProducto.setColumns(20);
         descripcionProducto.setRows(5);
         jScrollPane1.setViewportView(descripcionProducto);
 
         jLabel3.setText("Precio:");
+
+        precioProducto.setEditable(false);
 
         jLabel4.setText("Categoría:");
 
@@ -79,6 +83,10 @@ public class VerProducto extends javax.swing.JInternalFrame {
                 botonSalirActionPerformed(evt);
             }
         });
+
+        categoriaProducto.setEditable(false);
+
+        existenciasProducto.setEditable(false);
 
         jLabel5.setText("Existencias:");
 

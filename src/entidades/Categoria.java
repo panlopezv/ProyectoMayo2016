@@ -27,6 +27,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "Categoria.findAll", query = "SELECT c FROM Categoria c ORDER BY c.nombre"),
     @NamedQuery(name = "Categoria.findByIdCategoria", query = "SELECT c FROM Categoria c WHERE c.idCategoria = :idCategoria"),
+    @NamedQuery(name = "Categoria.findLikeNombre", query = "SELECT c FROM Categoria c WHERE c.nombre LIKE :nombre ORDER BY c.nombre"),
     @NamedQuery(name = "Categoria.findByNombre", query = "SELECT c FROM Categoria c WHERE c.nombre = :nombre")})
 public class Categoria implements Serializable {
 
