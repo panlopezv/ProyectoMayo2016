@@ -34,40 +34,6 @@ public class DetalleVenta extends javax.swing.JPanel {
             modeloDV = new ModeloDetalleVenta(new ArrayList<>());
         }
         jTable1.setModel(modeloDV);
-        ajustarColumnas(jTable1);
-    }
-    
-    public void ajustarColumnas(JTable tabla){
-        tabla.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        
-        for (int column = 0; column < tabla.getColumnCount(); column++)
-        {
-            TableColumn tableColumn = tabla.getColumnModel().getColumn(column);
-            int preferredWidth = tableColumn.getMinWidth();
-            int maxWidth = tableColumn.getMaxWidth();
-            for (int row = 0; row < tabla.getRowCount(); row++)
-            {
-                TableCellRenderer cellRenderer = tabla.getCellRenderer(row, column);
-                Component c = tabla.prepareRenderer(cellRenderer, row, column);
-                int width = c.getPreferredSize().width + tabla.getIntercellSpacing().width;
-                preferredWidth = Math.max(preferredWidth, width);
-                if (preferredWidth >= maxWidth)
-                {
-                    preferredWidth = maxWidth;
-                    break;
-                }
-            }
-            TableColumn columna = tabla.getColumnModel().getColumn(column);
-            TableCellRenderer headerRenderer = columna.getHeaderRenderer();
-            if (headerRenderer == null) {
-                headerRenderer = tabla.getTableHeader().getDefaultRenderer();
-            }
-            Object headerValue = columna.getHeaderValue();
-            Component headerComp
-                    = headerRenderer.getTableCellRendererComponent(tabla, headerValue, false, false, 0, column);
-            preferredWidth = Math.max(preferredWidth, headerComp.getPreferredSize().width);
-            tableColumn.setPreferredWidth( preferredWidth );
-        }
     }
 
     /**

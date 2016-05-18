@@ -67,7 +67,7 @@ public class modeloComprasAbono extends AbstractTableModel{
                         }else{
                             return ((Proveedor)q.getSingleResult()).getNombre();                            
                         }
-                    case 4: return (new SimpleDateFormat("dd/MM/yyyy").format(c.getFecha()));
+                    case 4: return (new SimpleDateFormat("dd/MM/yyyy HH:mm").format(c.getFecha()));
                     default: return null;
                 }
             }

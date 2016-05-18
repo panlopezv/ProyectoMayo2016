@@ -57,7 +57,7 @@ public class ModeloVentas extends AbstractTableModel{
         Venta v = this.ventas.get(rowIndex);
         switch(columnIndex){
             case 0:{
-                return new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a").format(v.getFecha());
+                return new SimpleDateFormat("dd/MM/yyyy HH:mm").format(v.getFecha());
             }
             case 1:{
                 Query q = Conexion.getConexion().getEmf().createEntityManager().createNamedQuery("Cliente.findByIdCliente");
@@ -80,7 +80,7 @@ public class ModeloVentas extends AbstractTableModel{
                 return v.getAnulada();
             }
             case 6:{
-                return new DecimalFormat("Q#,##0.00").format(v.getTotal());
+                return new DecimalFormat("Q#,##0.00").format(v.getTotal()-v.getDescuento());
             }
             default: return null;
         }

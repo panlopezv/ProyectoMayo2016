@@ -160,7 +160,9 @@ public class controlPagos extends javax.swing.JInternalFrame {
                 List<Venta> temporal = q.getResultList();
                 ArrayList<Venta> encontradas = new ArrayList<>();
                 for (Venta v : temporal) {
-                    encontradas.add(v);
+                    if(v.getAnulada()==null || !v.getAnulada()){
+                        encontradas.add(v);                        
+                    }
                 }
                 mva = new modeloVentasAbono(encontradas);
                 jTable1.setModel(mva);
@@ -178,7 +180,9 @@ public class controlPagos extends javax.swing.JInternalFrame {
                 List<Venta> temporal = q.getResultList();
                 ArrayList<Venta> encontradas = new ArrayList<>();
                 for (Venta v : temporal) {
-                    encontradas.add(v);
+                    if(v.getAnulada()==null || !v.getAnulada()){
+                        encontradas.add(v);                        
+                    }
                 }
                 mva = new modeloVentasAbono(encontradas);
                 jTable1.setModel(mva);
@@ -201,7 +205,9 @@ public class controlPagos extends javax.swing.JInternalFrame {
                 List<Compra> temporal = q.getResultList();
                 ArrayList<Compra> encontradas = new ArrayList<>();
                 for (Compra c : temporal) {
-                    encontradas.add(c);
+                    if(c.getAnulada()==null || !c.getAnulada()){
+                        encontradas.add(c);
+                    }
                 }
                 mca = new modeloComprasAbono(encontradas);
                 jTable2.setModel(mca);
@@ -218,7 +224,9 @@ public class controlPagos extends javax.swing.JInternalFrame {
                 List<Compra> temporal = q.getResultList();
                 ArrayList<Compra> encontradas = new ArrayList<>();
                 for (Compra c : temporal) {
-                    encontradas.add(c);
+                    if(c.getAnulada()==null || !c.getAnulada()){
+                        encontradas.add(c);
+                    }
                 }
                 mca = new modeloComprasAbono(encontradas);
                 jTable2.setModel(mca);

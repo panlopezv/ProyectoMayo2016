@@ -56,7 +56,7 @@ public class modeloVentasAbono extends AbstractTableModel{
                 Venta v = ventas.get(i);
                 switch(i1){
                     case 0: return v.getIdVenta();
-                    case 1: return (new DecimalFormat("Q#,##0.00")).format(v.getTotal());
+                    case 1: return (new DecimalFormat("Q#,##0.00")).format(v.getTotal()-v.getDescuento());
                     case 2: return (new DecimalFormat("Q#,##0.00")).format(v.getSaldo());
                     case 3: 
                         EntityManagerFactory emf = Conexion.getConexion().getEmf();
@@ -67,7 +67,7 @@ public class modeloVentasAbono extends AbstractTableModel{
                         }else{
                             return ((Cliente)q.getSingleResult()).getNombre();                            
                         }
-                    case 4: return (new SimpleDateFormat("dd/MM/yyyy").format(v.getFecha()));
+                    case 4: return (new SimpleDateFormat("dd/MM/yyyy HH:mm").format(v.getFecha()));
                     default: return null;
                 }
             }

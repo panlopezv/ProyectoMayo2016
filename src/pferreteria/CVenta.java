@@ -87,7 +87,7 @@ public class CVenta extends COperacion {
                 controladorDetalleVenta.create(new Detalleventa(nueva.getIdVenta(), cp.getId(), cp.getCantidad(), cp.getPrecio(), cp.getSubtotal()));
             }
             if (credito) {
-                if (pagoInicial > 0) {
+                if (pagoInicial > 0.00) {
                     crearAbono();
                 }
             }
@@ -193,7 +193,7 @@ public class CVenta extends COperacion {
      */
     @Override
     public double getTotal() {
-        double total = 0;
+        double total = 0.00;
         for (int i = 0; i < productos.size(); i++) {
             total += productos.get(i).getSubtotal();
         }

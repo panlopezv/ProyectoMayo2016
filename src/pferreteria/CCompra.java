@@ -168,7 +168,7 @@ public class CCompra extends COperacion {
      */
     @Override
     public double getTotal() {
-        double total = 0;
+        double total = 0.00;
         for (int i = 0; i < productos.size(); i++) {
             total += productos.get(i).getSubtotal();
         }

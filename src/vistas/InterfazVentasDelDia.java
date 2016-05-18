@@ -66,6 +66,11 @@ public class InterfazVentasDelDia extends javax.swing.JInternalFrame {
                     q.setParameter("fecha", fechaF);//para poder encontrar todas desde esa fecha desde las 00:00:00
                     if (!q.getResultList().isEmpty()) {
                         ArrayList<Venta> todasLasVentas = new ArrayList<>(q.getResultList());
+                        for(int i = 0; i< todasLasVentas.size(); i++){
+                            if(todasLasVentas.get(i).getIdUsuario()!=Conexion.getConexion().getIdUsuario()){
+                                todasLasVentas.remove(i);
+                            }
+                        }
                         modeloV = new ModeloVentas(todasLasVentas);
                         tablaVentas.setModel(modeloV);
                         ajustarColumnas(tablaVentas);
@@ -80,6 +85,11 @@ public class InterfazVentasDelDia extends javax.swing.JInternalFrame {
                     q.setParameter("fecha", fechaF);
                     if (!q.getResultList().isEmpty()) {
                         ArrayList<Venta> encontradas = new ArrayList<>(q.getResultList());
+                        for(int i = 0; i< encontradas.size(); i++){
+                            if(encontradas.get(i).getIdUsuario()!=Conexion.getConexion().getIdUsuario()){
+                                encontradas.remove(i);
+                            }
+                        }
                         modeloV = new ModeloVentas(encontradas);
                         tablaVentas.setModel(modeloV);
                         ajustarColumnas(tablaVentas);

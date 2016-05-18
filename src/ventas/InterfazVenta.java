@@ -263,7 +263,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                 //Verifica si se está agregando un producto ya agregado anteriormente y suma las cantidades
                 cp.setCantidad(cp.getCantidad() + cantidad);
                 venta.getProductos().set(venta.getProductos().indexOf(cp), cp);
-                totalVenta.setText(new DecimalFormat("Q #,##0.00").format(venta.getTotal()));
+                totalVenta.setText(new DecimalFormat("Q #,##0.00").format(venta.getTotal()-obtenerDescuento()));
                 if (!efectivo.getText().matches("[ ]*")) {
                     vuelto.setText(new DecimalFormat("Q #,##0.00").format((double)((int)((obtenerMonto() - venta.getTotal() + obtenerDescuento())*100)/100.0)));
                 }
@@ -277,7 +277,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
             if (venta.getProductos().size() == 1) {
                 commitVenta.setEnabled(true);
             }
-            totalVenta.setText(new DecimalFormat("Q #,##0.00").format(venta.getTotal()));
+            totalVenta.setText(new DecimalFormat("Q #,##0.00").format(venta.getTotal()-obtenerDescuento()));
             if (!efectivo.getText().matches("[ ]*")) {
                 vuelto.setText(new DecimalFormat("Q #,##0.00").format((double)((int)((obtenerMonto() - venta.getTotal() + obtenerDescuento())*100)/100.0)));
             }
@@ -940,7 +940,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
 //        int opc = JOptionPane.showConfirmDialog(this, "Realmente quiere quitar el producto de esta venta?", "Confirmación de borrado", JOptionPane.OK_CANCEL_OPTION);
         if (opc == 0) {// para verificar si eligió editar la cantidad a vender o eliminar el producto del carrito
             venta.quitarProducto(jTable2.getSelectedRow());
-            totalVenta.setText(new DecimalFormat("Q #,##0.00").format(venta.getTotal()));
+            totalVenta.setText(new DecimalFormat("Q #,##0.00").format(venta.getTotal()-obtenerDescuento()));
             if (!efectivo.getText().matches("[ ]*")) {
                 vuelto.setText(new DecimalFormat("Q #,##0.00").format((double)((int)((obtenerMonto() - venta.getTotal() + obtenerDescuento())*100)/100.0)));
             }
@@ -959,7 +959,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
             int cant = ingresoCantidad(((Producto) q.getSingleResult()).getExistencias());
             if (cant != 0) {
                 venta.getProductos().get(jTable2.getSelectedRow()).setCantidad(cant);
-                totalVenta.setText(new DecimalFormat("Q #,##0.00").format(venta.getTotal()));
+                totalVenta.setText(new DecimalFormat("Q #,##0.00").format(venta.getTotal()-obtenerDescuento()));
                 if (!efectivo.getText().matches("[ ]*")) {
                     vuelto.setText(new DecimalFormat("Q #,##0.00").format((double)((int)((obtenerMonto() - venta.getTotal() + obtenerDescuento())*100)/100.0)));
                 }
@@ -1111,7 +1111,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
     private void descuentoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_descuentoKeyReleased
         // TODO add your handling code here:
         if (!descuento.getText().matches("\\.|[0-9]+\\.")) {
-            obtenerDescuento();
+            totalVenta.setText(new DecimalFormat("Q #,##0.00").format((double)((int)((venta.getTotal() - obtenerDescuento())*100)/100.0)));
             if (efectivo.getText().length() > 0) {
                 vuelto.setText(new DecimalFormat("Q #,##0.00").format((double)((int)((obtenerMonto() - venta.getTotal() + obtenerDescuento())*100)/100.0)));
             }

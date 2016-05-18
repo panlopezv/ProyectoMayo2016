@@ -57,7 +57,7 @@ public class ModeloCompras extends AbstractTableModel{
         Compra c = this.compras.get(rowIndex);
         switch(columnIndex){
             case 0:{
-                return new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a").format(c.getFecha());
+                return new SimpleDateFormat("dd/MM/yyyy HH:mm").format(c.getFecha());
             }
             case 1:{
                 Query q = Conexion.getConexion().getEmf().createEntityManager().createNamedQuery("Proveedor.findByIdProveedor");

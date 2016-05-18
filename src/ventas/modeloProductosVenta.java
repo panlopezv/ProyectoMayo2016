@@ -23,9 +23,9 @@ public class modeloProductosVenta extends AbstractTableModel{
 
     public modeloProductosVenta(ArrayList<CProducto> productos, int opc) {
         if(opc==0){
-            columnas = new String[]{"Código", "Producto", "Cantidad" , "Precio", "Subtotal"};
+            columnas = new String[]{"Código", "Producto", "Cantidad" , "Precio", "Precio Total"};
         } else{
-            columnas = new String[]{"Código", "Producto", "Cantidad" , "Costo", "Subtotal"};
+            columnas = new String[]{"Código", "Producto", "Cantidad" , "Costo", "Costo Total"};
         }
         this.productosVenta = productos;
     }   
