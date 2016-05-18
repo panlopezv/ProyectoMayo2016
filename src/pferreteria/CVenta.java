@@ -9,6 +9,7 @@ import conexion.Conexion;
 import controladores.AbonoJpaController;
 import controladores.ClienteJpaController;
 import controladores.DetalleventaJpaController;
+import controladores.ProductoJpaController;
 import controladores.VentaJpaController;
 import entidades.Abono;
 import entidades.Cliente;
@@ -17,8 +18,6 @@ import entidades.Producto;
 import entidades.Venta;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 
@@ -28,6 +27,7 @@ public class CVenta extends COperacion {
     private final DetalleventaJpaController controladorDetalleVenta;
     private final ClienteJpaController controladorCliente;
     private final AbonoJpaController controladorAbono;
+    private final ProductoJpaController controladorProducto;
     private int idVenta;
     private double descuento;
     private double saldo;
@@ -54,6 +54,7 @@ public class CVenta extends COperacion {
         controladorDetalleVenta = new DetalleventaJpaController(emf);
         controladorCliente = new ClienteJpaController(emf);
         controladorAbono = new AbonoJpaController(emf);
+        controladorProducto = new ProductoJpaController(emf);
     }
 
     /**
@@ -139,6 +140,12 @@ public class CVenta extends COperacion {
     public void crearAbono() {
         Abono nuevo = new Abono(fecha, getPagoInicial(), getIdPersona());
         controladorAbono.create(nuevo);
+    }
+    
+    public Producto crearProducto(String nombre, double precio, int existencias, int idCategoria) {
+        Producto nuevo = new Producto(nombre, existencias, precio, idCategoria);
+        controladorProducto.create(nuevo);
+        return nuevo;
     }
 
     public void setFecha(Date fecha) {

@@ -6,10 +6,11 @@
 package ventas;
 
 import conexion.Conexion;
+import controladores.CategoriaJpaController;
+import controladores.ProductoJpaController;
 import entidades.Categoria;
 import entidades.Cliente;
 import entidades.Producto;
-import java.awt.Color;
 import java.awt.Component;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -20,6 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTable;
@@ -34,6 +37,7 @@ import net.sf.jasperreports.view.JasperViewer;
 import pferreteria.CProducto;
 import pferreteria.CVenta;
 import vistas.Inicio;
+import static vistas.Inicio.conexion;
 
 /**
  *
@@ -360,6 +364,97 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
             System.out.println(ex.getMessage());
         }
     }
+    
+    public void crearIngresarProducto(String nombre, String precio, String cantidad, DefaultComboBoxModel modelo){
+        JTextField nombreP = new JTextField(nombre);
+        JTextField precioP = new JTextField(precio);
+        JTextField cantidadP = new JTextField(cantidad);
+        JComboBox<String> categoriaP = new JComboBox<>(modelo);
+        Object[] message = {
+            "Nombre:", nombreP,
+            "Cantidad:", cantidadP,
+            "Precio:", precioP,
+            "Categoría:", categoriaP
+        };
+        int opcion = JOptionPane.showConfirmDialog(this, message, "Crear producto.", JOptionPane.OK_CANCEL_OPTION);
+        if (opcion == JOptionPane.OK_OPTION) {       
+            String registro = "";
+            if(nombreP.getText().matches("[ ]*")){
+                registro=registro + "Nombre.\n\r";
+            }
+            try{
+                Double.parseDouble(precioP.getText());
+                if(Double.parseDouble(precioP.getText())<=0){
+                    registro=registro + "Precio. (No se permiten valores negativos o 0).\n\r";
+                    precioP.setText("");
+                }
+            }
+            catch(NumberFormatException ex){
+                if(precioP.getText().matches("[ ]*")){
+                    registro=registro + "Precio.\n\r";
+                }
+                else{
+                    registro=registro + "Precio. (No se permiten letras).\n\r";
+                }
+                precioP.setText("");
+            }
+            try{
+                Integer.parseInt(cantidadP.getText());
+                if(Integer.parseInt(cantidadP.getText())<=0){
+                    registro=registro + "Cantidad. (No se permiten valores negativos o 0).\n\r";
+                    cantidadP.setText("");
+                }
+            }
+            catch(NumberFormatException ex){
+                if(cantidadP.getText().matches("[ ]*")){
+                    registro=registro + "Cantidad.\n\r";
+                }
+                else{
+                    registro=registro + "Cantidad. (No se permiten letras).\n\r";
+                }
+                cantidadP.setText("");
+            }
+            if(registro.compareTo("")==0){
+                Query q = Conexion.getConexion().getEmf().createEntityManager().createNamedQuery("Producto.findByNombre");
+                q.setParameter("nombre", nombreP.getText());
+                if(q.getResultList().isEmpty()){
+                    int idCategoria=0;
+                    if(((String)categoriaP.getSelectedItem()).compareTo("Seleccione una categoría")==0){
+                        q = Conexion.getConexion().getEmf().createEntityManager().createNamedQuery("Categoria.findByNombre");
+                        q.setParameter("nombre", "Default");
+                        if(q.getResultList().isEmpty()){
+                            //Se crea la categoria Default
+                            CategoriaJpaController controladorC = new CategoriaJpaController(Conexion.getConexion().getEmf());
+                            Categoria nuevaCat = new Categoria("Default");
+                            controladorC.create(nuevaCat);
+                            idCategoria = nuevaCat.getIdCategoria();
+                        }
+                        else{
+                            idCategoria=((List<Categoria>)q.getResultList()).get(0).getIdCategoria();
+                        }
+                    }
+                    else{
+                        q = Conexion.getConexion().getEmf().createEntityManager().createNamedQuery("Categoria.findByNombre");
+                        q.setParameter("nombre", (String)categoriaP.getSelectedItem());
+                        idCategoria = ((Categoria) q.getSingleResult()).getIdCategoria();
+                    }
+                    Producto nuevo = new Producto(nombreP.getText(), Integer.parseInt(cantidadP.getText()), Double.parseDouble(precioP.getText()), idCategoria);
+                    ProductoJpaController controladorP = new ProductoJpaController(Conexion.getConexion().getEmf());
+                    controladorP.create(nuevo);
+                    JOptionPane.showMessageDialog(this, "Producto creado e ingresado exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
+                    agrearCproducto(nuevo, Integer.parseInt(cantidadP.getText()));
+                }
+                else{
+                    JOptionPane.showMessageDialog(this, "El producto ingresado ya existe.", "Error", JOptionPane.ERROR_MESSAGE);
+                crearIngresarProducto(nombreP.getText(), precioP.getText(), cantidadP.getText(), modelo);
+                }
+            }
+            else{
+                JOptionPane.showMessageDialog(this, "Debe rellenar los siguientes campos:\n\r"+registro, "Error", JOptionPane.ERROR_MESSAGE);
+                crearIngresarProducto(nombreP.getText(), precioP.getText(), cantidadP.getText(), modelo);
+            }
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -413,6 +508,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
         jDateChooser1 = new com.toedter.calendar.JDateChooser();
         modificarEntradaCarrito = new javax.swing.JButton();
         cancelar1 = new javax.swing.JButton();
+        entradaManual = new javax.swing.JButton();
 
         crearCliente.setTitle("Datos de cliente nuevo");
         crearCliente.setName("agregarCliente"); // NOI18N
@@ -754,6 +850,14 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
             }
         });
 
+        entradaManual.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/addItem.png"))); // NOI18N
+        entradaManual.setText("Entrada manual");
+        entradaManual.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                entradaManualActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -767,7 +871,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                         .addComponent(cancelar1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(cancelar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addComponent(jLabel12)
@@ -809,11 +913,13 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                             .addComponent(jLabel8)
                             .addComponent(productoBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 365, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel9))
-                        .addGap(0, 392, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPane1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(agregarAlCarrito)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(agregarAlCarrito, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(entradaManual, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -841,7 +947,10 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(agregarAlCarrito))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(agregarAlCarrito)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(entradaManual, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel9)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1128,6 +1237,49 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
         this.dispose();
     }//GEN-LAST:event_cancelar1ActionPerformed
 
+    private void entradaManualActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_entradaManualActionPerformed
+        // TODO add your handling code here:
+        CategoriaJpaController controladorC = new CategoriaJpaController(Conexion.getConexion().getEmf());
+        List<Categoria> listaCategorias = controladorC.findCategoriaEntities();
+        DefaultComboBoxModel modelo = new DefaultComboBoxModel();
+        modelo.addElement("Seleccione una categoría");
+        modelo.setSelectedItem("Seleccione una categoría");
+        for(int i=0;i<listaCategorias.size();i++){
+            modelo.addElement(listaCategorias.get(i).getNombre());
+        }
+        crearIngresarProducto("", "", "", modelo);
+        if (!primerAdd) {
+            JTextField cliente = new JTextField();
+            Object[] message = {
+                "NIT:", cliente,};
+            int opcion = JOptionPane.showConfirmDialog(this, message, "Indicar cliente.", JOptionPane.OK_CANCEL_OPTION);
+            if (opcion == JOptionPane.OK_OPTION) {
+                EntityManagerFactory emf = Conexion.getConexion().getEmf();
+                Query q = emf.createEntityManager().createNamedQuery("Cliente.findByNit");
+                if (cliente.getText().matches("CF|cf|C/F|c/f|c.f.|C.F.")) {
+                    q.setParameter("nit", "C/F");
+                } else {
+                    q.setParameter("nit", cliente.getText());
+                }
+                List<Cliente> clienteBusqueda = q.getResultList();
+                if (clienteBusqueda.isEmpty()) {
+                    int crearcliente = JOptionPane.showConfirmDialog(this, "¿Desea crear un cliente nuevo?", "El cliente no existe.", JOptionPane.OK_OPTION);
+                    if (crearcliente == JOptionPane.OK_OPTION) {
+                        crearCliente.setSize(400, 200);
+                        crearCliente.setLocationRelativeTo(this);
+                        datoNit.setText(cliente.getText());
+                        datoDireccion.setText("Ciudad");
+                        crearCliente.setVisible(true);
+                    }
+                } else {
+                    primerAdd = true;
+                    venta.setIdPersona(clienteBusqueda.get(0).getIdCliente());
+                    mostrarDatosCliente(clienteBusqueda.get(0));
+                }
+            }
+        }
+    }//GEN-LAST:event_entradaManualActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton agregarAlCarrito;
     private javax.swing.JButton cancelar;
@@ -1141,6 +1293,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
     private javax.swing.JTextField descuento;
     private javax.swing.JTextField direccionCliente;
     private javax.swing.JTextField efectivo;
+    private javax.swing.JButton entradaManual;
     private javax.swing.JCheckBox esAlCredito;
     private javax.swing.JButton insertarCliente;
     private javax.swing.JButton jButton6;
