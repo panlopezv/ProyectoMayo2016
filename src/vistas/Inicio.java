@@ -39,10 +39,10 @@ import ventas.InterfazVenta;
 public class Inicio extends javax.swing.JFrame {
 
     public static Conexion conexion;
-    public static final String USER = "root";
-    public static final String PASS = "Kk4/1";
-    public static final String SERVER = "localhost";
-    public static final String DIRECTORY = "src\\reportes\\";   // "reportes\\" cuando se ejecuta desde netbeans
+    public static final String USER = "flordelcafe";
+    public static final String PASS = "hernor";
+    public static final String SERVER = "192.168.1.8";
+    public static final String DIRECTORY = "reportes\\";   // "reportes\\" cuando se ejecuta desde netbeans
 
     /**
      * Creates new form Principal
