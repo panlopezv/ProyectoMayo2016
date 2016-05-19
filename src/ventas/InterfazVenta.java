@@ -1074,7 +1074,12 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
             jTable2.setModel(mpv);
             ajustarColumnas(jTable2);
             productoBusqueda.requestFocus();
-            cargarProductos(productoBusqueda.getText());
+            if (mp != null) {
+                limpiarTabla1();
+            }
+            if (productoBusqueda.getText().compareTo("") != 0) {
+                cargarProductos(productoBusqueda.getText());
+            }
         } else if (opc == 1) {
             EntityManagerFactory emf = Conexion.getConexion().getEmf();
             Query q = emf.createEntityManager().createNamedQuery("Producto.findByIdProducto");
@@ -1102,7 +1107,12 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                 jTable2.setModel(mpv);
                 ajustarColumnas(jTable2);
                 productoBusqueda.requestFocus();
-                cargarProductos(productoBusqueda.getText());
+                if (mp != null) {
+                    limpiarTabla1();
+                }
+                if (productoBusqueda.getText().compareTo("") != 0) {
+                    cargarProductos(productoBusqueda.getText());
+                }
             }
         }
         modificarEntradaCarrito.setEnabled(false);
