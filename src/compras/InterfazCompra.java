@@ -333,8 +333,7 @@ public class InterfazCompra extends javax.swing.JInternalFrame {
         nitProveedor.setText(prov.getNit());
     }
 
-    public void agregarAlCarrito(Producto p){
-        Producto productoCompra = p;
+    public void agregarAlCarrito(Producto productoCompra){
         ingresoCostoCantidad(encontrarCostoActual(productoCompra));
         if (!primerAdd) {
             JTextField proveedor = new JTextField();
@@ -349,7 +348,7 @@ public class InterfazCompra extends javax.swing.JInternalFrame {
                 if (proveedorBusqueda.isEmpty()) {
                     int crearProveedor = JOptionPane.showConfirmDialog(this, "¿Desea crear un proveedor nuevo?", "El proveedor no existe.", JOptionPane.OK_OPTION);
                     if (crearProveedor == JOptionPane.OK_OPTION) {
-                        insertarProveedor(proveedor.getText(),p);
+                        insertarProveedor(proveedor.getText(),productoCompra);
                     }
                 } else {
                     primerAdd = true;

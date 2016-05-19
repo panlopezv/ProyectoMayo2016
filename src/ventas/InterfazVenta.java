@@ -19,6 +19,9 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.swing.DefaultComboBoxModel;
@@ -50,6 +53,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
     boolean primerAdd;
     CVenta venta;
     int cantidad;
+    ArrayList<Producto> insertados;
 
     /**
      * Creates new form InternoA
@@ -63,6 +67,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
         venta = new CVenta(Conexion.getConexion().getEmf(), Conexion.getConexion().getIdUsuario());
         numeroVenta.setText(String.valueOf(venta.obtenerIdVenta() + 1));
         jDateChooser1.setDate(new java.util.Date());
+        insertados = new ArrayList<>();
     }
 
     /**
@@ -85,7 +90,9 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                 } else {
                     for (CProducto cp : venta.getProductos()) {//de lo contrario busca coincidencias en los productos encontrados
                         if (cp.getId().equals(P.getIdProducto())) {
-                            P.setExistencias(P.getExistencias() - cp.getCantidad()); // al encontrar una coincidencia actualiza las existencias temporales
+                            if (P.getExistencias() >= cp.getCantidad()) {//para no mostrar existencias negativas
+                                P.setExistencias(P.getExistencias() - cp.getCantidad()); // al encontrar una coincidencia actualiza las existencias temporales
+                            }
                         }
                     }
                     productosB.add(P);
@@ -143,6 +150,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
         productoBusqueda.setText("");
         limpiarTabla1();
         mpv.borrarCProductos();
+        insertados.clear();
         jTable2.setModel(new DefaultTableModel(new Object[]{"Código", "Producto", "Cantidad", "Precio", "Subtotal"}, 0));
         ajustarColumnas(jTable2);
         esAlCredito.setSelected(false);
@@ -187,7 +195,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
         }
     }
 
-    public int ingresoCantidad(int existencias) {
+    public int ingresoCantidad(int existencias, boolean b) {
         JTextField cantidad = new JTextField();
         Object[] objeto = {cantidad};
         int opcion = JOptionPane.showConfirmDialog(this, objeto, "Cantidad a vender:", JOptionPane.OK_CANCEL_OPTION);
@@ -201,14 +209,23 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                 }
                 if (Integer.parseInt(cantidad.getText()) <= existencias) {
                     return Integer.parseInt(cantidad.getText());
+                } else if (existencias == 0) {
+                    if (!b) {
+                        int opc = JOptionPane.showConfirmDialog(this, "Si es un producto especial aún puede agregralo.\n\n\r\t\t¿Desea de todas formas venderlo?", "No hay Existencias.", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                        if (opc == JOptionPane.OK_OPTION) {
+                            return Integer.parseInt(cantidad.getText());
+                        }
+                    } else {
+                        return Integer.parseInt(cantidad.getText());
+                    }
                 } else {
-                    JOptionPane.showMessageDialog(this, "Solo hay " + String.valueOf(existencias) + " existencias!",
+                    JOptionPane.showMessageDialog(this, "Solo hay " + String.valueOf(existencias) + " existencias.",
                             "Existencias insuficientes.", JOptionPane.WARNING_MESSAGE);
-                    ingresoCantidad(existencias);
+                    ingresoCantidad(existencias, b);
                 }
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(null, "Debe indicar un valor correcto en cantidad a vender!", "ERROR DE FORMATO", JOptionPane.ERROR_MESSAGE);
-                ingresoCantidad(existencias);
+                ingresoCantidad(existencias, b);
             }
         }
         return 0;
@@ -217,40 +234,50 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
     /**
      * Crea un cliente si al indicar el cliente de la venta no existe
      *
+     * @param p
+     * @param nit
+     * @param direccion
      * @return true si se agrega el cliente
      */
-    public boolean insertarCliente() {
+    public void insertarCliente(Producto productoVenta, String nit, String direccion) {
         String registro = "";
-        if (!datoNombre.getText().matches("[ ]*") && !datoNit.getText().matches("[ ]*")) {
-            EntityManagerFactory emf = Conexion.getConexion().getEmf();
-            Query q = emf.createEntityManager().createNamedQuery("Cliente.findByNit");
-            q.setParameter("nit", datoNit.getText());
-            if (q.getResultList().isEmpty()) {
-                Cliente creado = venta.crearCliente(datoNombre.getText(), datoDireccion.getText(), datoNit.getText());
-                venta.setIdPersona(creado.getIdCliente());
-                primerAdd = true;
-                mostrarDatosCliente(creado);
-                Producto productoVenta = mp.obtenerProducto((String) jTable1.getValueAt(jTable1.getSelectedRow(), 1));
-                if (cantidad != 0) {
-                    agrearCproducto(productoVenta, cantidad);
+        JTextField datoNombre = new JTextField();
+        JTextField datoNit = new JTextField(nit);
+        JTextField datoDireccion = new JTextField(direccion);
+        Object[] mensaje = new Object[]{
+            "Nombre:", datoNombre,
+            "N I T: ", datoNit,
+            "Dirección: ", datoDireccion
+        };
+        int opc = JOptionPane.showConfirmDialog(this, mensaje, "Datos de Cliente Nuevo", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+        if (opc == JOptionPane.OK_OPTION) {
+            if (!datoNombre.getText().matches("[ ]*") && !datoNit.getText().matches("[ ]*")) {
+                EntityManagerFactory emf = Conexion.getConexion().getEmf();
+                Query q = emf.createEntityManager().createNamedQuery("Cliente.findByNit");
+                q.setParameter("nit", datoNit.getText());
+                if (q.getResultList().isEmpty()) {
+                    Cliente creado = venta.crearCliente(datoNombre.getText(), datoDireccion.getText(), datoNit.getText());
+                    venta.setIdPersona(creado.getIdCliente());
+                    primerAdd = true;
+                    mostrarDatosCliente(creado);
+                    if (cantidad != 0) {
+                        agrearCproducto(productoVenta, cantidad);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "El NIT ingresado ya pertenece a un cliente!", "Error de nit.", JOptionPane.ERROR_MESSAGE);
+                    insertarCliente(productoVenta, "", datoDireccion.getText());
                 }
-                crearCliente.setVisible(false);
-                return true;
             } else {
-                JOptionPane.showMessageDialog(this, "El NIT ingresado ya pertenece a un cliente!", "Error de nit.", JOptionPane.ERROR_MESSAGE);
-                datoNit.setText("");
-                datoNit.requestFocus();
+                if (datoNombre.getText().matches("[ ]*")) {
+                    registro += "Nombre\n\r";
+                }
+                if (datoNit.getText().matches("[ ]*")) {
+                    registro += "NIT\n\r";
+                }
+                JOptionPane.showMessageDialog(this, "Los siguientes campos son requeridos:\n\n\r" + registro, "Error.", JOptionPane.ERROR_MESSAGE);
+                insertarCliente(productoVenta, datoNit.getText(), datoDireccion.getText());
             }
-        } else {
-            if (datoNombre.getText().matches("[ ]*")) {
-                registro += "Nombre\n\r";
-            }
-            if (datoNit.getText().matches("[ ]*")) {
-                registro += "NIT\n\r";
-            }
-            JOptionPane.showMessageDialog(this, "Los siguientes campos son requeridos:\n\n\r" + registro, "Error.", JOptionPane.ERROR_MESSAGE);
         }
-        return false;
     }
 
     public void mostrarDatosCliente(Cliente client) {
@@ -260,6 +287,64 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
         nitCliente.setText(client.getNit());
     }
 
+    public void agregarAlCarrito(Producto productoVenta) {
+        if (!primerAdd) {
+            JTextField cliente = new JTextField();
+            Object[] message = {
+                "NIT:", cliente,};
+            int opcion = JOptionPane.showConfirmDialog(this, message, "Indicar cliente.", JOptionPane.OK_CANCEL_OPTION);
+            if (opcion == JOptionPane.OK_OPTION) {
+                EntityManagerFactory emf = Conexion.getConexion().getEmf();
+                Query q = emf.createEntityManager().createNamedQuery("Cliente.findByNit");
+                if (cliente.getText().matches("CF|cf|C/F|c/f|c.f.|C.F.")) {
+                    q.setParameter("nit", "C/F");
+                } else {
+                    q.setParameter("nit", cliente.getText());
+                }
+                List<Cliente> clienteBusqueda = q.getResultList();
+                if (clienteBusqueda.isEmpty()) {
+                    int crearcliente = JOptionPane.showConfirmDialog(this, "¿Desea crear un cliente nuevo?", "El cliente no existe.", JOptionPane.OK_OPTION);
+                    if (crearcliente == JOptionPane.OK_OPTION) {
+                        insertarCliente(productoVenta, cliente.getText(), "Ciudad");
+                    }
+                } else {
+                    primerAdd = true;
+                    venta.setIdPersona(clienteBusqueda.get(0).getIdCliente());
+                    mostrarDatosCliente(clienteBusqueda.get(0));
+                    if (cantidad != 0) {
+                        if (productoVenta.getExistencias() == 0) {
+                            for (int i = 0; i < insertados.size(); i++) {
+                                if (Objects.equals(insertados.get(i).getIdProducto(), productoVenta.getIdProducto())) {
+                                    productoVenta.setExistencias(cantidad + insertados.get(i).getExistencias());
+                                    insertados.set(i, productoVenta);
+                                }
+                            }
+                            if (productoVenta.getExistencias() == 0) {
+                                productoVenta.setExistencias(cantidad);
+                                insertados.add(productoVenta);
+                            }
+                        }
+                        agrearCproducto(productoVenta, cantidad);
+                    }
+                }
+            }
+        } else if (cantidad != 0) {
+            if (productoVenta.getExistencias() == 0) {
+                for (int i = 0; i < insertados.size(); i++) {
+                    if (Objects.equals(insertados.get(i).getIdProducto(), productoVenta.getIdProducto())) {
+                        productoVenta.setExistencias(cantidad + insertados.get(i).getExistencias());
+                        insertados.set(i, productoVenta);
+                    }
+                }
+                if (productoVenta.getExistencias() == 0) {
+                    productoVenta.setExistencias(cantidad);
+                    insertados.add(productoVenta);
+                }
+            }
+            agrearCproducto(productoVenta, cantidad);
+        }
+    }
+
     public void agrearCproducto(Producto prod, int cantidad) {
         boolean yaEstaAgregado = false;
         for (CProducto cp : venta.getProductos()) {
@@ -267,9 +352,9 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                 //Verifica si se está agregando un producto ya agregado anteriormente y suma las cantidades
                 cp.setCantidad(cp.getCantidad() + cantidad);
                 venta.getProductos().set(venta.getProductos().indexOf(cp), cp);
-                totalVenta.setText(new DecimalFormat("Q #,##0.00").format(venta.getTotal()-obtenerDescuento()));
+                totalVenta.setText(new DecimalFormat("Q #,##0.00").format(venta.getTotal() - obtenerDescuento()));
                 if (!efectivo.getText().matches("[ ]*")) {
-                    vuelto.setText(new DecimalFormat("Q #,##0.00").format((double)((int)((obtenerMonto() - venta.getTotal() + obtenerDescuento())*100)/100.0)));
+                    vuelto.setText(new DecimalFormat("Q #,##0.00").format((double) ((int) ((obtenerMonto() - venta.getTotal() + obtenerDescuento()) * 100) / 100.0)));
                 }
                 yaEstaAgregado = true;
                 break;
@@ -281,16 +366,21 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
             if (venta.getProductos().size() == 1) {
                 commitVenta.setEnabled(true);
             }
-            totalVenta.setText(new DecimalFormat("Q #,##0.00").format(venta.getTotal()-obtenerDescuento()));
+            totalVenta.setText(new DecimalFormat("Q #,##0.00").format(venta.getTotal() - obtenerDescuento()));
             if (!efectivo.getText().matches("[ ]*")) {
-                vuelto.setText(new DecimalFormat("Q #,##0.00").format((double)((int)((obtenerMonto() - venta.getTotal() + obtenerDescuento())*100)/100.0)));
+                vuelto.setText(new DecimalFormat("Q #,##0.00").format((double) ((int) ((obtenerMonto() - venta.getTotal() + obtenerDescuento()) * 100) / 100.0)));
             }
         }
         mpv = new modeloProductosVenta(venta.getProductos(), 0);
         jTable2.setModel(mpv);
         ajustarColumnas(jTable2);
         productoBusqueda.requestFocus();
-        cargarProductos(productoBusqueda.getText());
+        if (mp != null) {
+            limpiarTabla1();
+        }
+        if (productoBusqueda.getText().compareTo("") != 0) {
+            cargarProductos(productoBusqueda.getText());
+        }
     }
 
     public Double obtenerDescuento() {
@@ -330,8 +420,11 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
     public boolean autenticacionDeAdministrador() {
         JTextField usuario = new JTextField();
         JTextField contraseña = new JPasswordField();
-        Object[] objeto = {"Usuario Administrador:", usuario, "Contraseña:", contraseña};
-        int opcion = JOptionPane.showConfirmDialog(this, objeto, "Permisos de administrador requeridos!", JOptionPane.OK_CANCEL_OPTION);
+        Object[] objeto = {
+            "Usuario Administrador:", usuario,
+            "Contraseña:", contraseña
+        };
+        int opcion = JOptionPane.showConfirmDialog(this, objeto, "Permisos de administrador requeridos", JOptionPane.OK_CANCEL_OPTION);
         if (opcion == JOptionPane.OK_OPTION) {
             EntityManagerFactory emf = Conexion.getConexion().getEmf();
             Query q = emf.createEntityManager().createNamedQuery("Usuario.findByUsuarioAndContrasenya");
@@ -340,7 +433,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
             if (!q.getResultList().isEmpty()) {
                 return true;
             } else {
-                JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos!", "Error de autenticación!", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos.", "Error de autenticación", JOptionPane.ERROR_MESSAGE);
                 autenticacionDeAdministrador();
             }
         }
@@ -364,11 +457,11 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
             System.out.println(ex.getMessage());
         }
     }
-    
-    public void crearIngresarProducto(String nombre, String precio, String cantidad, DefaultComboBoxModel modelo){
+
+    public void crearIngresarProducto(String nombre, String precio, String cantP, DefaultComboBoxModel modelo) {
         JTextField nombreP = new JTextField(nombre);
         JTextField precioP = new JTextField(precio);
-        JTextField cantidadP = new JTextField(cantidad);
+        JTextField cantidadP = new JTextField(cantP);
         JComboBox<String> categoriaP = new JComboBox<>(modelo);
         Object[] message = {
             "Nombre:", nombreP,
@@ -376,83 +469,108 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
             "Precio:", precioP,
             "Categoría:", categoriaP
         };
-        int opcion = JOptionPane.showConfirmDialog(this, message, "Crear producto.", JOptionPane.OK_CANCEL_OPTION);
-        if (opcion == JOptionPane.OK_OPTION) {       
+        int opcion = JOptionPane.showConfirmDialog(this, message, "Ingresar producto.", JOptionPane.OK_CANCEL_OPTION);
+        if (opcion == JOptionPane.OK_OPTION) {
             String registro = "";
-            if(nombreP.getText().matches("[ ]*")){
-                registro=registro + "Nombre.\n\r";
+            if (nombreP.getText().matches("[ ]*")) {
+                registro = registro + "Nombre.\n\r";
             }
-            try{
+            try {
                 Double.parseDouble(precioP.getText());
-                if(Double.parseDouble(precioP.getText())<=0){
-                    registro=registro + "Precio. (No se permiten valores negativos o 0).\n\r";
+                if (Double.parseDouble(precioP.getText()) <= 0) {
+                    registro = registro + "Precio. (Debe ser mayor a 0.00).\n\r";
                     precioP.setText("");
                 }
-            }
-            catch(NumberFormatException ex){
-                if(precioP.getText().matches("[ ]*")){
-                    registro=registro + "Precio.\n\r";
-                }
-                else{
-                    registro=registro + "Precio. (No se permiten letras).\n\r";
+            } catch (NumberFormatException ex) {
+                if (precioP.getText().matches("[ ]*")) {
+                    registro = registro + "Precio.\n\r";
+                } else {
+                    registro = registro + "Precio. (No se permiten letras).\n\r";
                 }
                 precioP.setText("");
             }
-            try{
+            try {
                 Integer.parseInt(cantidadP.getText());
-                if(Integer.parseInt(cantidadP.getText())<=0){
-                    registro=registro + "Cantidad. (No se permiten valores negativos o 0).\n\r";
+                if (Integer.parseInt(cantidadP.getText()) <= 0) {
+                    registro = registro + "Cantidad. (Debe ser mayor a 0).\n\r";
                     cantidadP.setText("");
                 }
-            }
-            catch(NumberFormatException ex){
-                if(cantidadP.getText().matches("[ ]*")){
-                    registro=registro + "Cantidad.\n\r";
-                }
-                else{
-                    registro=registro + "Cantidad. (No se permiten letras).\n\r";
+            } catch (NumberFormatException ex) {
+                if (cantidadP.getText().matches("[ ]*")) {
+                    registro = registro + "Cantidad.\n\r";
+                } else {
+                    registro = registro + "Cantidad. (No se permiten letras).\n\r";
                 }
                 cantidadP.setText("");
             }
-            if(registro.compareTo("")==0){
+            if (registro.compareTo("") == 0) {
                 Query q = Conexion.getConexion().getEmf().createEntityManager().createNamedQuery("Producto.findByNombre");
                 q.setParameter("nombre", nombreP.getText());
-                if(q.getResultList().isEmpty()){
-                    int idCategoria=0;
-                    if(((String)categoriaP.getSelectedItem()).compareTo("Seleccione una categoría")==0){
+                if (q.getResultList().isEmpty()) {
+                    int idCategoria = 0;
+                    if (((String) categoriaP.getSelectedItem()).compareTo("Seleccione una categoría") == 0) {
                         q = Conexion.getConexion().getEmf().createEntityManager().createNamedQuery("Categoria.findByNombre");
                         q.setParameter("nombre", "Default");
-                        if(q.getResultList().isEmpty()){
+                        if (q.getResultList().isEmpty()) {
                             //Se crea la categoria Default
                             CategoriaJpaController controladorC = new CategoriaJpaController(Conexion.getConexion().getEmf());
                             Categoria nuevaCat = new Categoria("Default");
                             controladorC.create(nuevaCat);
                             idCategoria = nuevaCat.getIdCategoria();
+                        } else {
+                            idCategoria = ((List<Categoria>) q.getResultList()).get(0).getIdCategoria();
                         }
-                        else{
-                            idCategoria=((List<Categoria>)q.getResultList()).get(0).getIdCategoria();
-                        }
-                    }
-                    else{
+                    } else {
                         q = Conexion.getConexion().getEmf().createEntityManager().createNamedQuery("Categoria.findByNombre");
-                        q.setParameter("nombre", (String)categoriaP.getSelectedItem());
+                        q.setParameter("nombre", (String) categoriaP.getSelectedItem());
                         idCategoria = ((Categoria) q.getSingleResult()).getIdCategoria();
                     }
-                    Producto nuevo = new Producto(nombreP.getText(), Integer.parseInt(cantidadP.getText()), Double.parseDouble(precioP.getText()), idCategoria);
+                    Producto nuevo = new Producto(nombreP.getText(), 0, Double.parseDouble(precioP.getText()), idCategoria);
                     ProductoJpaController controladorP = new ProductoJpaController(Conexion.getConexion().getEmf());
                     controladorP.create(nuevo);
-                    JOptionPane.showMessageDialog(this, "Producto creado e ingresado exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
-                    agrearCproducto(nuevo, Integer.parseInt(cantidadP.getText()));
-                }
-                else{
+                    nuevo.setExistencias(Integer.parseInt(cantidadP.getText()));
+                    insertados.add(nuevo);
+                    cantidad = Integer.parseInt(cantidadP.getText());
+                    agregarAlCarrito(nuevo);
+//                    JOptionPane.showMessageDialog(this, "Producto creado e ingresado exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
+//                    agrearCproducto(nuevo, Integer.parseInt(cantidadP.getText()));
+                } else {
                     JOptionPane.showMessageDialog(this, "El producto ingresado ya existe.", "Error", JOptionPane.ERROR_MESSAGE);
+                    crearIngresarProducto(nombreP.getText(), precioP.getText(), cantidadP.getText(), modelo);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Los siguientes campos son requeridos:\n\r" + registro, "Error", JOptionPane.ERROR_MESSAGE);
                 crearIngresarProducto(nombreP.getText(), precioP.getText(), cantidadP.getText(), modelo);
+            }
+        }
+    }
+
+    public void terminarVenta() {
+        venta.setFecha(jDateChooser1.getDate());
+        venta.setDescuento(obtenerDescuento());
+        venta.setPagoInicial(obtenerMonto());
+        if (!insertados.isEmpty()) {
+            for (Producto p : insertados) {
+                ProductoJpaController controladorP = new ProductoJpaController(Conexion.getConexion().getEmf());
+                try {
+                    controladorP.edit(p);
+                } catch (Exception ex) {
+                    Logger.getLogger(InterfazVenta.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            else{
-                JOptionPane.showMessageDialog(this, "Debe rellenar los siguientes campos:\n\r"+registro, "Error", JOptionPane.ERROR_MESSAGE);
-                crearIngresarProducto(nombreP.getText(), precioP.getText(), cantidadP.getText(), modelo);
+        }
+        if (venta.finalizarVenta()) {
+            commitVenta.setEnabled(false);
+            int opc = JOptionPane.showConfirmDialog(this, "¿Desea ver el comprobante de esta venta?",
+                    "Venta efectuada con éxito.", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+            if (opc == JOptionPane.OK_OPTION) {
+                //mostrar reporte
+                mostrarComprobanteDeVenta(venta.getIdVenta());
             }
+            limpiarFormulario();
+        } else {
+            JOptionPane.showMessageDialog(this, "Por favor revise las existencias.", "No se pudo finalizar la venta.", JOptionPane.ERROR_MESSAGE);
+            limpiarTabla2();
         }
     }
 
@@ -465,15 +583,6 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        crearCliente = new javax.swing.JDialog();
-        jLabel14 = new javax.swing.JLabel();
-        datoNombre = new javax.swing.JTextField();
-        jLabel15 = new javax.swing.JLabel();
-        datoNit = new javax.swing.JTextField();
-        jLabel16 = new javax.swing.JLabel();
-        datoDireccion = new javax.swing.JTextField();
-        jButton6 = new javax.swing.JButton();
-        insertarCliente = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         codigoCliente = new javax.swing.JTextField();
@@ -509,73 +618,6 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
         modificarEntradaCarrito = new javax.swing.JButton();
         cancelar1 = new javax.swing.JButton();
         entradaManual = new javax.swing.JButton();
-
-        crearCliente.setTitle("Datos de cliente nuevo");
-        crearCliente.setName("agregarCliente"); // NOI18N
-
-        jLabel14.setText("Nombre:");
-
-        jLabel15.setText("N I T:");
-
-        jLabel16.setText("Dirección:");
-
-        jButton6.setText("Cancelar");
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton6ActionPerformed(evt);
-            }
-        });
-
-        insertarCliente.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/add.png"))); // NOI18N
-        insertarCliente.setText("Aceptar");
-        insertarCliente.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                insertarClienteActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout crearClienteLayout = new javax.swing.GroupLayout(crearCliente.getContentPane());
-        crearCliente.getContentPane().setLayout(crearClienteLayout);
-        crearClienteLayout.setHorizontalGroup(
-            crearClienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(crearClienteLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(crearClienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel14)
-                    .addComponent(jLabel15)
-                    .addComponent(jLabel16))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(crearClienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(datoNit, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(datoNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(datoDireccion, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, crearClienteLayout.createSequentialGroup()
-                        .addComponent(jButton6)
-                        .addGap(35, 35, 35)
-                        .addComponent(insertarCliente)))
-                .addContainerGap(37, Short.MAX_VALUE))
-        );
-        crearClienteLayout.setVerticalGroup(
-            crearClienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(crearClienteLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(crearClienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel14)
-                    .addComponent(datoNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(crearClienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(datoNit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel15))
-                .addGap(8, 8, 8)
-                .addGroup(crearClienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(datoDireccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel16))
-                .addGap(32, 32, 32)
-                .addGroup(crearClienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(insertarCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton6))
-                .addContainerGap(26, Short.MAX_VALUE))
-        );
 
         setBackground(new java.awt.Color(181, 232, 205));
         setClosable(true);
@@ -998,42 +1040,8 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
     private void agregarAlCarritoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agregarAlCarritoActionPerformed
         // TODO add your handling code here:
         Producto productoVenta = mp.obtenerProducto((String) jTable1.getValueAt(jTable1.getSelectedRow(), 1));
-        cantidad = ingresoCantidad(productoVenta.getExistencias());
-        if (!primerAdd) {
-            JTextField cliente = new JTextField();
-            Object[] message = {
-                "NIT:", cliente,};
-            int opcion = JOptionPane.showConfirmDialog(this, message, "Indicar cliente.", JOptionPane.OK_CANCEL_OPTION);
-            if (opcion == JOptionPane.OK_OPTION) {
-                EntityManagerFactory emf = Conexion.getConexion().getEmf();
-                Query q = emf.createEntityManager().createNamedQuery("Cliente.findByNit");
-                if (cliente.getText().matches("CF|cf|C/F|c/f|c.f.|C.F.")) {
-                    q.setParameter("nit", "C/F");
-                } else {
-                    q.setParameter("nit", cliente.getText());
-                }
-                List<Cliente> clienteBusqueda = q.getResultList();
-                if (clienteBusqueda.isEmpty()) {
-                    int crearcliente = JOptionPane.showConfirmDialog(this, "¿Desea crear un cliente nuevo?", "El cliente no existe.", JOptionPane.OK_OPTION);
-                    if (crearcliente == JOptionPane.OK_OPTION) {
-                        crearCliente.setSize(400, 200);
-                        crearCliente.setLocationRelativeTo(this);
-                        datoNit.setText(cliente.getText());
-                        datoDireccion.setText("Ciudad");
-                        crearCliente.setVisible(true);
-                    }
-                } else {
-                    primerAdd = true;
-                    venta.setIdPersona(clienteBusqueda.get(0).getIdCliente());
-                    mostrarDatosCliente(clienteBusqueda.get(0));
-                    if (cantidad != 0) {
-                        agrearCproducto(productoVenta, cantidad);
-                    }
-                }
-            }
-        } else if (cantidad != 0) {
-            agrearCproducto(productoVenta, cantidad);
-        }
+        cantidad = ingresoCantidad(productoVenta.getExistencias(), Boolean.FALSE);
+        agregarAlCarrito(productoVenta);
     }//GEN-LAST:event_agregarAlCarritoActionPerformed
 
     private void jTable1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseReleased
@@ -1048,10 +1056,16 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                 new Object[]{"Quitar entrada", "Editar cantidad", "Cancelar"}, "Editar cantidad");
 //        int opc = JOptionPane.showConfirmDialog(this, "Realmente quiere quitar el producto de esta venta?", "Confirmación de borrado", JOptionPane.OK_CANCEL_OPTION);
         if (opc == 0) {// para verificar si eligió editar la cantidad a vender o eliminar el producto del carrito
+            for (int i = 0; i < insertados.size(); i++) {
+                if (Objects.equals(insertados.get(i).getIdProducto(), venta.getProductos().get(jTable2.getSelectedRow()).getId())) {
+                    insertados.remove(i);
+                    break;
+                }
+            }
             venta.quitarProducto(jTable2.getSelectedRow());
-            totalVenta.setText(new DecimalFormat("Q #,##0.00").format(venta.getTotal()-obtenerDescuento()));
+            totalVenta.setText(new DecimalFormat("Q #,##0.00").format(venta.getTotal() - obtenerDescuento()));
             if (!efectivo.getText().matches("[ ]*")) {
-                vuelto.setText(new DecimalFormat("Q #,##0.00").format((double)((int)((obtenerMonto() - venta.getTotal() + obtenerDescuento())*100)/100.0)));
+                vuelto.setText(new DecimalFormat("Q #,##0.00").format((double) ((int) ((obtenerMonto() - venta.getTotal() + obtenerDescuento()) * 100) / 100.0)));
             }
             if (venta.getProductos().isEmpty()) {
                 commitVenta.setEnabled(false);
@@ -1064,13 +1078,25 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
         } else if (opc == 1) {
             EntityManagerFactory emf = Conexion.getConexion().getEmf();
             Query q = emf.createEntityManager().createNamedQuery("Producto.findByIdProducto");
-            q.setParameter("idProducto", (Integer) jTable2.getValueAt(jTable2.getSelectedRow(), 0));
-            int cant = ingresoCantidad(((Producto) q.getSingleResult()).getExistencias());
+            q.setParameter("idProducto", venta.getProductos().get(jTable2.getSelectedRow()).getId());
+            int cant = 0;
+            boolean bandera = Boolean.FALSE;
+            for (int i = 0; i < insertados.size(); i++) {
+                if (Objects.equals(insertados.get(i).getIdProducto(), venta.getProductos().get(jTable2.getSelectedRow()).getId())) {
+                    bandera = Boolean.TRUE;
+                    cant = ingresoCantidad(((Producto) q.getSingleResult()).getExistencias(), bandera);
+                    insertados.get(i).setExistencias(insertados.get(i).getExistencias() + cant);
+                    break;
+                }
+            }
+            if (!bandera) {
+                cant = ingresoCantidad(((Producto) q.getSingleResult()).getExistencias(), bandera);
+            }
             if (cant != 0) {
                 venta.getProductos().get(jTable2.getSelectedRow()).setCantidad(cant);
-                totalVenta.setText(new DecimalFormat("Q #,##0.00").format(venta.getTotal()-obtenerDescuento()));
+                totalVenta.setText(new DecimalFormat("Q #,##0.00").format(venta.getTotal() - obtenerDescuento()));
                 if (!efectivo.getText().matches("[ ]*")) {
-                    vuelto.setText(new DecimalFormat("Q #,##0.00").format((double)((int)((obtenerMonto() - venta.getTotal() + obtenerDescuento())*100)/100.0)));
+                    vuelto.setText(new DecimalFormat("Q #,##0.00").format((double) ((int) ((obtenerMonto() - venta.getTotal() + obtenerDescuento()) * 100) / 100.0)));
                 }
                 mpv = new modeloProductosVenta(venta.getProductos(), 0);
                 jTable2.setModel(mpv);
@@ -1087,118 +1113,30 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
         modificarEntradaCarrito.setEnabled(true);
     }//GEN-LAST:event_jTable2MouseReleased
 
-    private void insertarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertarClienteActionPerformed
-        // TODO add your handling code here:
-        insertarCliente();
-    }//GEN-LAST:event_insertarClienteActionPerformed
-
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        // TODO add your handling code here:
-        crearCliente.setVisible(false);
-    }//GEN-LAST:event_jButton6ActionPerformed
-
     private void commitVentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_commitVentaActionPerformed
         // TODO add your handling code here:
-        double total = (double)((int)((venta.getTotal() - obtenerDescuento())*100)/100.0);
+        double total = (double) ((int) ((venta.getTotal() - obtenerDescuento()) * 100) / 100.0);
         boolean mayor = obtenerMonto() >= total;
         if (mayor) {
             if (obtenerDescuento() > 0.0) {
                 if (Conexion.getConexion().getEsAdministrador()) {
-                    venta.setFecha(jDateChooser1.getDate());
-                    venta.setDescuento(obtenerDescuento());
-                    venta.setPagoInicial(obtenerMonto());
-                    if (venta.finalizarVenta()) {
-                        commitVenta.setEnabled(false);
-                        int opc = JOptionPane.showConfirmDialog(this, "¿Desea ver el comprobante de esta venta?",
-                                "Venta efectuada con éxito.", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
-                        if (opc == JOptionPane.OK_OPTION) {
-                            //mostrar reporte
-                            mostrarComprobanteDeVenta(venta.getIdVenta());
-                        }
-                        limpiarFormulario();
-                    } else {
-                        JOptionPane.showMessageDialog(this, "Por favor revise las existencias.", "No se pudo finalizar la venta.", JOptionPane.ERROR_MESSAGE);
-                        limpiarTabla2();
-                    }
+                    terminarVenta();
                 } else if (autenticacionDeAdministrador()) {
-                    venta.setFecha(jDateChooser1.getDate());
-                    venta.setDescuento(obtenerDescuento());
-                    venta.setPagoInicial(obtenerMonto());
-                    if (venta.finalizarVenta()) {
-                        commitVenta.setEnabled(false);
-                        int opc = JOptionPane.showConfirmDialog(this, "¿Desea ver el comprobante de esta venta?",
-                                "Venta efectuada con éxito.", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
-                        if (opc == JOptionPane.OK_OPTION) {
-                            //mostrar reporte
-                            mostrarComprobanteDeVenta(venta.getIdVenta());
-                        }
-                        limpiarFormulario();
-                    } else {
-                        JOptionPane.showMessageDialog(this, "Por favor revise las existencias.", "No se pudo finalizar la venta.", JOptionPane.ERROR_MESSAGE);
-                        limpiarTabla2();
-                    }
+                    terminarVenta();
                 } else {
                     JOptionPane.showMessageDialog(this, "No es posible aplicar el descuento!", "Permisos insuficientes!", JOptionPane.ERROR_MESSAGE);
                 }
             } else {
-                venta.setFecha(jDateChooser1.getDate());
-                venta.setPagoInicial(obtenerMonto());
-                if (venta.finalizarVenta()) {
-                    commitVenta.setEnabled(false);
-                    int opc = JOptionPane.showConfirmDialog(this, "¿Desea ver el comprobante de esta venta?",
-                            "Venta efectuada con éxito.", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
-                    if (opc == JOptionPane.OK_OPTION) {
-                        //mostrar reporte
-                        mostrarComprobanteDeVenta(venta.getIdVenta());
-                    }
-                    limpiarFormulario();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Por favor revise las existencias.", "No se pudo finalizar la venta.", JOptionPane.ERROR_MESSAGE);
-                    limpiarTabla2();
-                }
+                terminarVenta();
             }
         } else if (venta.getCredito()) {
-//          int opc = JOptionPane.showConfirmDialog(this, "¿Asignar como pago inicial?", "El pago indicado es insuficiente!",
-//                 JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-//          if (opc == JOptionPane.YES_OPTION) {
             if (Conexion.getConexion().getEsAdministrador()) {
-                venta.setPagoInicial(obtenerMonto());
-                venta.setFecha(jDateChooser1.getDate());
-                venta.setDescuento(obtenerDescuento());
-                if (venta.finalizarVenta()) {
-                    commitVenta.setEnabled(false);
-                    int opc = JOptionPane.showConfirmDialog(this, "¿Desea ver el comprobante de esta venta?",
-                            "Venta efectuada con éxito.", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
-                    if (opc == JOptionPane.OK_OPTION) {
-                        //mostrar reporte
-                        mostrarComprobanteDeVenta(venta.getIdVenta());
-                    }
-                    limpiarFormulario();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Por favor revise las existencias.", "No se pudo finalizar la venta.", JOptionPane.ERROR_MESSAGE);
-                    limpiarTabla2();
-                }
+                terminarVenta();
             } else if (autenticacionDeAdministrador()) {
-                venta.setPagoInicial(obtenerMonto());
-                venta.setFecha(jDateChooser1.getDate());
-                venta.setDescuento(obtenerDescuento());
-                if (venta.finalizarVenta()) {
-                    commitVenta.setEnabled(false);
-                    int opc = JOptionPane.showConfirmDialog(this, "¿Desea ver el comprobante de esta venta?",
-                            "Venta efectuada con éxito.", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
-                    if (opc == JOptionPane.OK_OPTION) {
-                        //mostrar reporte
-                        mostrarComprobanteDeVenta(venta.getIdVenta());
-                    }
-                    limpiarFormulario();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Por favor revise las existencias.", "No se pudo finalizar la venta.", JOptionPane.ERROR_MESSAGE);
-                    limpiarTabla2();
-                }
+                terminarVenta();
             } else {
                 JOptionPane.showMessageDialog(this, "No es posible vender al crédito.", "Permisos insuficientes.", JOptionPane.ERROR_MESSAGE);
             }
-//      }
         } else {
             JOptionPane.showMessageDialog(this, "Intente las siguientes opciones:\n\r\t- Vender al crédito.\n\r\t- Agregar un descuento.",
                     "El monto de efectivo es insuficiente!", JOptionPane.ERROR_MESSAGE);
@@ -1213,16 +1151,16 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
     private void efectivoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_efectivoKeyReleased
         // TODO add your handling code here:
         if (!efectivo.getText().matches("\\.|[0-9]+\\.")) {
-            vuelto.setText(new DecimalFormat("Q #,##0.00").format((double)((int)((obtenerMonto() - venta.getTotal() + obtenerDescuento())*100)/100.0)));
+            vuelto.setText(new DecimalFormat("Q #,##0.00").format((double) ((int) ((obtenerMonto() - venta.getTotal() + obtenerDescuento()) * 100) / 100.0)));
         }
     }//GEN-LAST:event_efectivoKeyReleased
 
     private void descuentoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_descuentoKeyReleased
         // TODO add your handling code here:
         if (!descuento.getText().matches("\\.|[0-9]+\\.")) {
-            totalVenta.setText(new DecimalFormat("Q #,##0.00").format((double)((int)((venta.getTotal() - obtenerDescuento())*100)/100.0)));
+            totalVenta.setText(new DecimalFormat("Q #,##0.00").format((double) ((int) ((venta.getTotal() - obtenerDescuento()) * 100) / 100.0)));
             if (efectivo.getText().length() > 0) {
-                vuelto.setText(new DecimalFormat("Q #,##0.00").format((double)((int)((obtenerMonto() - venta.getTotal() + obtenerDescuento())*100)/100.0)));
+                vuelto.setText(new DecimalFormat("Q #,##0.00").format((double) ((int) ((obtenerMonto() - venta.getTotal() + obtenerDescuento()) * 100) / 100.0)));
             }
         }
     }//GEN-LAST:event_descuentoKeyReleased
@@ -1244,40 +1182,10 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
         DefaultComboBoxModel modelo = new DefaultComboBoxModel();
         modelo.addElement("Seleccione una categoría");
         modelo.setSelectedItem("Seleccione una categoría");
-        for(int i=0;i<listaCategorias.size();i++){
+        for (int i = 0; i < listaCategorias.size(); i++) {
             modelo.addElement(listaCategorias.get(i).getNombre());
         }
         crearIngresarProducto("", "", "", modelo);
-        if (!primerAdd) {
-            JTextField cliente = new JTextField();
-            Object[] message = {
-                "NIT:", cliente,};
-            int opcion = JOptionPane.showConfirmDialog(this, message, "Indicar cliente.", JOptionPane.OK_CANCEL_OPTION);
-            if (opcion == JOptionPane.OK_OPTION) {
-                EntityManagerFactory emf = Conexion.getConexion().getEmf();
-                Query q = emf.createEntityManager().createNamedQuery("Cliente.findByNit");
-                if (cliente.getText().matches("CF|cf|C/F|c/f|c.f.|C.F.")) {
-                    q.setParameter("nit", "C/F");
-                } else {
-                    q.setParameter("nit", cliente.getText());
-                }
-                List<Cliente> clienteBusqueda = q.getResultList();
-                if (clienteBusqueda.isEmpty()) {
-                    int crearcliente = JOptionPane.showConfirmDialog(this, "¿Desea crear un cliente nuevo?", "El cliente no existe.", JOptionPane.OK_OPTION);
-                    if (crearcliente == JOptionPane.OK_OPTION) {
-                        crearCliente.setSize(400, 200);
-                        crearCliente.setLocationRelativeTo(this);
-                        datoNit.setText(cliente.getText());
-                        datoDireccion.setText("Ciudad");
-                        crearCliente.setVisible(true);
-                    }
-                } else {
-                    primerAdd = true;
-                    venta.setIdPersona(clienteBusqueda.get(0).getIdCliente());
-                    mostrarDatosCliente(clienteBusqueda.get(0));
-                }
-            }
-        }
     }//GEN-LAST:event_entradaManualActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -1286,26 +1194,17 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
     private javax.swing.JButton cancelar1;
     private javax.swing.JTextField codigoCliente;
     private javax.swing.JButton commitVenta;
-    private javax.swing.JDialog crearCliente;
-    private javax.swing.JTextField datoDireccion;
-    private javax.swing.JTextField datoNit;
-    private javax.swing.JTextField datoNombre;
     private javax.swing.JTextField descuento;
     private javax.swing.JTextField direccionCliente;
     private javax.swing.JTextField efectivo;
     private javax.swing.JButton entradaManual;
     private javax.swing.JCheckBox esAlCredito;
-    private javax.swing.JButton insertarCliente;
-    private javax.swing.JButton jButton6;
     private com.toedter.calendar.JDateChooser jDateChooser1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;

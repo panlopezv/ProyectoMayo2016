@@ -40,7 +40,7 @@ public class Inicio extends javax.swing.JFrame {
 
     public static Conexion conexion;
     public static final String USER = "root";
-    public static final String PASS = "root";
+    public static final String PASS = "Kk4/1";
     public static final String SERVER = "localhost";
     public static final String DIRECTORY = "src\\reportes\\";   // "reportes\\" cuando se ejecuta desde netbeans
 
