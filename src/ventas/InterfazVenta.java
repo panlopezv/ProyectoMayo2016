@@ -221,11 +221,11 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                 } else {
                     JOptionPane.showMessageDialog(this, "Solo hay " + String.valueOf(existencias) + " existencias.",
                             "Existencias insuficientes.", JOptionPane.WARNING_MESSAGE);
-                    ingresoCantidad(existencias, b);
+                    return ingresoCantidad(existencias, b);
                 }
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(null, "Debe indicar un valor correcto en cantidad a vender!", "ERROR DE FORMATO", JOptionPane.ERROR_MESSAGE);
-                ingresoCantidad(existencias, b);
+                JOptionPane.showMessageDialog(null, "Debe indicar un valor correcto en cantidad a vender.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
+                return ingresoCantidad(existencias, b);
             }
         }
         return 0;
@@ -234,10 +234,9 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
     /**
      * Crea un cliente si al indicar el cliente de la venta no existe
      *
-     * @param p
+     * @param productoVenta
      * @param nit
      * @param direccion
-     * @return true si se agrega el cliente
      */
     public void insertarCliente(Producto productoVenta, String nit, String direccion) {
         String registro = "";
@@ -264,7 +263,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                         agrearCproducto(productoVenta, cantidad);
                     }
                 } else {
-                    JOptionPane.showMessageDialog(this, "El NIT ingresado ya pertenece a un cliente!", "Error de nit.", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "El NIT ingresado ya pertenece a un cliente.", "Error de nit", JOptionPane.ERROR_MESSAGE);
                     insertarCliente(productoVenta, "", datoDireccion.getText());
                 }
             } else {
@@ -434,7 +433,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                 return true;
             } else {
                 JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos.", "Error de autenticación", JOptionPane.ERROR_MESSAGE);
-                autenticacionDeAdministrador();
+                return autenticacionDeAdministrador();
             }
         }
         return false;
@@ -1090,7 +1089,7 @@ public class InterfazVenta extends javax.swing.JInternalFrame {
                 if (Objects.equals(insertados.get(i).getIdProducto(), venta.getProductos().get(jTable2.getSelectedRow()).getId())) {
                     bandera = Boolean.TRUE;
                     cant = ingresoCantidad(((Producto) q.getSingleResult()).getExistencias(), bandera);
-                    insertados.get(i).setExistencias(insertados.get(i).getExistencias() + cant);
+                    insertados.get(i).setExistencias(cant);
                     break;
                 }
             }
